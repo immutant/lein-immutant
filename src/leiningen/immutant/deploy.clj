@@ -8,9 +8,8 @@
 
 (defn deploy [project]
   (with-jboss-home
-    (let [descriptor (io/file jboss-home "standalone" "deployments" (descriptor-name project))]
-      (io/copy (make-descriptor project)
-               descriptor)
-      (io/copy ""
-               (dodeploy-marker descriptor))
-      (println "Deployed" (app-name project) "to" (.getAbsolutePath descriptor)))))
+    (io/copy (make-descriptor project)
+             (descriptor-file project))
+    (io/copy ""
+             (dodeploy-marker project))
+    (println "Deployed" (app-name project) "to" (.getAbsolutePath (descriptor-file project)))))

@@ -5,7 +5,7 @@
 (defn undeploy [project]
   (with-jboss-home
     (if-let [files (seq (filter #(.exists %)
-                                [(descriptor project)
+                                [(descriptor-file project)
                                  (dodeploy-marker project)
                                  (deployed-marker project)]))]
       (do

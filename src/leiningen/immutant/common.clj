@@ -36,11 +36,11 @@
 (defn deployment-dir []
   (io/file jboss-home "standalone" "deployments"))
 
-(defn descriptor [project]
+(defn descriptor-file [project]
   (io/file (deployment-dir) (descriptor-name project)))
 
 (defn marker [suffix project]
-  (io/file (str (.getAbsolutePath (descriptor project)) suffix)))
+  (io/file (str (.getAbsolutePath (descriptor-file project)) suffix)))
 
 (def dodeploy-marker
   (partial marker ".dodeploy"))
