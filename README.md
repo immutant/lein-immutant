@@ -23,6 +23,9 @@ Add it as a dev dependency in your project.clj:
 First, you'll need to define an environment variable called `IMMUTANT_HOME`
 pointing to your Immutant distribution. 
 
+* `lein immutant init` - creates a sample immuntant.clj configuration
+  file at the root of the project.
+  
 * `lein immutant deploy` - deploys the current app to the Immutant you 
   specified above. If a map is defined under the `:immutant` key in
   `project.clj`, it will be merged with the deployed descriptor. This
