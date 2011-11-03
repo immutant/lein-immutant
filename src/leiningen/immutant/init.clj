@@ -12,5 +12,5 @@
                (:name project)))
          file)
         (println "Wrote sample immutant.clj"))
-      (println "immutant.clj already exists!"))))
+      (err "immutant.clj already exists"))))
 

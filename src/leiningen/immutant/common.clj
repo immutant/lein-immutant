@@ -8,15 +8,15 @@
 (defn get-jboss-home []
   (if-let [jboss-home (System/getenv "JBOSS_HOME")]
     (io/file jboss-home)
-    (if (get-immutant-home)
-      (io/file (get-immutant-home) "jboss"))))
+    (when-let [immutant-home (get-immutant-home)]
+      (io/file immutant-home "jboss"))))
 
-(def ^:dynamic jboss-home)
+(def *jboss-home*)
 
 (defmacro with-jboss-home [& forms]
   `(if (get-jboss-home)
     (if (.isDirectory (get-jboss-home))
-      (binding [jboss-home (get-jboss-home)]
+      (binding [*jboss-home* (get-jboss-home)]
         (do ~@forms))
       (err (.getAbsolutePath (get-jboss-home)) "does not exist."))
     (err "Could not locate jboss home. Set $JBOSS_HOME or $IMMUTANT_HOME.")))
@@ -34,7 +34,7 @@
   (str (app-name project) ".clj"))
 
 (defn deployment-dir []
-  (io/file jboss-home "standalone" "deployments"))
+  (io/file  *jboss-home* "standalone" "deployments"))
 
 (defn descriptor-file [project]
   (io/file (deployment-dir) (descriptor-name project)))
