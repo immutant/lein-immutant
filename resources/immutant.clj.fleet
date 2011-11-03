@@ -15,6 +15,8 @@
 
 ;; Web endpoints can be stopped from anywhere in your code with:
 ;; (web/stop "/")
+;; This is optional - any endpoints you leave up will be stopped when your
+;; app is undeployed.
 
 ;; Messaging allows for starting (and stopping) destinations (queues & topics)
 ;; and listening for messages on a destination.
@@ -24,4 +26,6 @@
 
 ;; Destinations can be stopped with:
 ;; (messaging/stop "/queue/a-queue")
+;; This is optional - any destinations you leave up will be stopped when your
+;; app is undeployed.
 
