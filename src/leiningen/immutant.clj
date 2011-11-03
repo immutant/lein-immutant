@@ -1,6 +1,7 @@
 (ns leiningen.immutant
   (:require [leiningen.help :as help])
   (:use leiningen.immutant.deploy)
+  (:use leiningen.immutant.init)
   (:use leiningen.immutant.undeploy)
   (:use leiningen.immutant.run))
 
@@ -12,6 +13,7 @@
      (println (help/help-for "immutant")))
   ([project subtask]
      (case subtask
+       "init"         (init project)
        "deploy"       (deploy project)
        "undeploy"     (undeploy project)
        "run"          (run project))))
