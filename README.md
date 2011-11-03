@@ -9,9 +9,12 @@ A Leiningen plugin for deploying Immutant apps.
 This isn't (yet) published to clojars, so you'll need to build it first. 
 To do so, checkout this repo and `lein install`.
 
-### Adding to a project
-
-Add it as a dev dependency in your project.clj:
+To install for all lein projects, execute:
+    
+    lein plugin install lein-immutant 1.0.0-SNAPSHOT
+    
+If you don't want to install it for all lein projects, you can add it as 
+a dev dependency in your project.clj:
 
     ...
     :dependencies [[org.clojure/clojure "1.3.0"]]
