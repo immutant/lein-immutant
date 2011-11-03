@@ -6,11 +6,11 @@
 ;; This file will be loaded when the application is deployed to Immutant, and
 ;; can be used to start services your app needs. Examples:
 
-;; Web endpoints need a context-path and ring hander function. The context
+;; Web endpoints need a context-path and ring handler function. The context
 ;; path given here is a sub-path to the global context-path for the app
 ;; if any.
 
-; (web/start "/" my-ring-hander)
+; (web/start "/" my-ring-handler)
 ; (web/start "/foo" a-different-ring-handler)
 
 ;; Web endpoints can be stopped from anywhere in your code with:
