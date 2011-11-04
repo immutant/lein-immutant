@@ -6,19 +6,16 @@ A Leiningen plugin for deploying Immutant apps.
 
 ### Installation
 
-This isn't (yet) published to clojars, so you'll need to build it first. 
-To do so, checkout this repo and `lein install`.
-
 To install for all lein projects, execute:
     
-    lein plugin install lein-immutant 1.0.0-SNAPSHOT
+    lein plugin install lein-immutant 0.1.0
     
 If you don't want to install it for all lein projects, you can add it as 
 a dev dependency in your project.clj:
 
     ...
     :dependencies [[org.clojure/clojure "1.3.0"]]
-    :dev-dependencies [[lein-immutant "1.0.0-SNAPSHOT"]]
+    :dev-dependencies [[lein-immutant "0.1.0"]]
     ...
     
 ### Running it
@@ -37,7 +34,7 @@ pointing to your Immutant distribution.
 * `lein immutant undeploy` - undeploys the current app from the Immutant 
   you specified above.
   
-* `lein immutant run` - launches Immutant. Not yet implemented.
+* `lein immutant run` - launches Immutant. 
 
 ## License
 
