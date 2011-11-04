@@ -43,4 +43,4 @@ pointing to your Immutant distribution.
 
 Copyright (C) 2011 Red Hat, Inc.
 
-License TBD.
+Licensed under the Eclipse Public License v1.0

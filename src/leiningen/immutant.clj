@@ -7,8 +7,8 @@
 
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
-  {:help-arglists '([deploy undeploy run])
-   :subtasks [#'deploy #'undeploy #'run]}
+  {:help-arglists '([immutant subtask])
+   :subtasks [#'init #'deploy #'undeploy #'run]}
   ([project]
      (println (help/help-for "immutant")))
   ([project subtask]

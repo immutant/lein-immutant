@@ -6,7 +6,9 @@
   (with-out-str
     (prn (assoc (:immutant project) :root (:target-dir project)))))
 
-(defn deploy [project]
+(defn deploy 
+  "Deploys the current project to the Immutant specified by $IMMUTANT_HOME"
+  [project]
   (with-jboss-home
     (io/copy (make-descriptor project)
              (descriptor-file project))

@@ -2,7 +2,9 @@
   (:use leiningen.immutant.common
         leiningen.immutant.exec))
 
-(defn run [project]
+(defn run
+  "Starts up the Immutant specified by $IMMUTANT_HOME"
+  [project]
   "Launches Immutant and displays its console output"
   (with-jboss-home
     (if-not (.exists (descriptor-file project))
