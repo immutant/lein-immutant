@@ -1,5 +1,7 @@
 (ns leiningen.immutant.common
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [leiningen.help :as lhelp]
+            [leiningen.core :as lcore]))
 
 (defn get-immutant-home []
   (if-let [immutant-home (System/getenv "IMMUTANT_HOME")]
@@ -18,14 +20,16 @@
     (if (.isDirectory (get-jboss-home))
       (binding [*jboss-home* (get-jboss-home)]
         (do ~@forms))
-      (err (.getAbsolutePath (get-jboss-home)) "does not exist."))
-    (err "Could not locate jboss home. Set $JBOSS_HOME or $IMMUTANT_HOME.")))
+      (abort (.getAbsolutePath (get-jboss-home)) "does not exist."))
+    (abort "Could not locate jboss home. Set $JBOSS_HOME or $IMMUTANT_HOME.")))
 
 (defn err [& message]
   (do
     (binding [*out* *err*]
-      (apply println message))
-    1))
+      (apply println message))))
+
+(defn abort [& message]
+  (apply lcore/abort message))
 
 (defn app-name [project]
   (:name project))
@@ -47,4 +51,11 @@
 
 (def deployed-marker
   (partial marker ".deployed"))
+
+(defn print-help []
+  (println (lhelp/help-for "immutant")))
+
+(defn unknown-subtask [subtask]
+  (err "Unknown subtask" subtask)
+  (print-help))
 
