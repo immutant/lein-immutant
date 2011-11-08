@@ -8,14 +8,14 @@ A Leiningen plugin for deploying Immutant apps.
 
 To install for all lein projects, execute:
     
-    lein plugin install lein-immutant 0.1.0
+    lein plugin install lein-immutant 0.2.0
     
 If you don't want to install it for all lein projects, you can add it as 
 a dev dependency in your project.clj:
 
     ...
     :dependencies [[org.clojure/clojure "1.3.0"]]
-    :dev-dependencies [[lein-immutant "0.1.0"]]
+    :dev-dependencies [[lein-immutant "0.2.0"]]
     ...
     
 ### Running it
@@ -23,8 +23,11 @@ a dev dependency in your project.clj:
 First, you'll need to define an environment variable called `IMMUTANT_HOME`
 pointing to your Immutant distribution. 
 
+* `lein immutant new project-name` - calls `lein new project-name` for you,
+   the calls `lein immutant init`.
+
 * `lein immutant init` - creates a sample immuntant.clj configuration
-  file at the root of the project.
+  file at the root of the current project.
   
 * `lein immutant deploy` - deploys the current app to the Immutant you 
   specified above. If a map is defined under the `:immutant` key in
