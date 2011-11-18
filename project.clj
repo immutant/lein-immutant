@@ -9,6 +9,5 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo}
   :eval-in-leiningen true
-  :dependencies [[fleet "0.9.5"]
-                 [org.apache.commons/commons-exec "1.1"]]
+  :dependencies [[fleet "0.9.5"]]
   :dev-dependencies [[lein-clojars "0.7.0"]])

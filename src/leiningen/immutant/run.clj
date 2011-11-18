@@ -1,6 +1,6 @@
 (ns leiningen.immutant.run
   (:use leiningen.immutant.common
-        leiningen.immutant.exec))
+        [leiningen.compile :only [sh]]))
 
 (defn run
   "Starts up the Immutant specified by $IMMUTANT_HOME, displaying its console output"
@@ -12,4 +12,4 @@
             (err "WARNING: The current app is not deployed - deploy with 'lein immutant deploy'"))
        (let [script (str (.getAbsolutePath *jboss-home*) "/bin/standalone.sh")]
          (println "Starting Immutant via" script)
-         (exec script)))))
+         (sh script)))))
