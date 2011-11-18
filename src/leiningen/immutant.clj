@@ -1,9 +1,9 @@
 (ns leiningen.immutant
-  (:use [leiningen.immutant.common :only [print-help unknown-subtask]])
-  (:use leiningen.immutant.deploy)
-  (:use leiningen.immutant.init)
-  (:use leiningen.immutant.undeploy)
-  (:use leiningen.immutant.run))
+  (:use [leiningen.immutant.common :only [print-help unknown-subtask]]
+        leiningen.immutant.deploy
+        leiningen.immutant.init
+        leiningen.immutant.undeploy
+        leiningen.immutant.run))
 
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."

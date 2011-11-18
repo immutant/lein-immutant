@@ -24,9 +24,8 @@
     (abort "Could not locate jboss home. Set $JBOSS_HOME or $IMMUTANT_HOME.")))
 
 (defn err [& message]
-  (do
-    (binding [*out* *err*]
-      (apply println message))))
+  (binding [*out* *err*]
+    (apply println message)))
 
 (defn abort [& message]
   (apply lcore/abort message))

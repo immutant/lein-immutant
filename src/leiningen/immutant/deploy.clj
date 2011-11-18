@@ -1,6 +1,5 @@
 (ns leiningen.immutant.deploy
-  (:use leiningen.immutant.common)
-  (:require [clojure.java.io :as io]))
+  (:use leiningen.immutant.common))
 
 (defn make-descriptor [project]
   (with-out-str
@@ -10,8 +9,6 @@
   "Deploys the current project to the Immutant specified by $IMMUTANT_HOME"
   [project]
   (with-jboss-home
-    (io/copy (make-descriptor project)
-             (descriptor-file project))
-    (io/copy ""
-             (dodeploy-marker project))
+    (spit (descriptor-file project) (make-descriptor project))
+    (spit (dodeploy-marker project) "")
     (println "Deployed" (app-name project) "to" (.getAbsolutePath (descriptor-file project)))))

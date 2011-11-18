@@ -11,6 +11,7 @@
                                  (dodeploy-marker project)
                                  (deployed-marker project)]))]
       (do
-        (doall (map #(io/delete-file %) files))
+        (doseq [file files]
+          (io/delete-file file))
         (println "Undeployed" (app-name project) "from" (.getAbsolutePath (deployment-dir))))
       (println "No action taken:" (app-name project) "is not deployed to" (.getAbsolutePath (deployment-dir))))))
