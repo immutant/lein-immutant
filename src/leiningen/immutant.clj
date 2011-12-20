@@ -8,7 +8,7 @@
 
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
-  {:help-arglists '([subtask] [new project-name])
+  {:help-arglists '([subtask] [new project-name] [install [version [destination-dir]]])
    :subtasks [#'install #'leiningen.immutant.init/new #'init #'deploy #'undeploy #'run]}
    ([]
       (print-help))

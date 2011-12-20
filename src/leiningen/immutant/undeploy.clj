@@ -3,7 +3,7 @@
   (:require [clojure.java.io :as io]))
 
 (defn undeploy
-  "Undeploys the current project from the Immutant specified by $IMMUTANT_HOME"
+  "Undeploys the current project from the Immutant specified by ~/.lein/immutant/current or $IMMUTANT_HOME"
   [project]
   (with-jboss-home
     (if-let [files (seq (filter #(.exists %)

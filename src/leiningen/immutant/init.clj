@@ -19,7 +19,7 @@
       (abort "immutant.clj already exists"))))
 
 (defn new
-  "Create a new project skeleton initialized for immutant."
+  "Creates a new project skeleton initialized for Immutant"
   [project-name]
   (lnew/new project-name)
   (init (lcore/read-project

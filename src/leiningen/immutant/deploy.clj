@@ -6,7 +6,7 @@
     (prn (assoc (:immutant project) :root (:target-dir project)))))
 
 (defn deploy 
-  "Deploys the current project to the Immutant specified by $IMMUTANT_HOME"
+  "Deploys the current project to the Immutant specified by ~/.lein/immutant/current or $IMMUTANT_HOME"
   [project]
   (with-jboss-home
     (spit (descriptor-file project) (make-descriptor project))

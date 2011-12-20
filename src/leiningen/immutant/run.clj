@@ -6,7 +6,7 @@
   (str (.getAbsolutePath *jboss-home*) "/bin/standalone.sh"))
 
 (defn run
-  "Starts up the Immutant specified by $IMMUTANT_HOME, displaying its console output"
+  "Starts up the Immutant specified by ~/.lein/immutant/current or $IMMUTANT_HOME, displaying its console output"
   ([]
      (run nil))
   ([project]
