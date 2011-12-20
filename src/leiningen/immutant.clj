@@ -1,6 +1,7 @@
 (ns leiningen.immutant
   (:use [leiningen.immutant.common :only [print-help unknown-subtask]]
         leiningen.immutant.deploy
+        leiningen.immutant.env
         leiningen.immutant.init
         leiningen.immutant.install
         leiningen.immutant.undeploy
@@ -11,19 +12,19 @@
   {:help-arglists '([subtask]
                     [new project-name]
                     [install [version [destination-dir]]
-                    [overlay [layee [version]]]])
-   :subtasks [#'install #'overlay #'leiningen.immutant.init/new #'init #'deploy #'undeploy #'run]}
+                    [overlay [layee [version]]]]
+                    [env [key]])
+   :subtasks [#'install #'overlay #'env #'leiningen.immutant.init/new #'init #'deploy #'undeploy #'run]}
    ([]
       (print-help))
    ([subtask]
-      (case subtask
-        "run" (run)
-        (unknown-subtask subtask)))
+      (immutant nil subtask))
    ([project-or-nil subtask & args]
       (case subtask
-        "new"          (leiningen.immutant.init/new (first args))
         "install"      (apply install args)
         "overlay"      (apply overlay args)
+        "env"          (apply env args)
+        "new"          (leiningen.immutant.init/new (first args))
         "init"         (init project-or-nil)
         "deploy"       (deploy project-or-nil)
         "undeploy"     (undeploy project-or-nil)
