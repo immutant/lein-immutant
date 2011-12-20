@@ -1,11 +1,22 @@
 (ns leiningen.immutant.common
   (:require [clojure.java.io :as io]
             [leiningen.help :as lhelp]
-            [leiningen.core :as lcore]))
+            [leiningen.core :as lcore]
+            [leiningen.util.paths :as lpaths]))
+
+(defn immutant-storage-dir []
+  (.getAbsolutePath
+   (doto (io/file (lpaths/leiningen-home) "immutant")
+     .mkdirs)))
+
+(def current-path
+  (io/file (immutant-storage-dir) "current"))
 
 (defn get-immutant-home []
   (if-let [immutant-home (System/getenv "IMMUTANT_HOME")]
-    (io/file immutant-home)))
+    (io/file immutant-home)
+    (and (.exists current-path)
+         current-path)))
 
 (defn get-jboss-home []
   (if-let [jboss-home (System/getenv "JBOSS_HOME")]
