@@ -8,8 +8,11 @@
 
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
-  {:help-arglists '([subtask] [new project-name] [install [version [destination-dir]]])
-   :subtasks [#'install #'leiningen.immutant.init/new #'init #'deploy #'undeploy #'run]}
+  {:help-arglists '([subtask]
+                    [new project-name]
+                    [install [version [destination-dir]]
+                    [overlay [layee [version]]]])
+   :subtasks [#'install #'overlay #'leiningen.immutant.init/new #'init #'deploy #'undeploy #'run]}
    ([]
       (print-help))
    ([subtask]
@@ -20,6 +23,7 @@
       (case subtask
         "new"          (leiningen.immutant.init/new (first args))
         "install"      (apply install args)
+        "overlay"      (apply overlay args)
         "init"         (init project-or-nil)
         "deploy"       (deploy project-or-nil)
         "undeploy"     (undeploy project-or-nil)
