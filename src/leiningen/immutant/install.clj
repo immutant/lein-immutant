@@ -22,13 +22,16 @@
   (println  "Linking" (.getAbsolutePath current-path) "to" (.getAbsolutePath target)))
 
 (defn version-exists [url dest-dir]
-  (let [version (with-open [r (io/reader (metadata-url url))]
-                  (:build_number (json/read-json (slurp r))))
-        dir (io/file dest-dir (format "immutant-1.x.incremental.%s" version))]
-    (if (.exists dir) [dir version])))
+  (try
+    (let [version (with-open [r (io/reader (metadata-url url))]
+                    (:build_number (json/read-json (slurp r))))
+          dir (io/file dest-dir (format "immutant-1.x.incremental.%s" version))]
+      (if (.exists dir) [dir version]))
+    (catch Exception e
+            nil)))
 
 (defn install
-  "download and install Immutant"
+  "Downloads and installs Immutant"
   ([]
      (install nil nil))
   ([version]
