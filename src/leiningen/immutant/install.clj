@@ -47,14 +47,14 @@
                          (overlayment/download-and-extract incr-url)))))))
 
 (defn overlay
-  "Overlays layee onto ~/.lein/immutant/current or $IMMUTANT_HOME"
+  "Overlays layer onto ~/.lein/immutant/current or $IMMUTANT_HOME"
   ([]
-     (println "No layee provided, assuming 'torquebox'")
+     (println "No layer provided, assuming 'torquebox'")
      (overlay "torquebox" nil))
-  ([layee]
-     (overlay layee nil))
-  ([layee version]
+  ([layer]
+     (overlay layer nil))
+  ([layer version]
      (when-not (and (get-jboss-home) (.exists (get-jboss-home)))
        (println "No Immutant installed, installing the latest")
        (install))
-     (overlayment/overlay (get-immutant-home) layee)))
+     (overlayment/overlay (get-immutant-home) layer)))
