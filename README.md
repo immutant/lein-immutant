@@ -29,11 +29,11 @@ a dev dependency in your project.clj:
    `~/.lein/immutant/current`. If this link is present (and points to a 
    valid Immutant install), you won't need to set `$IMMUTANT_HOME`
 
-* `lein immutant overlay [layer [version]]` - downloads and overlays a 
-  version of layer onto the currenty installed Immutant. If it can't find
+* `lein immutant overlay [feature-set [version]]` - downloads and overlays a
+  feature set onto the currenty installed Immutant. If it can't find
   an Immutant install (either via the `current` link or `$IMMUTANT_HOME`), 
   it will download and install the latest incremental build first. Currently,
-  the only supported layer is 'torquebox'. The version defaults to the
+  the only supported feature set is 'torquebox'. The version defaults to the
   latest incremental, but can also be any recent build number from
   http://torquebox.org/2x/builds/.
 

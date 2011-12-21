@@ -12,7 +12,7 @@
   {:help-arglists '([subtask]
                     [new project-name]
                     [install [version [destination-dir]]
-                    [overlay [layer [version]]]]
+                    [overlay [feature-set [version]]]]
                     [env [key]])
    :subtasks [#'install #'overlay #'env #'leiningen.immutant.init/new #'init #'deploy #'undeploy #'run]}
    ([]
