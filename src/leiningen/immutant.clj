@@ -28,5 +28,5 @@
         "init"         (init project-or-nil)
         "deploy"       (deploy project-or-nil)
         "undeploy"     (undeploy project-or-nil)
-        "run"          (run project-or-nil)
+        "run"          (apply run project-or-nil args)
         (unknown-subtask subtask))))
