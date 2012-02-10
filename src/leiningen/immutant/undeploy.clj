@@ -7,9 +7,13 @@
   [project]
   (with-jboss-home
     (if-let [files (seq (filter #(.exists %)
-                                [(descriptor-file project)
-                                 (dodeploy-marker project)
-                                 (deployed-marker project)]))]
+                                (map #(% project)
+                                     [descriptor-file
+                                      dodeploy-marker
+                                      deployed-marker
+                                      deployed-archive-file
+                                      archive-dodeploy-marker
+                                      archive-deployed-marker])))]
       (do
         (doseq [file files]
           (io/delete-file file))

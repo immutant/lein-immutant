@@ -1,13 +1,10 @@
 (ns leiningen.immutant.install
   (:use leiningen.immutant.common)
-  (:require [clojure.java.io :as io]
-            [clojure.java.shell :as shell]
-            [clojure.data.json :as json]
+  (:require [clojure.java.io     :as io]
+            [clojure.java.shell  :as shell]
+            [clojure.data.json   :as json]
             [leiningen.util.file :as lfile]
-            [overlay.core :as overlayment]))
-
-;; short-circuit the future pool so we don't have to wait 60s for it to exit
-(.setKeepAliveTime clojure.lang.Agent/soloExecutor 100 java.util.concurrent.TimeUnit/MILLISECONDS)
+            [overlay.core        :as overlayment]))
 
 (alter-var-root #'overlayment/*output-dir*
                 (constantly (lfile/unique-lein-tmp-dir)))

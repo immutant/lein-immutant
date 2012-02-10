@@ -47,11 +47,17 @@
 (defn descriptor-name [project]
   (str (app-name project) ".clj"))
 
+(defn archive-name [project]
+  (str (:name project) ".ima"))
+
 (defn deployment-dir []
   (io/file  *jboss-home* "standalone" "deployments"))
 
 (defn descriptor-file [project]
   (io/file (deployment-dir) (descriptor-name project)))
+
+(defn deployed-archive-file [project]
+  (io/file (deployment-dir) (archive-name project)))
 
 (defn marker [suffix project]
   (io/file (str (.getAbsolutePath (descriptor-file project)) suffix)))
@@ -61,6 +67,15 @@
 
 (def deployed-marker
   (partial marker ".deployed"))
+
+(defn archive-marker [suffix project]
+  (io/file (str (.getAbsolutePath (deployed-archive-file project)) suffix)))
+
+(def archive-dodeploy-marker
+  (partial archive-marker ".dodeploy"))
+
+(def archive-deployed-marker
+  (partial archive-marker ".deployed"))
 
 (defn print-help []
   (println (lhelp/help-for "immutant")))

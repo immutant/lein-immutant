@@ -3,6 +3,7 @@
         leiningen.immutant.deploy
         leiningen.immutant.env
         leiningen.immutant.init
+        leiningen.immutant.archive
         leiningen.immutant.install
         leiningen.immutant.undeploy
         leiningen.immutant.run))
@@ -26,7 +27,11 @@
         "env"          (apply env args)
         "new"          (leiningen.immutant.init/new (first args))
         "init"         (init project-or-nil)
-        "deploy"       (deploy project-or-nil)
+        "archive"      (archive project-or-nil)
+        "deploy"       (apply deploy project-or-nil args)
         "undeploy"     (undeploy project-or-nil)
         "run"          (apply run project-or-nil args)
-        (unknown-subtask subtask))))
+        (unknown-subtask subtask))
+      (shutdown-agents)))
+
+
