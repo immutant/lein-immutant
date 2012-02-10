@@ -11,7 +11,7 @@
   (let [archive-file (io/file (archive-name project))
         deployed-file (deployed-archive-file project)]
     (if (.exists archive-file)
-      (println "A" (.getName archive-file) "already exists, skipping archive step.")
+      (println (.getName archive-file) "already exists, skipping archive step.")
       (archive/archive project))
     (io/copy archive-file deployed-file)
     (spit (archive-dodeploy-marker project) "")
@@ -32,3 +32,22 @@
             (deploy-archive project)
             (deploy-dir project))]
       (println "Deployed" (app-name project) "to" (.getAbsolutePath deployed-file)))))
+
+(defn undeploy
+  "Undeploys the current project from the Immutant specified by ~/.lein/immutant/current or $IMMUTANT_HOME"
+  [project]
+  (with-jboss-home
+    (if-let [files (seq (filter #(.exists %)
+                                (map #(% project)
+                                     [descriptor-file
+                                      dodeploy-marker
+                                      deployed-marker
+                                      deployed-archive-file
+                                      archive-dodeploy-marker
+                                      archive-deployed-marker])))]
+      (do
+        (doseq [file files]
+          (io/delete-file file))
+        (println "Undeployed" (app-name project) "from" (.getAbsolutePath (deployment-dir))))
+      (println "No action taken:" (app-name project) "is not deployed to" (.getAbsolutePath (deployment-dir))))))
+

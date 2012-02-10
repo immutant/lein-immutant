@@ -8,14 +8,14 @@ A Leiningen plugin for deploying Immutant apps.
 
 To install for all lein projects, execute:
     
-    lein plugin install lein-immutant 0.3.1
+    lein plugin install lein-immutant 0.4.0
     
 If you don't want to install it for all lein projects, you can add it as 
 a dev dependency in your project.clj:
 
     ...
     :dependencies [[org.clojure/clojure "1.3.0"]]
-    :dev-dependencies [[lein-immutant "0.3.1"]]
+    :dev-dependencies [[lein-immutant "0.4.0"]]
     ...
     
 ### Running it
@@ -47,10 +47,16 @@ a dev dependency in your project.clj:
 * `lein immutant init` - creates a sample immuntant.clj configuration
   file at the root of the current project.
   
+* `lein immutant archive` - creates an Immutant archive (suffixed with `.ima`)
+  in the app directory. This archive can be deployed in lieu of a descriptor
+  pointing to the app directory.
+  
 * `lein immutant deploy` - deploys the current app to the current Immutant. 
   If a map is defined under the `:immutant` key in  `project.clj`, it will 
   be merged with the deployed descriptor. This is useful for setting your 
-  `:init` function.
+  `:init` function. If passed the `--archive` option, it will deploy an
+  archive of the app instead of a descriptor pointing to the app on
+  disk. If an archive does not yet exist, one will be created.
 
 * `lein immutant undeploy` - undeploys the current app from the current
   Immutant.
