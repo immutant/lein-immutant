@@ -37,7 +37,7 @@
      (let [incr-url (overlayment/incremental :immutant :bin (and version (.toUpperCase version)))
            install-dir (or dest-dir (releases-dir))]
        (if-let [[existing-dir true-version] (version-exists incr-url install-dir)]
-         (doall
+         (do
           (println (str "Version " true-version " already installed to " install-dir ", not downloading."))
           (link-current existing-dir))
          (link-current (binding [overlayment/*extract-dir* (releases-dir)]
