@@ -3,9 +3,9 @@
   (:require [clojure.java.io            :as io]
             [leiningen.immutant.archive :as archive]))
 
-(defn make-descriptor [project]
+(defn make-descriptor [{root :root}]
   (with-out-str
-    (prn (assoc (:immutant project) :root (:target-dir project)))))
+    (prn {:root root})))
 
 (defn deploy-archive [project]
   (let [archive-file (io/file (archive-name project))
