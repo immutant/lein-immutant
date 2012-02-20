@@ -15,7 +15,9 @@
                     [install [version [destination-dir]]
                     [overlay [feature-set [version]]]]
                     [env [key]]
-                    [deploy [--archive]])
+                    [archive [path/to/project]]    
+                    [deploy [--archive] [path/to/project]]
+                    [undeploy [path/to/project]])
    :subtasks [#'install #'overlay #'env #'leiningen.immutant.init/new #'init #'archive #'deploy #'undeploy #'run]}
   ([]
      (common/print-help))

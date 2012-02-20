@@ -4,7 +4,7 @@
             [immutant.deploy-tools.archive :as archive]))
 
 (defn archive
-  "Creates an Immutant archive from the current project"
+  "Creates an Immutant archive from a project"
   ([project root]
      (archive project root (System/getProperty "user.dir")))
   ([project root dest-dir]
