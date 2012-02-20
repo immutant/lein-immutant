@@ -1,4 +1,4 @@
-(defproject lein-immutant "0.4.1"
+(defproject lein-immutant "0.5.0"
   :description "Leiningen plugin for managing an Immutant project."
   :url "https://github.com/immutant/lein-immutant"
   :mailing-list {:name "Immutant users list"
@@ -9,6 +9,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo}
   :eval-in-leiningen true
-  :dependencies [[fleet "0.9.5"]
-                 [org.immutant/overlay "1.0.3"]
-                 [org.clojure/data.json "0.1.1"]])
+  :dependencies [[fleet                     "0.9.5"]
+                 [org.immutant/overlay      "1.0.3"]
+                 [org.immutant/deploy-tools "0.5.0"]
+                 [org.clojure/data.json     "0.1.1"]])

@@ -1,5 +1,5 @@
 (ns immutant.deploy-tools.deploy
-  (:use immutant.deploy-tools.common)
+  (:use immutant.deploy-tools.util)
   (:require [clojure.java.io               :as io]
             [immutant.deploy-tools.archive :as archive]))
 

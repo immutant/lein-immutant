@@ -1,4 +1,4 @@
-(ns immutant.deploy-tools.common
+(ns immutant.deploy-tools.util
   (:require [clojure.java.io :as io]))
 
 (defn get-application-root [args]
@@ -29,7 +29,7 @@
     (System/exit 1)))
 
 (defn app-name [project root-dir]
-  (:name project (.getName root-dir)))
+  (:name project (and root-dir (.getName root-dir))))
 
 (defn descriptor-name [project root-dir]
   (str (app-name project root-dir) ".clj"))
@@ -37,8 +37,11 @@
 (defn archive-name [project root-dir]
   (str (app-name project root-dir) ".ima"))
 
-(defn deployment-dir []
-  (io/file  *jboss-home* "standalone" "deployments"))
+(defn deployment-dir
+  ([]
+     (deployment-dir *jboss-home*))
+  ([jboss-home]
+   (io/file jboss-home "standalone" "deployments")))
 
 (defn deployment-file [archive-name]
   (io/file (deployment-dir) archive-name))
@@ -52,4 +55,6 @@
 (def deployed-marker
   (partial marker ".deployed"))
 
-
+(defn application-is-deployed? [project root-dir]
+  (or (.exists (deployment-file (descriptor-name project root-dir)))
+      (.exists (deployment-file (archive-name project root-dir)))))

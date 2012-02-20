@@ -2,7 +2,7 @@
   (:use [immutant.deploy-tools.deploy])
   (:use [clojure.test])
   (:require [clojure.java.io :as io]
-            [immutant.deploy-tools.common :as common])
+            [immutant.deploy-tools.util :as util])
   (:import [java.util.jar JarFile]))
 
 (def ^{:dynamic true} *mock-jboss-home*)
@@ -56,7 +56,7 @@
 
   (deftest test-undeploy
     (let [deployed-file (deploy-archive *mock-jboss-home* {:name "gravy"} app-root)
-          dodeploy-marker (common/dodeploy-marker deployed-file)]
+          dodeploy-marker (util/dodeploy-marker deployed-file)]
       (is (.exists deployed-file))
       (is (.exists dodeploy-marker))
       (is (= true (undeploy *mock-jboss-home* {:name "gravy"} app-root)))

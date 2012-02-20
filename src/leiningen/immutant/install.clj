@@ -1,22 +1,22 @@
 (ns leiningen.immutant.install
-  (:use leiningen.immutant.common)
-  (:require [clojure.java.io     :as io]
-            [clojure.java.shell  :as shell]
-            [clojure.data.json   :as json]
-            [leiningen.util.file :as lfile]
-            [overlay.core        :as overlayment]))
+  (:require [clojure.java.io           :as io]
+            [clojure.java.shell        :as shell]
+            [clojure.data.json         :as json]
+            [leiningen.util.file       :as lfile]
+            [overlay.core              :as overlayment]
+            [leiningen.immutant.common :as common]))
 
 (alter-var-root #'overlayment/*output-dir*
                 (constantly (lfile/unique-lein-tmp-dir)))
 
 (defn releases-dir []
-  (doto (io/file (immutant-storage-dir) "releases")
+  (doto (io/file (common/immutant-storage-dir) "releases")
     .mkdirs))
 
 (defn link-current [target]
-  (.delete current-path)
-  (shell/sh "ln" "-s" (.getAbsolutePath target) (.getAbsolutePath current-path))
-  (println  "Linking" (.getAbsolutePath current-path) "to" (.getAbsolutePath target)))
+  (.delete common/current-path)
+  (shell/sh "ln" "-s" (.getAbsolutePath target) (.getAbsolutePath common/current-path))
+  (println  "Linking" (.getAbsolutePath common/current-path) "to" (.getAbsolutePath target)))
 
 (defn version-exists [url dest-dir]
   (try
@@ -51,7 +51,7 @@
   ([feature-set]
      (overlay feature-set nil))
   ([feature-set version]
-     (when-not (and (get-jboss-home) (.exists (get-jboss-home)))
+     (when-not (and (common/get-jboss-home) (.exists (common/get-jboss-home)))
        (println "No Immutant installed, installing the latest")
        (install))
-     (overlayment/overlay (get-immutant-home) feature-set)))
+     (overlayment/overlay (common/get-immutant-home) feature-set)))

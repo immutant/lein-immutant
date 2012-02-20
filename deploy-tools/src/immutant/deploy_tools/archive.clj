@@ -1,5 +1,5 @@
 (ns immutant.deploy-tools.archive
-  (:use immutant.deploy-tools.common)
+  (:use immutant.deploy-tools.util)
   (:require [clojure.java.io :as io])
   (:import (java.io         BufferedOutputStream FileOutputStream)
            (java.util.jar   JarEntry JarOutputStream)

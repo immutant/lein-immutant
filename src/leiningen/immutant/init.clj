@@ -3,7 +3,8 @@
   (:use fleet)
   (:require [clojure.java.io :as io]
             [leiningen.new :as lnew]
-            [leiningen.core :as lcore]))
+            [leiningen.core :as lcore]
+            [immutant.deploy-tools.util :as util]))
 
 (defn init 
   "Adds a sample immutant.clj configuration file to an existing project"
@@ -16,7 +17,7 @@
                (:name project)))
          file)
         (println "Wrote sample immutant.clj"))
-      (abort "immutant.clj already exists"))))
+      (util/abort "immutant.clj already exists"))))
 
 (defn new
   "Creates a new project skeleton initialized for Immutant"
