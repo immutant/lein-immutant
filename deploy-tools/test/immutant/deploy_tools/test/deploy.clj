@@ -1,8 +1,8 @@
-(ns deploy-tools.test.deploy
-  (:use [deploy-tools.deploy])
+(ns immutant.deploy-tools.test.deploy
+  (:use [immutant.deploy-tools.deploy])
   (:use [clojure.test])
   (:require [clojure.java.io :as io]
-            [deploy-tools.common :as common])
+            [immutant.deploy-tools.common :as common])
   (:import [java.util.jar JarFile]))
 
 (def ^{:dynamic true} *mock-jboss-home*)

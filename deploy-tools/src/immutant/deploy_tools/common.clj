@@ -1,4 +1,4 @@
-(ns deploy-tools.common
+(ns immutant.deploy-tools.common
   (:require [clojure.java.io :as io]))
 
 (defn get-application-root [args]

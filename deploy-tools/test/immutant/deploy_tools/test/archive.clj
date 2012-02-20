@@ -1,5 +1,5 @@
-(ns deploy-tools.test.archive
-  (:use [deploy-tools.archive])
+(ns immutant.deploy-tools.test.archive
+  (:use [immutant.deploy-tools.archive])
   (:use [clojure.test])
   (:require [clojure.java.io :as io])
   (:import [java.util.jar JarFile]))

@@ -1,7 +1,7 @@
-(ns deploy-tools.deploy
-  (:use deploy-tools.common)
-  (:require [clojure.java.io      :as io]
-            [deploy-tools.archive :as archive]))
+(ns immutant.deploy-tools.deploy
+  (:use immutant.deploy-tools.common)
+  (:require [clojure.java.io               :as io]
+            [immutant.deploy-tools.archive :as archive]))
 
 (defn make-descriptor [root-dir]
   (prn-str {:root (.getAbsolutePath root-dir)}))
