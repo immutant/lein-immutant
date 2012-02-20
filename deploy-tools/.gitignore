@@ -5,3 +5,4 @@
 /.lein-failures
 /checkouts
 /.lein-deps-sum
+*.ima
