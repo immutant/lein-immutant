@@ -12,9 +12,12 @@
                           :from-env-var (env-var-set? "JBOSS_HOME")}))
 
 (defn display-entry [key {:keys [value from-env-var]}]
-  (println (format "%14s: %s %s" key value (if from-env-var
-                                               (str "(from: $" from-env-var ")")
-                                               ""))))
+  (println (format "%14s: %s %s"
+                   key
+                   (if value value "NOT FOUND")
+                   (if from-env-var
+                     (str "(from: $" from-env-var ")")
+                     ""))))
 
 (defn env
   "Displays paths to the Immutant that the plugin can find"
@@ -24,5 +27,8 @@
         (display-entry key entry))))
   ([key]
      (if (contains? the-env key)
-       (display-entry key (the-env key))
-       (println key "is an unkown env key. Valid keys are:" (keys the-env)))))
+       (when-let [{:keys [value]} (the-env key)]
+         (print (.getAbsolutePath value))
+         (flush))
+       (binding [*out* *err*]
+         (println key "is an unkown env key. Valid keys are:" (keys the-env))))))
