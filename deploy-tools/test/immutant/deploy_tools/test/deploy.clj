@@ -38,6 +38,15 @@
       (is (.exists expected-descriptor))
       (is (.exists (io/file *deployments-dir* "app-root.clj.dodeploy")))))
 
+  (deftest test-deploy-dir-should-remove-failed-markers
+    (let [failed-clj (util/failed-marker (io/file *deployments-dir* "app-root.clj"))
+          failed-ima (util/failed-marker (io/file *deployments-dir* "app-root.ima"))]
+      (spit failed-clj "")
+      (spit failed-ima "")
+      (deploy-dir *mock-jboss-home* nil app-root)
+      (is (not (.exists failed-clj)))
+      (is (not (.exists failed-ima)))))
+  
   (deftest test-deploy-archive-with-a-project
     (let [descriptor (deploy-archive *mock-jboss-home* {:name "ham-biscuit"} app-root)
           expected-descriptor (io/file *deployments-dir* "ham-biscuit.ima")]
@@ -53,6 +62,15 @@
       (is (= expected-descriptor descriptor))
       (is (.exists expected-descriptor))
       (is (.exists (io/file *deployments-dir* "app-root.ima.dodeploy")))))
+
+ (deftest test-deploy-dir-should-remove-failed-markers
+    (let [failed-clj (util/failed-marker (io/file *deployments-dir* "app-root.clj"))
+          failed-ima (util/failed-marker (io/file *deployments-dir* "app-root.ima"))]
+      (spit failed-clj "")
+      (spit failed-ima "")
+      (deploy-archive *mock-jboss-home* nil app-root)
+      (is (not (.exists failed-clj)))
+      (is (not (.exists failed-ima)))))
 
   (deftest test-undeploy
     (let [deployed-file (deploy-archive *mock-jboss-home* {:name "gravy"} app-root)
