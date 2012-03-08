@@ -1,7 +1,8 @@
 (ns leiningen.immutant.common
-  (:require [clojure.java.io :as io]
-            [leiningen.help :as lhelp]
-            [leiningen.util.paths :as lpaths]))
+  (:require [clojure.java.io        :as io]
+            [leiningen.help         :as lhelp]
+            [leiningen.core.project :as project]
+            [leiningen.core.user    :as user]))
 
 (defn get-application-root [args]
   (io/file (or (first (filter #(not (.startsWith % "--")) args))
@@ -9,7 +10,7 @@
 
 (defn immutant-storage-dir []
   (.getAbsolutePath
-   (doto (io/file (lpaths/leiningen-home) "immutant")
+   (doto (io/file (user/leiningen-home) "immutant")
      .mkdirs)))
 
 (def current-path
@@ -38,3 +39,8 @@
   (err "Unknown subtask" subtask)
   (print-help))
 
+(defn resolve-project [project root-dir]
+  (let [project-file (io/file root-dir "project.clj")]
+    (if (or project (not (.exists project-file))) 
+      [project root-dir]
+      [(project/read (.getAbsolutePath project-file) [:default]) root-dir])))

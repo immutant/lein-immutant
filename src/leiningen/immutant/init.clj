@@ -1,9 +1,8 @@
 (ns leiningen.immutant.init
   (:use leiningen.immutant.common)
-  (:use fleet)
   (:require [clojure.java.io :as io]
-            [leiningen.new :as lnew]
-            [leiningen.core :as lcore]
+            [leiningen.new :as new]
+            [leiningen.new.templates :as templates]
             [immutant.deploy-tools.util :as util]))
 
 (defn init 
@@ -12,19 +11,16 @@
   (let [file (io/file (:root project) "immutant.clj")]
     (if-not (.exists file)
       (do
-        (io/copy
-         (str ((fleet [ns] (slurp (io/resource "immutant.clj.fleet")))
-               (:name project)))
-         file)
+        (spit file ((templates/renderer "immutant") "immutant.clj" project))
         (println "Wrote sample immutant.clj"))
       (util/abort "immutant.clj already exists"))))
 
 (defn new
-  "Creates a new project skeleton initialized for Immutant"
+  "Creates a new project skeleton initialized for Immutant.
+This delegates to lein's builtin 'new' task using the 'immutant' template,
+and is the same as calling 'lein new immutant project-name'"
   [project-name]
-  (lnew/new project-name)
-  (init (lcore/read-project
-         (-> (System/getProperty "leiningen.original.pwd")
-             (io/file (name (symbol project-name)) "project.clj")
-             (.getAbsolutePath)))))
+  (if (nil? project-name)
+    (println "You must provide a project name.")
+    (new/create "immutant" project-name)))
 

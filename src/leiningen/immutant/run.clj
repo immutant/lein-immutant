@@ -1,6 +1,6 @@
 (ns leiningen.immutant.run
-  (:use [leiningen.compile :only [sh]])
-  (:require [leiningen.immutant.common  :as common]
+  (:require [leiningen.core.eval :as eval]
+            [leiningen.immutant.common  :as common]
             [immutant.deploy-tools.util :as util]))
 
 (let [jboss-home (common/get-jboss-home)]
@@ -18,4 +18,4 @@
          (let [script (standalone-sh)
                params (replace {"--clustered" "--server-config=standalone-ha.xml"} opts)]
            (apply println "Starting Immutant:" script params)
-           (apply sh script params))))))
+           (apply eval/sh script params))))))

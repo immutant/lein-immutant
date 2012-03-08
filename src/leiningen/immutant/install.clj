@@ -2,12 +2,12 @@
   (:require [clojure.java.io           :as io]
             [clojure.java.shell        :as shell]
             [clojure.data.json         :as json]
-            [leiningen.util.file       :as lfile]
             [overlay.core              :as overlayment]
             [leiningen.immutant.common :as common]))
 
 (alter-var-root #'overlayment/*output-dir*
-                (constantly (lfile/unique-lein-tmp-dir)))
+                (constantly (io/file (System/getProperty "java.io.tmpdir")
+                                     (str "lein-immutant-" (java.util.UUID/randomUUID)))))
 
 (defn releases-dir []
   (doto (io/file (common/immutant-storage-dir) "releases")
