@@ -1,5 +1,5 @@
-(ns <(str ns)>.init
-  ;(:use <(str ns)>.core)
+(ns {{name}}.init
+  ;(:use {{name}}.core)
   (:require [immutant.messaging :as messaging]
             [immutant.web :as web]))
 

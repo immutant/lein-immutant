@@ -10,7 +10,8 @@
 
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
-  {:help-arglists '([subtask]
+  {:no-project-needed true
+   :help-arglists '([subtask]
                     [new project-name]
                     [install [version [destination-dir]]
                     [overlay [feature-set [version]]]]
@@ -18,11 +19,9 @@
                     [archive [path/to/project]]    
                     [deploy [--archive] [path/to/project]]
                     [undeploy [path/to/project]])
-   :subtasks [#'install #'overlay #'env #'leiningen.immutant.init/new #'init #'archive #'deploy #'undeploy #'run]}
-  ([]
+   :subtasks [#'leiningen.immutant.init/new #'install #'overlay #'env #'init #'archive #'deploy #'undeploy #'run]}
+  ([_]
      (common/print-help))
-  ([subtask]
-     (immutant nil subtask))
   ([project-or-nil subtask & args]
      (let [root-dir (common/get-application-root args)]
        (case subtask
@@ -31,11 +30,13 @@
          "env"          (apply env args)
          "new"          (leiningen.immutant.init/new (first args))
          "init"         (init project-or-nil)
-         "archive"      (archive project-or-nil root-dir)
-         "deploy"       (apply deploy project-or-nil root-dir args)
-         "undeploy"     (undeploy project-or-nil root-dir)
+         "archive"      (apply archive
+                               (common/resolve-project project-or-nil root-dir))
+         "deploy"       (apply deploy
+                               (concat (common/resolve-project project-or-nil root-dir) args))
+         "undeploy"     (apply undeploy
+                               (common/resolve-project project-or-nil root-dir))
          "run"          (apply run project-or-nil args)
          (common/unknown-subtask subtask)))
      (shutdown-agents)))
-
 
