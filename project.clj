@@ -10,6 +10,6 @@
             :distribution :repo}
   :eval-in-leiningen true
   :dependencies [[fleet                     "0.9.5"]
-                 [org.immutant/overlay      "1.0.3"]
+                 [org.immutant/overlay      "1.1.0"]
                  [org.immutant/deploy-tools "0.5.0"]
                  [org.clojure/data.json     "0.1.1"]])

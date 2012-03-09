@@ -18,14 +18,17 @@
   (shell/sh "ln" "-s" (.getAbsolutePath target) (.getAbsolutePath common/current-path))
   (println  "Linking" (.getAbsolutePath common/current-path) "to" (.getAbsolutePath target)))
 
-(defn version-exists [url dest-dir]
-  (try
-    (let [version (with-open [r (io/reader (overlayment/metadata-url url))]
-                    (:build_number (json/read-json (slurp r))))
-          dir (io/file dest-dir (format "immutant-1.x.incremental.%s" version))]
-      (if (.exists dir) [dir version]))
-    (catch Exception e
-            nil)))
+(defn version-exists [url dest-dir version]
+  (if (overlayment/released-version? version)
+    (let [dir (io/file dest-dir (format "immutant-%s" version))]
+      (and (.exists dir) [dir version]))
+    (try
+      (let [incr-version (with-open [r (io/reader (overlayment/metadata-url url))]
+                           (:build_number (json/read-json (slurp r))))
+            dir (io/file dest-dir  (format "immutant-1.x.incremental.%s" incr-version))]
+        (and (.exists dir) [dir version]))
+      (catch Exception e
+        nil))))
 
 (defn install
   "Downloads and installs Immutant"
@@ -34,14 +37,18 @@
   ([version]
      (install version nil))
   ([version dest-dir]
-     (let [incr-url (overlayment/incremental :immutant :bin (and version (.toUpperCase version)))
+     (let [url (overlayment/url :immutant :bin
+                                (if (and version
+                                         (not (overlayment/released-version? version)))
+                                  (.toUpperCase version)
+                                  version))
            install-dir (or dest-dir (releases-dir))]
-       (if-let [[existing-dir true-version] (version-exists incr-url install-dir)]
+       (if-let [[existing-dir true-version] (version-exists url install-dir version)]
          (do
           (println (str "Version " true-version " already installed to " install-dir ", not downloading."))
           (link-current existing-dir))
          (link-current (binding [overlayment/*extract-dir* (releases-dir)]
-                         (overlayment/download-and-extract incr-url)))))))
+                         (overlayment/download-and-extract url)))))))
 
 (defn overlay
   "Overlays features onto ~/.lein/immutant/current or $IMMUTANT_HOME"
@@ -52,6 +59,6 @@
      (overlay feature-set nil))
   ([feature-set version]
      (when-not (and (common/get-jboss-home) (.exists (common/get-jboss-home)))
-       (println "No Immutant installed, installing the latest")
+       (println "No Immutant installed, installing the latest incremental")
        (install))
      (overlayment/overlay (common/get-immutant-home) feature-set)))
