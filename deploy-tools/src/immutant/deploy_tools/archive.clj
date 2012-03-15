@@ -41,11 +41,25 @@
           %
           (str root-path "/" %))
        (flatten
-        [(:library-path project "lib")
-         (:source-path project "src")
-         (:resources-path project "resources")
+        (conj
+         (map (fn [[keys default]]
+                (let [paths (remove nil? (map #(% project) keys))]
+                  (if (seq paths)
+                    paths
+                    default)))
+              [[[:resources-path  ;; lein1
+                 :resource-paths] ;; lein2
+                "resources"] 
+               [[:source-path     ;; lein1
+                 :source-paths]   ;; lein2
+                "src"]       
+               [[:native-path]    ;; lein2
+                "native"]
+               [[:library-path]   ;; lein1
+                "lib"]
+               ])
          "project.clj"
-         "immutant.clj"])))
+         "immutant.clj"))))
 
 (defn create [project root-dir dest-dir]
   (let [jar-file (io/file dest-dir (archive-name project root-dir))

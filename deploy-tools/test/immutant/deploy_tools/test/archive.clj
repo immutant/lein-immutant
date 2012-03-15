@@ -23,7 +23,7 @@
                "immutant.clj")))
 
       (testing "with a project"
-        (let [entry-points (entry-points {:source-path ["srca" "srcb"]} (.getAbsolutePath app-root))]
+        (let [entry-points (entry-points {:source-paths ["srca" "srcb"]} (.getAbsolutePath app-root))]
           (are [path] (contains-file-path? entry-points path)
                "lib"
                "srca"
