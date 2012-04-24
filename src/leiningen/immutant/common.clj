@@ -33,7 +33,7 @@
     (apply println message)))
 
 (defn print-help []
-  (println (lhelp/help-for "immutant")))
+  (println (lhelp/help-for nil "immutant")))
 
 (defn unknown-subtask [subtask]
   (err "Unknown subtask" subtask)
