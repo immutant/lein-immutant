@@ -6,8 +6,7 @@
 (def ^{:doc "True if running under lein2"}
   lein2?
   (or (try
-        (require 'leiningen.core.main
-                 'leiningen.core.eval
+        (require 'leiningen.core.eval
                  'leiningen.core.project
                  'leiningen.core.classpath
                  'leiningen.core.user
