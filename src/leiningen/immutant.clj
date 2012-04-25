@@ -5,7 +5,8 @@
         leiningen.immutant.archive
         leiningen.immutant.install
         leiningen.immutant.run)
-  (:require [clojure.java.io           :as io]
+  (:require [leiningen.immutant.shim   :as shim]
+            [clojure.java.io           :as io]
             [leiningen.immutant.common :as common]))
 
 (defn immutant
@@ -20,8 +21,12 @@
                     [deploy [--archive] [path/to/project]]
                     [undeploy [path/to/project]])
    :subtasks [#'leiningen.immutant.init/new #'install #'overlay #'env #'init #'archive #'deploy #'undeploy #'run]}
-  ([_]
-     (common/print-help))
+  ([] 
+     (common/print-help)) ;; lein1
+  ([subtask]
+     (if shim/lein2?
+       (common/print-help)
+       (immutant nil subtask)))
   ([project-or-nil subtask & args]
      (let [root-dir (common/get-application-root args)]
        (case subtask

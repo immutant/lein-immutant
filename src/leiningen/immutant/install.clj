@@ -26,7 +26,7 @@
       (let [incr-version (with-open [r (io/reader (overlayment/metadata-url url))]
                            (:build_number (json/read-json (slurp r))))
             dir (io/file dest-dir  (format "immutant-1.x.incremental.%s" incr-version))]
-        (and (.exists dir) [dir version]))
+        (and (.exists dir) [dir (str "1.x.incremental." incr-version)]))
       (catch Exception e
         nil))))
 
