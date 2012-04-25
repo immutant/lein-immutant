@@ -6,18 +6,26 @@ A Leiningen plugin for deploying Immutant apps.
 
 ### Installation
 
+#### Leiningen 1
+
 To install for all lein projects, execute:
     
-    lein plugin install lein-immutant 0.5.2
+    lein plugin install lein-immutant 0.7.0
     
 If you don't want to install it for all lein projects, you can add it as 
 a dev dependency in your project.clj:
 
     ...
     :dependencies [[org.clojure/clojure "1.3.0"]]
-    :dev-dependencies [[lein-immutant "0.5.2"]]
+    :dev-dependencies [[lein-immutant "0.7.0"]]
     ...
     
+#### Leiningen 2
+
+Add it to your `~/.lein/profiles.clj`:
+
+    {:user {:plugins [[lein-immutant "0.7.0"]]}
+      
 ### Running it
 
 * `lein immutant install [version [install-dir]]` - downloads and installs
@@ -77,6 +85,6 @@ that first:
     
 ## License
 
-Copyright (C) 2011 Red Hat, Inc.
+Copyright (C) 2011-2012 Red Hat, Inc.
 
 Licensed under the Eclipse Public License v1.0
