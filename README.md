@@ -78,11 +78,9 @@ Add it to your `~/.lein/profiles.clj`:
 
 ## Development
 
-This plugin depends on the `deploy-tools` project, so you'll need to install
-that first:
+This plugin depends on the [deploy-tools](https://github.com/immutant/deploy-tools/) 
+project, so you'll need to checkout and install that first.
 
-    cd deploy-tools; lein install
-    
 ## License
 
 Copyright (C) 2011-2012 Red Hat, Inc.
