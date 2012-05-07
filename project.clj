@@ -1,4 +1,4 @@
-(defproject lein-immutant "0.8.0-SNAPSHOT"
+(defproject lein-immutant "0.7.2"
   :description "Leiningen plugin for managing an Immutant project."
   :url "https://github.com/immutant/lein-immutant"
   :mailing-list {:name "Immutant users list"
@@ -10,5 +10,5 @@
             :distribution :repo}
   :eval-in-leiningen true
   :dependencies [[org.immutant/overlay      "1.1.0"]
-                 [org.immutant/deploy-tools "0.7.0-SNAPSHOT"]
+                 [org.immutant/deploy-tools "0.6.1"]
                  [org.clojure/data.json     "0.1.1"]])
