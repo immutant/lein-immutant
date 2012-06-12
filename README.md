@@ -61,14 +61,14 @@ Add it to your `~/.lein/profiles.clj`:
   task can be run outside of a project dir of the path to the project is
   provided.
   
-* `lein immutant deploy [--archive] [path/to/project]` - deploys the current 
-  app to the current Immutant. If a map is defined under the `:immutant` key 
-  in  `project.clj`, it will be merged with the deployed descriptor. This is 
-  useful for setting your `:init` function. If passed the `--archive` option, 
-  it will deploy an archive of the app instead of a descriptor pointing to the
-  app on disk. This will currently recreate the archive on every deploy. This
-  task can be run outside of a project dir of the path to the project is
-  provided.
+* `lein immutant deploy [--archive] [--profiles :p1,p2] [path/to/project]` - 
+  deploys the current app to the current Immutant. If passed the `--archive` 
+  option, it will deploy an archive of the app instead of a descriptor pointing 
+  to the app on disk. This will currently recreate the archive on every deploy. 
+  You can pass a comma separated list of lein profiles via the `--profiles :p1,p2`
+  option to have them set as the `:lein-profiles` key in the descriptor and
+  applied when the app is deployed. This task can be run outside of a project 
+      dir of the path to the project is provided.
 
 * `lein immutant undeploy` - undeploys the current app from the current
   Immutant. This task can be run outside of a project dir of the path to 

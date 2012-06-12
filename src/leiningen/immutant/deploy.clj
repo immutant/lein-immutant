@@ -1,5 +1,7 @@
 (ns leiningen.immutant.deploy
   (:require [clojure.java.io               :as io]
+            [clojure.string                :as str]
+            [clojure.tools.cli             :as cli]
             [leiningen.immutant.shim       :as shim]
             [leiningen.immutant.archive    :as local-archive]
             [leiningen.immutant.common     :as common]
@@ -10,11 +12,14 @@
 (defn deploy 
   "Deploys a project to the Immutant specified by ~/.lein/immutant/current or $IMMUTANT_HOME"
   [project root & args] 
-  (let [jboss-home (common/get-jboss-home)
-        deployed-file (if (some #{"--archive"} args)
-                        (binding [archive/*dependency-resolver* (shim/copy-dependencies-fn)]
+  (let [[opts other-args _] (cli/cli args
+                                     ["--archive" :flag true]
+                                     ["--profiles" :parse-fn #(str/split % #",")])
+        jboss-home (common/get-jboss-home)
+        deployed-file (if (:archive opts)
+                        (binding [archive/*dependency-resolver* shim/copy-dependencies-fn]
                           (deploy/deploy-archive jboss-home project root))
-                        (deploy/deploy-dir jboss-home project root))]
+                        (deploy/deploy-dir jboss-home project root (:profiles opts)))]
     (println "Deployed" (util/app-name project root) "to" (.getAbsolutePath deployed-file))))
 
 (defn undeploy

@@ -11,4 +11,5 @@
   :eval-in-leiningen true
   :dependencies [[org.immutant/overlay      "1.2.0"]
                  [org.immutant/deploy-tools "0.7.0-SNAPSHOT"]
-                 [org.clojure/data.json     "0.1.1"]])
+                 [org.clojure/data.json     "0.1.1"]
+                 [org.clojure/tools.cli     "0.2.1"]])
