@@ -47,7 +47,8 @@
          (do
           (println (str "Version " true-version " already installed to " install-dir ", not downloading."))
           (link-current existing-dir))
-         (link-current (binding [overlayment/*extract-dir* (releases-dir)]
+         (link-current (binding [overlayment/*extract-dir* (releases-dir)
+                                 overlayment/*verify-sha1-sum* true]
                          (overlayment/download-and-extract url)))))))
 
 (defn overlay
@@ -61,4 +62,5 @@
      (when-not (and (common/get-jboss-home) (.exists (common/get-jboss-home)))
        (println "No Immutant installed, installing the latest incremental")
        (install))
-     (overlayment/overlay (common/get-immutant-home) feature-set)))
+     (binding [overlayment/*verify-sha1-sum* true]
+       (overlayment/overlay (common/get-immutant-home) feature-set))))
