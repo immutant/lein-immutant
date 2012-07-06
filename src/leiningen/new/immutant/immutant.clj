@@ -1,7 +1,8 @@
 (ns {{namespace}}.init
   ;(:use {{namespace}}.core)
   (:require [immutant.messaging :as messaging]
-            [immutant.web :as web]))
+            [immutant.web :as web]
+            [immutant.utilities :as util]))
 
 ;; This file will be loaded when the application is deployed to Immutant, and
 ;; can be used to start services your app needs. Examples:
@@ -15,7 +16,7 @@
 ; (web/start "/foo" a-different-ring-handler)
 
 ;; To start a Noir app:
-; (server/load-views (str (web/src-dir) "src/{{nested-dirs}}/views"))
+; (server/load-views (util/app-relative "src/{{nested-dirs}}/views"))
 ; (web/start "/" (server/gen-handler {:mode :dev :ns '{{namespace}}}))
 
 
