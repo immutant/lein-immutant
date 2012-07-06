@@ -9,7 +9,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo}
   :eval-in-leiningen true
-  :dependencies [[org.immutant/overlay      "1.2.0"]
+  :dependencies [[org.immutant/overlay      "1.2.1"]
                  [org.immutant/deploy-tools "0.8.0-SNAPSHOT"]
                  [org.clojure/data.json     "0.1.1"]
                  [org.clojure/tools.cli     "0.2.1"]])

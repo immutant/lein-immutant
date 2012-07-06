@@ -47,9 +47,11 @@
          (do
           (println (str "Version " true-version " already installed to " install-dir ", not downloading."))
           (link-current existing-dir))
-         (link-current (binding [overlayment/*extract-dir* install-dir
+         (if-let [extracted-dir (binding [overlayment/*extract-dir* install-dir
                                  overlayment/*verify-sha1-sum* true]
-                         (overlayment/download-and-extract url)))))))
+                                  (overlayment/download-and-extract url))]
+           (link-current extracted-dir)
+           (println "Please try the install again."))))))
 
 (defn overlay
   "Overlays features onto ~/.lein/immutant/current or $IMMUTANT_HOME"
