@@ -47,7 +47,7 @@
          (do
           (println (str "Version " true-version " already installed to " install-dir ", not downloading."))
           (link-current existing-dir))
-         (link-current (binding [overlayment/*extract-dir* (releases-dir)
+         (link-current (binding [overlayment/*extract-dir* install-dir
                                  overlayment/*verify-sha1-sum* true]
                          (overlayment/download-and-extract url)))))))
 
