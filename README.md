@@ -10,21 +10,21 @@ A Leiningen plugin for deploying Immutant apps.
 
 To install for all lein projects, execute:
     
-    lein plugin install lein-immutant 0.8.0
+    lein plugin install lein-immutant 0.8.1
     
 If you don't want to install it for all lein projects, you can add it as 
 a dev dependency in your project.clj:
 
     ...
     :dependencies [[org.clojure/clojure "1.3.0"]]
-    :dev-dependencies [[lein-immutant "0.8.0"]]
+    :dev-dependencies [[lein-immutant "0.8.1"]]
     ...
     
 #### Leiningen 2
 
 Add it to your `~/.lein/profiles.clj`:
 
-    {:user {:plugins [[lein-immutant "0.8.0"]]}
+    {:user {:plugins [[lein-immutant "0.8.1"]]}
       
 ### Running it
 
