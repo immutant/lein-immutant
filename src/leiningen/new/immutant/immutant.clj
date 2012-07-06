@@ -1,5 +1,5 @@
-(ns {{name}}.init
-  ;(:use {{name}}.core)
+(ns {{namespace}}.init
+  ;(:use {{namespace}}.core)
   (:require [immutant.messaging :as messaging]
             [immutant.web :as web]))
 
@@ -15,8 +15,8 @@
 ; (web/start "/foo" a-different-ring-handler)
 
 ;; To start a Noir app:
-; (server/load-views (str (web/src-dir) "/<(str ns)>/views"))
-; (web/start "/" (server/gen-handler {:mode :dev :ns '<(str ns)>}))
+; (server/load-views (str (web/src-dir) "src/{{nested-dirs}}/views"))
+; (web/start "/" (server/gen-handler {:mode :dev :ns '{{namespace}}}))
 
 
 ;; Messaging allows for starting (and stopping) destinations (queues & topics)

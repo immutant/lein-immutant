@@ -1,6 +1,7 @@
 (ns leiningen.immutant.init
   (:use leiningen.immutant.common)
   (:require [clojure.java.io            :as io]
+            [clojure.string             :as str]
             [leiningen.new              :as new]
             [leiningen.immutant.shim    :as shim]
             [immutant.deploy-tools.util :as util]))
@@ -8,8 +9,9 @@
 (defn sample-immutant-clj [project]
   (if shim/lein2?
     (((resolve 'leiningen.new.templates/renderer) "immutant") "immutant.clj" project)
-    (.replace (slurp (io/resource "leiningen/new/immutant/immutant.clj")) "{{name}}"
-              (:name project))))
+    (str/replace (slurp (io/resource "leiningen/new/immutant/immutant.clj"))
+                 #"(\{\{raw-name\}\}|\{\{namespace\}\}|\{\{nested-dirs\}\})"
+                 (:name project))))
 
 (defn init 
   "Adds a sample immutant.clj configuration file to an existing project"
