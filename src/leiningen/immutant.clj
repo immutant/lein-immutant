@@ -5,8 +5,7 @@
         leiningen.immutant.archive
         leiningen.immutant.install
         leiningen.immutant.run)
-  (:require [leiningen.immutant.shim   :as shim]
-            [clojure.java.io           :as io]
+  (:require [clojure.java.io           :as io]
             [leiningen.immutant.common :as common]))
 
 (defn immutant
@@ -24,7 +23,7 @@
   ([] 
      (common/print-help)) ;; lein1
   ([subtask]
-     (if shim/lein2?
+     (if common/lein2?
        (common/print-help)
        (immutant nil subtask)))
   ([project-or-nil subtask & args]

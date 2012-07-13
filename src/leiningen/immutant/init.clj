@@ -2,12 +2,11 @@
   (:use leiningen.immutant.common)
   (:require [clojure.java.io            :as io]
             [clojure.string             :as str]
-            [leiningen.new              :as new]
-            [leiningen.immutant.shim    :as shim]
+            [leinjacker.utils           :as lj]
             [immutant.deploy-tools.util :as util]))
 
 (defn sample-immutant-clj [project]
-  (if shim/lein2?
+  (if lein2?
     (((resolve 'leiningen.new.templates/renderer) "immutant") "immutant.clj" project)
     (str/replace (slurp (io/resource "leiningen/new/immutant/immutant.clj"))
                  #"(\{\{raw-name\}\}|\{\{namespace\}\}|\{\{nested-dirs\}\})"
@@ -30,11 +29,11 @@ and is the same as calling 'lein new immutant project-name'"
   [project-name]
   (if (nil? project-name)
     (println "You must provide a project name.")
-    (if shim/lein2?
-      ((resolve 'leiningen.new/create) "immutant" project-name)
+    (if lein2?
+      ((lj/try-resolve 'leiningen.new/create) "immutant" project-name)
       (do
-        ((resolve 'leiningen.new/new) project-name)
-        (init (shim/read-project
+        ((lj/try-resolve 'leiningen.new/new) project-name)
+        (init (lj/read-lein-project
                (-> (System/getProperty "leiningen.original.pwd")
                    (io/file (name (symbol project-name)) "project.clj")
                    (.getAbsolutePath))
