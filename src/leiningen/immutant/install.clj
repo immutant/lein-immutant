@@ -48,7 +48,7 @@
           (println (str "Version " true-version " already installed to " install-dir ", not downloading."))
           (link-current existing-dir))
          (if-let [extracted-dir (binding [overlayment/*extract-dir* install-dir
-                                 overlayment/*verify-sha1-sum* true]
+                                          overlayment/*verify-sha1-sum* true]
                                   (overlayment/download-and-extract url))]
            (link-current extracted-dir)
            (println "Please try the install again."))))))
