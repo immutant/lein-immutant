@@ -48,3 +48,5 @@
     (if (or project (not (.exists project-file))) 
       [project root-dir]
       [(lj/read-lein-project (.getAbsolutePath project-file) [:default]) root-dir])))
+
+(def windows? (re-find #"(?i)^windows" (System/getProperty "os.name")))
