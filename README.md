@@ -76,6 +76,19 @@ Add it to your `~/.lein/profiles.clj`:
   
 * `lein immutant run` - launches the current Immutant. 
 
+#### Using the plugin on Windows
+
+There are two differences when using the plugin on windows:
+
+* `~/.lein/immutant/current' isn't a link to the currently active Immutant installation, 
+  but is instead a text file containing the path to that installation. This is to
+  work around linking issues on Windows.
+
+* Using `^C` to exit Immutant after calling `lein immutant run` will not work under
+  [git-bash](http://msysgit.github.com/) or [cygwin](http://www.cygwin.com/) - it instead
+  just detaches the shell from the java process, leaving it running. Using `command.com`
+  does not exhibit this problem.
+  
 ## Development
 
 This plugin depends on the [deploy-tools](https://github.com/immutant/deploy-tools/) 
