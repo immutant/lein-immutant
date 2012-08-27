@@ -15,8 +15,15 @@
 
 (defn link-current [target]
   (.delete common/current-path)
-  (shell/sh "ln" "-s" (.getAbsolutePath target) (.getAbsolutePath common/current-path))
-  (println  "Linking" (.getAbsolutePath common/current-path) "to" (.getAbsolutePath target)))
+  (let [current-path (.getAbsolutePath common/current-path)
+        target-path (.getAbsolutePath target)]
+    (if common/windows?
+      (do
+        (println "Storing path to" target-path "in" current-path)
+        (spit current-path target-path))
+      (do
+        (println  "Linking" current-path "to" target-path)
+        (shell/sh "ln" "-s" target-path current-path)))))
 
 (defn version-exists [url dest-dir version]
   (if (overlayment/released-version? version)

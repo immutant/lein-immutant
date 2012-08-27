@@ -6,6 +6,9 @@
 (def ^{:doc "True if running under lein2"}
   lein2? (= 2 (lj/lein-generation)))
 
+(def windows?
+  (re-find #"(?i)^windows" (System/getProperty "os.name")))
+
 (defn get-application-root [args]
   (io/file (or (first (filter #(not (.startsWith % "--")) args))
                (System/getProperty "user.dir"))))
@@ -21,8 +24,10 @@
 (defn get-immutant-home []
   (if-let [immutant-home (System/getenv "IMMUTANT_HOME")]
     (io/file immutant-home)
-    (and (.exists current-path)
-         current-path)))
+    (when (.exists current-path)
+      (if windows?
+        (io/file (slurp current-path))
+        current-path))))
 
 (defn get-jboss-home []
   (if-let [jboss-home (System/getenv "JBOSS_HOME")]
@@ -49,4 +54,3 @@
       [project root-dir]
       [(lj/read-lein-project (.getAbsolutePath project-file) [:default]) root-dir])))
 
-(def windows? (re-find #"(?i)^windows" (System/getProperty "os.name")))
