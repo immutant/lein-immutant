@@ -16,8 +16,8 @@
                     [install [version [destination-dir]]
                     [overlay [feature-set [version]]]]
                     [env [key]]
-                    [archive [path/to/project]]    
-                    [deploy [--archive] [--profiles ":p1,:p2"] [path/to/project]]
+                    [archive [--include-dependencies] [path/to/project]]    
+                    [deploy [--archive [--include-dependencies]] [--profiles ":p1,:p2"] [path/to/project]]
                     [undeploy [path/to/project]])
    :subtasks [#'leiningen.immutant.init/new #'install #'overlay #'env #'init #'archive #'deploy #'undeploy #'run]}
   ([] 
@@ -35,7 +35,7 @@
          "new"          (leiningen.immutant.init/new (first args))
          "init"         (init project-or-nil)
          "archive"      (apply archive
-                               (common/resolve-project project-or-nil root-dir))
+                               (concat (common/resolve-project project-or-nil root-dir) args))
          "deploy"       (apply deploy
                                (concat (common/resolve-project project-or-nil root-dir) args))
          "undeploy"     (apply undeploy
