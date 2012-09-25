@@ -55,7 +55,8 @@ Add it to your `~/.lein/profiles.clj`:
 * `lein immutant init` - creates a sample immuntant.clj configuration
   file at the root of the current project.
   
-* `lein immutant archive [--include-dependencies] [--name name] [path/to/project]` - 
+* `lein immutant archive [--include-dependencies] [--name name] 
+                         [path/to/project]` - 
   creates an Immutant archive (suffixed with `.ima`) in the current directory. 
   By default, the archive file will be named after the project name in project.clj.
   This can be overridden via the `--name` (or `-n`) option.
@@ -64,7 +65,9 @@ Add it to your `~/.lein/profiles.clj`:
   of the app's deps will be included in the archive as well. This task can be 
   run outside of a project dir of the path to the project is provided.
   
-* `lein immutant deploy [--archive [--include-dependencies]] [--name name] [--context-path path] [--virtual-host host] [--lein-profiles :p1,:p2] [path/to/project]` - 
+* `lein immutant deploy [--archive [--include-dependencies]] [--name name] 
+                        [--context-path path] [--virtual-host host] 
+                        [--lein-profiles :p1,:p2] [path/to/project]` - 
   deploys the current app to the current Immutant. If passed the `--archive` 
   option, it will deploy an archive of the app instead of a descriptor pointing 
   to the app on disk. This will currently recreate the archive on every deploy. 
