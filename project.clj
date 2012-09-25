@@ -10,7 +10,7 @@
             :distribution :repo}
   :eval-in-leiningen true
   :dependencies [[org.immutant/overlay      "1.2.2"]
-                 [org.immutant/deploy-tools "0.8.0"]
+                 [org.immutant/deploy-tools "0.9.2"]
                  [jboss-as-management       "0.1.1"]
                  [leinjacker                "0.2.0"]
                  [org.clojure/data.json     "0.1.1"]

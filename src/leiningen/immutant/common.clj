@@ -10,7 +10,7 @@
   (re-find #"(?i)^windows" (System/getProperty "os.name")))
 
 (defn get-application-root [args]
-  (io/file (or (first (filter #(not (.startsWith % "--")) args))
+  (io/file (or (first args)
                (System/getProperty "user.dir"))))
 
 (defn immutant-storage-dir []
@@ -54,3 +54,18 @@
       [project root-dir]
       [(lj/read-lein-project (.getAbsolutePath project-file) [:default]) root-dir])))
 
+(defn as-config-option [opt]
+  (with-meta opt {:config true}))
+
+(defn group-options [opts available-opts]
+  (let [{:keys [config options]}
+        (group-by
+         (fn [[key _]]
+           (if (:config (some #(if (some #{(str "--" (name key))} %)
+                                 (meta %))
+                              available-opts))
+             :config
+             :options))
+         opts)]
+    [(into {} options)
+     (into {} config)]))
