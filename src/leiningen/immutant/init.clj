@@ -7,7 +7,7 @@
 
 (defn sample-immutant-clj [project]
   (if lein2?
-    (((resolve 'leiningen.new.templates/renderer) "immutant") "immutant.clj" project)
+    (((lj/try-resolve 'leiningen.new.templates/renderer) "immutant") "immutant.clj" project)
     (str/replace (slurp (io/resource "leiningen/new/immutant/immutant.clj"))
                  #"(\{\{raw-name\}\}|\{\{namespace\}\}|\{\{nested-dirs\}\})"
                  (:name project))))
