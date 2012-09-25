@@ -10,21 +10,21 @@ A Leiningen plugin for deploying Immutant apps.
 
 To install for all lein projects, execute:
     
-    lein plugin install lein-immutant 0.10.0
+    lein plugin install lein-immutant 0.11.0
     
 If you don't want to install it for all lein projects, you can add it as 
 a dev dependency in your project.clj:
 
     ...
     :dependencies [[org.clojure/clojure "1.3.0"]]
-    :dev-dependencies [[lein-immutant "0.10.0"]]
+    :dev-dependencies [[lein-immutant "0.11.0"]]
     ...
     
 #### Leiningen 2
 
 Add it to your `~/.lein/profiles.clj`:
 
-    {:user {:plugins [[lein-immutant "0.10.0"]]}
+    {:user {:plugins [[lein-immutant "0.11.0"]]}
       
 ### Running it
 
@@ -55,25 +55,32 @@ Add it to your `~/.lein/profiles.clj`:
 * `lein immutant init` - creates a sample immuntant.clj configuration
   file at the root of the current project.
   
-* `lein immutant archive [--include-dependencies] [path/to/project]` - 
+* `lein immutant archive [--include-dependencies] [--name name] [path/to/project]` - 
   creates an Immutant archive (suffixed with `.ima`) in the current directory. 
+  By default, the archive file will be named after the project name in project.clj.
+  This can be overridden via the `--name` (or `-n`) option.
   This archive can be deployed in lieu of a descriptor pointing to the app 
   directory. If the `--include-dependencies` (or `-i`) option is provided, all
   of the app's deps will be included in the archive as well. This task can be 
   run outside of a project dir of the path to the project is provided.
   
-* `lein immutant deploy [--archive [--include-dependencies]] [--profiles :p1,p2] [path/to/project]` - 
+* `lein immutant deploy [--archive [--include-dependencies]] [--name name] [--context-path path] [--virtual-host host] [--lein-profiles :p1,:p2] [path/to/project]` - 
   deploys the current app to the current Immutant. If passed the `--archive` 
   option, it will deploy an archive of the app instead of a descriptor pointing 
   to the app on disk. This will currently recreate the archive on every deploy. 
-  You can pass a comma separated list of lein profiles via the `--profiles :p1,p2`
+  By default, the deployment will be named after the project name in project.clj.
+  This can be overridden via the `--name` (or `-n`) option.
+  You can pass a comma separated list of lein profiles via the `--lein-profiles :p1,:p2`
   option to have them set as the `:lein-profiles` key in the descriptor and
-  applied when the app is deployed. This task can be run outside of a project 
+  applied when the app is deployed. You can also override the default context-path 
+  (based off of the deployment name) and virtual-host with the `--context-path` and 
+  `--virtual-host` options, respectively. This task can be run outside of a project 
   dir of the path to the project is provided.
 
-* `lein immutant undeploy` - undeploys the current app from the current
-  Immutant. This task can be run outside of a project dir of the path to 
-  the project is provided.
+* `lein immutant undeploy [--name name] [path/to/project]` - undeploys the current app from the current
+  Immutant. If the `--name` option was used to deploy the app, you'll need to pass
+  the same name to undeploy as well. This task can be run outside of a project dir of the path to 
+  the project is provided. 
   
 * `lein immutant run` - launches the current Immutant. 
 
