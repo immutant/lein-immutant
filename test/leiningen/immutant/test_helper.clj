@@ -66,3 +66,10 @@
        ~@body
        (finally
          (delete-file-recursively *tmp-dir*)))))
+
+(def ^:dynamic *generation* nil)
+
+(defmacro for-all-generations [& body]
+  `(doseq [gen# [1 2]]
+     (binding [*generation* gen#]
+       ~@body)))
