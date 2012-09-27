@@ -31,4 +31,4 @@
          (print (.getAbsolutePath value))
          (flush))
        (binding [*out* *err*]
-         (println key "is an unkown env key. Valid keys are:" (keys the-env))))))
+         (println key "is an unknown env key. Valid keys are:" (keys the-env))))))

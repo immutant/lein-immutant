@@ -44,4 +44,4 @@
         (let [result (run-lein-env h/*generation* env "ham")]
           (:exit result) => 0
           (:out result)  => ""
-          (:err result)  => "ham is an unkown env key. Valid keys are: (immutant-home jboss-home)\n")))))
+          (:err result)  => "ham is an unknown env key. Valid keys are: (immutant-home jboss-home)\n")))))
