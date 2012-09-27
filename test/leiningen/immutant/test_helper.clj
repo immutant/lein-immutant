@@ -57,17 +57,30 @@
     (println "==> Test env setup complete.\n")))
 
 (def ^:dynamic *tmp-dir* nil)
+(def ^:dynamic *generation* nil)
+(def ^:dynamic *tmp-jboss-home* nil)
+(def ^:dynamic *tmp-deployments-dir* nil)
 
-(defmacro with-tmp-dir [& body]
-  `(binding [*tmp-dir* (doto (io/file (System/getProperty "java.io.tmpdir")
+(defn with-tmp-dir* [f]
+  (binding [*tmp-dir* (doto (io/file (System/getProperty "java.io.tmpdir")
                                       (str "lein-immutant-test-" (System/nanoTime)))
                          .mkdirs)]
      (try
-       ~@body
+       (f)
        (finally
          (delete-file-recursively *tmp-dir*)))))
 
-(def ^:dynamic *generation* nil)
+(defmacro with-tmp-dir [& body]
+  `(with-tmp-dir* (fn [] ~@body)))
+
+(defmacro with-tmp-jboss-home [& body]
+  `(with-tmp-dir*
+     (fn []
+       (binding [*tmp-jboss-home* (io/file *tmp-dir* "jboss-home")]
+         (binding [*tmp-deployments-dir* (io/file *tmp-jboss-home* "standalone/deployments")]
+           (.mkdirs *tmp-deployments-dir*)
+           ~@body)))))
+
 
 (defmacro for-all-generations [& body]
   `(doseq [gen# [1 2]]
