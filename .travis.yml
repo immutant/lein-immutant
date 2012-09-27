@@ -1,5 +1,6 @@
 language: clojure
 lein: lein2
+script: "DEBUG=1 lein2 test"
 notifications:
   email: false
   irc: "irc.freenode.net#immutant"
