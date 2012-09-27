@@ -12,6 +12,9 @@
   :dependencies [[org.immutant/overlay      "1.2.2"]
                  [org.immutant/deploy-tools "0.9.2"]
                  [jboss-as-management       "0.1.1"]
-                 [leinjacker                "0.2.0"]
+                 [org.tcrawley/leinjacker   "0.3.0-SNAPSHOT"]
                  [org.clojure/data.json     "0.1.1"]
-                 [org.clojure/tools.cli     "0.2.1"]])
+                 [org.clojure/tools.cli     "0.2.1"]]
+  :profiles {:test
+             {:dependencies [[midje "1.3.1"]]
+              :resource-paths ["test-resources"]}})

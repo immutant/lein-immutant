@@ -44,4 +44,3 @@
                                  (conj (common/resolve-project project-or-nil root-dir) options))
            (common/unknown-subtask subtask))))
      (shutdown-agents)))
-
