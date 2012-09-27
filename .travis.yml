@@ -1,2 +1,5 @@
 language: clojure
 lein: lein2
+notifications:
+  email: false
+  irc: "irc.freenode.net#immutant"
