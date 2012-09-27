@@ -15,6 +15,7 @@
                  [org.tcrawley/leinjacker   "0.3.0-SNAPSHOT"]
                  [org.clojure/data.json     "0.1.1"]
                  [org.clojure/tools.cli     "0.2.1"]]
-  :profiles {:test
-             {:dependencies [[midje "1.3.1"]]
+  :profiles {:dev
+             {:dependencies [[lein-midje "2.0.0-SNAPSHOT"]
+                             [midje "1.3.1"]]
               :resource-paths ["test-resources"]}})
