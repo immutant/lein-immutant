@@ -1,13 +1,14 @@
 (ns leiningen.immutant
-(:require [leiningen.immutant.deploy  :as deploy]
-          [leiningen.immutant.env     :as env]
-          [leiningen.immutant.init    :as init]
-          [leiningen.immutant.archive :as archive]
-          [leiningen.immutant.install :as install]
-          [leiningen.immutant.run     :as run]
-          [leiningen.immutant.common  :as common]
-          [clojure.java.io            :as io]
-          [clojure.tools.cli          :as cli]))
+  (:require [leiningen.immutant.deploy  :as deploy]
+            [leiningen.immutant.env     :as env]
+            [leiningen.immutant.test    :as test]
+            [leiningen.immutant.init    :as init]
+            [leiningen.immutant.archive :as archive]
+            [leiningen.immutant.install :as install]
+            [leiningen.immutant.run     :as run]
+            [leiningen.immutant.common  :as common]
+            [clojure.java.io            :as io]
+            [clojure.tools.cli          :as cli]))
 
 (def cli-options
   {"deploy"  deploy/deploy-options
@@ -42,5 +43,7 @@
                                  (conj (common/resolve-project project-or-nil root-dir) options))
            "undeploy"     (apply deploy/undeploy
                                  (conj (common/resolve-project project-or-nil root-dir) options))
+           "test"         (apply test/test
+                                 (common/resolve-project project-or-nil root-dir))
            (common/unknown-subtask subtask))))
      (shutdown-agents)))
