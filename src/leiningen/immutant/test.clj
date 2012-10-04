@@ -5,7 +5,7 @@
             [clojure.tools.nrepl :as repl])
   (:use [fntest.core :only [with-jboss with-deployment]]))
 
-(def NREPL_PORT (or (System/getenv "NREPL_PORT") 7888))
+(def NREPL_PORT (Integer. (or (System/getenv "NREPL_PORT") 7888)))
 
 (defn nrepl
   "Invoke command in remote nrepl"
@@ -21,7 +21,7 @@
   [results]
   (with-out-str
     (doseq [v results]
-      (if-let [out (or (:out v) (:err v) (:value v))]
+      (if-let [out (some v [:out :err :value])]
         (print out)))))
 
 (defmacro command [form]
