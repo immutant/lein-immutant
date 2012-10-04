@@ -7,12 +7,10 @@
 
 (def NREPL_PORT (or (System/getenv "NREPL_PORT") 7888))
 
-(defmacro stringify [form] (with-out-str (binding [*print-dup* true] (pr form))))
-
 (defn nrepl
   "Invoke command in remote nrepl"
   [command]
-  (println ">" (read-string command))
+  (println "nrepl>" command)
   (with-open [conn (repl/connect :port NREPL_PORT)]
     (-> (repl/client conn 10000)
         (repl/client-session)
@@ -27,7 +25,7 @@
         (print out)))))
 
 (defmacro command [form]
-  `(println (parse (nrepl (stringify ~form)))))
+  `(println (parse (nrepl (repl/code ~form)))))
 
 (defn run-tests
   "Invoke tests over nrepl"
