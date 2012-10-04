@@ -11,14 +11,15 @@
             [clojure.tools.cli          :as cli]))
 
 (def cli-options
-  {"deploy"  deploy/deploy-options
-   "undeploy" deploy/undeploy-options
-   "archive" archive/archive-options})
+  {"deploy"    deploy/deploy-options
+   "undeploy"  deploy/undeploy-options
+   "archive"   archive/archive-options
+   "test"      test/test-options})
 
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
   {:no-project-needed true
-   :subtasks [#'init/new #'install/install #'install/overlay #'env/env #'init/init #'archive/archive #'deploy/deploy #'deploy/undeploy #'run/run]}
+   :subtasks [#'init/new #'install/install #'install/overlay #'env/env #'init/init #'archive/archive #'deploy/deploy #'deploy/undeploy #'run/run #'test/test]}
   ([] 
      (common/print-help)) ;; lein1
   ([subtask]
@@ -44,6 +45,6 @@
            "undeploy"     (apply deploy/undeploy
                                  (conj (common/resolve-project project-or-nil root-dir) options))
            "test"         (apply test/test
-                                 (common/resolve-project project-or-nil root-dir))
+                                 (conj (common/resolve-project project-or-nil root-dir) options))
            (common/unknown-subtask subtask))))
      (shutdown-agents)))
