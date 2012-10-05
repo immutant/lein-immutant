@@ -1,6 +1,7 @@
 (ns leiningen.immutant
   (:require [leiningen.immutant.deploy  :as deploy]
             [leiningen.immutant.env     :as env]
+            [leiningen.immutant.eval    :as eval]
             [leiningen.immutant.test    :as test]
             [leiningen.immutant.init    :as init]
             [leiningen.immutant.archive :as archive]
@@ -14,12 +15,13 @@
   {"deploy"    deploy/deploy-options
    "undeploy"  deploy/undeploy-options
    "archive"   archive/archive-options
-   "test"      test/test-options})
+   "test"      test/test-options
+   "eval"      eval/eval-options})
 
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
   {:no-project-needed true
-   :subtasks [#'init/new #'install/install #'install/overlay #'env/env #'init/init #'archive/archive #'deploy/deploy #'deploy/undeploy #'run/run #'test/test]}
+   :subtasks [#'init/new #'install/install #'install/overlay #'env/env #'init/init #'archive/archive #'deploy/deploy #'deploy/undeploy #'run/run #'test/test #'eval/eval]}
   ([] 
      (common/print-help)) ;; lein1
   ([subtask]
@@ -46,5 +48,6 @@
                                  (conj (common/resolve-project project-or-nil root-dir) options))
            "test"         (apply test/test
                                  (conj (common/resolve-project project-or-nil root-dir) options))
+           "eval"         (eval/eval (first other-args) options)
            (common/unknown-subtask subtask))))
      (shutdown-agents)))
