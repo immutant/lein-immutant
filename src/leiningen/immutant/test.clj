@@ -14,7 +14,9 @@
    ["-p" "--port"]])
 
 (def load-command (repl/code
-                   (require '[clojure.test :as t]
+                   (require '[immutant.dev :as dev]
+                            '[clojure.pprint :as p]
+                            '[clojure.test :as t]
                             '[immutant.utilities :as u]
                             '[bultitude.core :as b])))
 
@@ -31,10 +33,9 @@
   "Load test namespaces beneath dir and run them"
   [& [opts]]
   (execute load-command opts)
-  (execute (str/replace-first run-command
-                              "TEST-DIR"
-                              (or (:dir opts) "test"))
-           opts))
+  (let [dir (or (:dir opts) "test")]
+    (execute (str "(p/pprint (dev/merge-dependencies! \"" dir "\"))"))
+    (execute (str/replace-first run-command "TEST-DIR" dir) opts)))
 
 (defn run-in-container
   "Starts up an Immutant, if necessary, deploys an application named

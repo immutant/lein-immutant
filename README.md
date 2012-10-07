@@ -89,6 +89,15 @@ Add it to your `~/.lein/profiles.clj`:
   
 * `lein immutant run` - launches the current Immutant. 
 
+* `lein immutant test [--name name] [--dir test] [--port 7888]
+  [path/to/project]` - runs the current Immutant, if necessary,
+  deploys the project to it, runs all tests found beneath the `test/`
+  directory, undeploys the app, and then shuts down the Immutant it
+  started. The `--port` option specifies the nREPL service port
+  through which the tests are invoked inside the running Immutant.
+  This is a very simple way to automate your integration testing on a
+  [CI](http://en.wikipedia.org/wiki/Continuous_integration) host.
+  
 #### Using the plugin on Windows
 
 There are two differences when using the plugin on windows:
