@@ -13,10 +13,13 @@
    ["-d" "--dir"]
    ["-p" "--port"]])
 
+(def deps-command (repl/code
+                   (use 'immutant.dev
+                        'clojure.pprint)
+                   (pprint (merge-dependencies! "TEST-DIR" '[bultitude "0.1.7"]))))
+
 (def load-command (repl/code
-                   (require '[immutant.dev :as dev]
-                            '[clojure.pprint :as p]
-                            '[clojure.test :as t]
+                   (require '[clojure.test :as t]
                             '[immutant.utilities :as u]
                             '[bultitude.core :as b])))
 
@@ -25,17 +28,14 @@
                     (apply require nses)
                     (apply t/run-tests nses))))
 
-(defn execute [command & [opts]]
-  (println "nrepl>" command)
-  (println (eval/parse (eval/nrepl command opts))))
-
 (defn run-tests
   "Load test namespaces beneath dir and run them"
   [& [opts]]
-  (execute load-command opts)
   (let [dir (or (:dir opts) "test")]
-    (execute (str "(p/pprint (dev/merge-dependencies! \"" dir "\"))"))
-    (execute (str/replace-first run-command "TEST-DIR" dir) opts)))
+    (eval/with-connection opts
+      (eval/execute (str/replace deps-command "TEST-DIR" dir))
+      (eval/execute load-command)
+      (eval/execute (str/replace run-command "TEST-DIR" dir)))))
 
 (defn run-in-container
   "Starts up an Immutant, if necessary, deploys an application named

@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [eval])
   (:require [clojure.tools.nrepl :as repl]))
 
-(def ^:dynamic *nrepl-port* 7888)
+(def ^:dynamic *nrepl-conn*)
 
 (def eval-options
   [["-h" "--host"]
@@ -12,16 +12,22 @@
   (or (:host opts) "localhost"))
 
 (defn get-port [& [opts]]
-  (read-string (or (:port opts) (str *nrepl-port*))))
+  (read-string (or (:port opts) "7888")))
+
+(defmacro with-connection
+  "Takes :host and :port options"
+  [opts & body]
+  `(with-open [c# (repl/connect :host (get-host ~opts) :port (get-port ~opts))]
+     (binding [*nrepl-conn* c#]
+       ~@body)))
 
 (defn nrepl
-  "Invoke command in remote nrepl; takes :host and :port options"
-  [command & [opts]]
-  (with-open [conn (repl/connect :host (get-host opts) :port (get-port opts))]
-    (-> (repl/client conn Long/MAX_VALUE)
-        (repl/client-session)
-        (repl/message {:op :eval :code command})
-        doall)))
+  "Invoke command in remote nrepl"
+  [command]
+  (-> (repl/client *nrepl-conn* Long/MAX_VALUE)
+      (repl/client-session)
+      (repl/message {:op :eval :code command})
+      doall))
 
 (defn parse
   "Stringify the nrepl results; contains all stdout and stderr and the
@@ -35,8 +41,13 @@
                  {} (apply concat results))]
     (str (:out summary) (:value summary))))
 
+(defn execute [command]
+  (println "nrepl>" command)
+  (println (parse (nrepl command))))
+
 (defn eval
   "Eval some code in a remote nrepl"
   [command & [opts]]
-  (println (parse (nrepl command opts))))
+  (with-connection opts
+    (execute command)))
 
