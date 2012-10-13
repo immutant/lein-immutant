@@ -30,20 +30,21 @@
       doall))
 
 (defn parse
-  "Stringify the nrepl results; contains all stdout and stderr and the
-   value of the last expression"
+  "Summary of the nrepl results, with :err merged into :out in the correct order"
   [results]
-  (let [summary (reduce
-                 (fn [m [k v]]
-                   (case k
-                     (:out :err) (update-in m [:out] #(str % v))
-                     (assoc m k v)))            
-                 {} (apply concat results))]
-    (str (:out summary) (:value summary))))
+  (reduce
+   (fn [m [k v]]
+     (case k
+       (:out :err) (update-in m [:out] #(str % v))
+       (assoc m k v)))
+   {} (apply concat results)))
 
 (defn execute [command]
   (println "nrepl>" command)
-  (println (parse (nrepl command))))
+  (let [result (parse (nrepl command))]
+    (if (:out result) (println (:out result)))
+    (println (:value result))
+    (read-string (:value result))))
 
 (defn eval
   "Eval some code in a remote nrepl"

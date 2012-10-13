@@ -16,7 +16,7 @@
 (def deps-command (repl/code
                    (use 'immutant.dev
                         'clojure.pprint)
-                   (pprint (merge-dependencies! "TEST-DIR" '[bultitude "0.1.7"]))))
+                   (pprint (add-dependencies! "TEST-DIR" '[bultitude "0.1.7"]))))
 
 (def load-command (repl/code
                    (require '[clojure.test :as t]
@@ -26,7 +26,7 @@
 (def run-command (repl/code
                   (let [nses (b/namespaces-in-dir (u/app-relative "TEST-DIR"))]
                     (apply require nses)
-                    (apply t/run-tests nses))))
+                    (t/successful? (apply t/run-tests nses)))))
 
 (defn run-tests
   "Load test namespaces beneath dir and run them"
@@ -52,8 +52,10 @@
 (defn test
   "Runs tests inside an Immutant, after starting one (if necessary) and deploying the project"
   [project root opts]
-  (run-in-container (or (:name opts) (util/app-name project root))
-                    root
-                    #(run-tests opts)
-                    opts))
+  (when-not (run-in-container (or (:name opts) (util/app-name project root))
+                              root
+                              #(run-tests opts)
+                              opts)
+    (println "Tests failed")
+    (System/exit -1)))
 
