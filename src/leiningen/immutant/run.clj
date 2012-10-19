@@ -1,8 +1,7 @@
 (ns leiningen.immutant.run
   (:require [clojure.java.io            :as io]
             [leiningen.immutant.common  :as common]
-            [immutant.deploy-tools.util :as util]
-            [jboss-as.management        :as api]))
+            [immutant.deploy-tools.util :as util]))
 
 
 (defn- pump
@@ -31,9 +30,6 @@ Borrowed from leiningen.core/eval and modified."
                            (.join pump-err))))))
     proc))
 
-(defn- add-shutdown-hook! [f]
-  (.addShutdownHook (Runtime/getRuntime) (Thread. f)))
-
 (let [jboss-home (common/get-jboss-home)]
   (defn- standalone-sh []
     (str (.getAbsolutePath jboss-home) "/bin/standalone."
@@ -52,5 +48,4 @@ Borrowed from leiningen.core/eval and modified."
                params (replace {"--clustered" "--server-config=standalone-ha.xml"} opts)]
            (apply println "Starting Immutant:" script params)
            (let [proc (apply sh script params)]
-             (add-shutdown-hook! api/shutdown)
              (.waitFor proc)))))))
