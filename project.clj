@@ -14,9 +14,10 @@
                  [leinjacker                "0.3.3"]
                  [org.clojure/data.json     "0.1.1"]
                  [org.clojure/tools.cli     "0.2.1"]
-                 [org.immutant/fntest       "0.3.2"]
+                 [org.immutant/fntest       "0.3.3"]
                  [org.clojure/tools.nrepl   "0.2.0-beta9"]]
   :profiles {:dev
              {:dependencies [[lein-midje "2.0.0-SNAPSHOT"]
                              [midje "1.3.1"]]
-              :resource-paths ["test-resources"]}})
+              :resource-paths ["test-resources"]}}
+  :pedantic :warn)
