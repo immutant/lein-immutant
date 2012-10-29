@@ -14,9 +14,9 @@
    ["-p" "--port"]])
 
 (def deps-command (repl/code
-                   (use 'immutant.dev
-                        'clojure.pprint)
-                   (pprint (add-dependencies! "TEST-DIR" '[bultitude "0.1.7"]))))
+                   (require 'immutant.dev)
+                   (-> (immutant.dev/add-dependencies! "TEST-DIR" '[bultitude "0.1.7"])
+                       (select-keys [:dependencies :source-paths]))))
 
 (def load-command (repl/code
                    (require '[clojure.test :as t]
