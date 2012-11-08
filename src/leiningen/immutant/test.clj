@@ -20,7 +20,7 @@
 
 (def load-command (repl/code
                    (require '[clojure.test :as t]
-                            '[immutant.utilities :as u]
+                            '[immutant.util :as u]
                             '[bultitude.core :as b])))
 
 (def run-command (repl/code
