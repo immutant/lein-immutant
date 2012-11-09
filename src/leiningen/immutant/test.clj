@@ -20,8 +20,11 @@
 
 (def load-command (repl/code
                    (require '[clojure.test :as t]
-                            '[immutant.util :as u]
-                            '[bultitude.core :as b])))
+                            '[bultitude.core :as b])
+                   (try
+                     (require '[immutant.util :as u])
+                     (catch java.io.FileNotFoundException _
+                       (require '[immutant.utilities :as u])))))
 
 (def run-command (repl/code
                   (let [nses (b/namespaces-in-dir (u/app-relative "TEST-DIR"))]
