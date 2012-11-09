@@ -11,6 +11,7 @@
   :eval-in-leiningen true
   :dependencies [[org.immutant/overlay      "1.2.2"]
                  [org.immutant/deploy-tools "0.9.2"]
+                 [jboss-as-management       "0.1.2"]
                  [leinjacker                "0.3.3"]
                  [org.clojure/data.json     "0.1.1"]
                  [org.clojure/tools.cli     "0.2.1"]
