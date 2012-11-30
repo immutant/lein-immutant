@@ -1,9 +1,10 @@
 (ns leiningen.immutant.install
-  (:require [clojure.java.io           :as io]
-            [clojure.java.shell        :as shell]
-            [clojure.data.json         :as json]
-            [overlay.core              :as overlayment]
-            [leiningen.immutant.common :as common]))
+  (:require [clojure.java.io            :as io]
+            [clojure.java.shell         :as shell]
+            [clojure.data.json          :as json]
+            [overlay.core               :as overlayment]
+            [leiningen.immutant.common  :as common]
+            [immutant.deploy-tools.util :as util]))
 
 (alter-var-root #'overlayment/*output-dir*
                 (constantly (io/file (System/getProperty "java.io.tmpdir")
@@ -73,3 +74,15 @@
        (install))
      (binding [overlayment/*verify-sha1-sum* true]
        (overlayment/overlay (common/get-immutant-home) feature-set))))
+
+(defn version
+  "Prints version info for the current Immutant if it can be determined"
+  []
+  (if-let [props (util/current-immutant-build-properties
+                  (common/get-jboss-home))]
+    (println "Immutant" (.getProperty props "Immutant.version")
+             (str "(revision: " (.getProperty props "Immutant.build.revision")
+                  ", built on AS7 " (.getProperty props "JBossAS.version")
+                  ")"))
+    (println "Unable to determine the Immutant version at"
+             (common/get-jboss-home))))

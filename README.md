@@ -1,8 +1,6 @@
-# lein-immutant
+# lein-immutant [![Build Status](https://secure.travis-ci.org/immutant/lein-immutant.png)](http://travis-ci.org/immutant/lein-immutant)
 
 A Leiningen plugin for deploying Immutant apps.
-
-[![Build Status](https://secure.travis-ci.org/immutant/lein-immutant.png)](http://travis-ci.org/immutant/lein-immutant)
 
 ## Usage
 
