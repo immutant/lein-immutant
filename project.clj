@@ -16,7 +16,7 @@
                  [org.clojure/data.json     "0.1.1"]
                  [org.clojure/tools.cli     "0.2.1"]
                  [org.immutant/fntest       "0.3.3"]
-                 [org.clojure/tools.nrepl   "0.2.0-beta9"]]
+                 [org.clojure/tools.nrepl   "0.2.0-RC1"]]
   :profiles {:dev
              {:dependencies [[lein-midje "2.0.0-SNAPSHOT"]
                              [midje "1.3.1"]]
