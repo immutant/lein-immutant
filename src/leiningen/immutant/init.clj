@@ -7,20 +7,21 @@
 
 (defn sample-immutant-clj [project]
   (if lein2?
-    (((lj/try-resolve 'leiningen.new.templates/renderer) "immutant") "immutant.clj" project)
-    (str/replace (slurp (io/resource "leiningen/new/immutant/immutant.clj"))
+    (((lj/try-resolve 'leiningen.new.templates/renderer) "immutant") "init.tmpl" project)
+    (str/replace (slurp (io/resource "leiningen/new/immutant/init.tmpl"))
                  #"(\{\{raw-name\}\}|\{\{namespace\}\}|\{\{nested-dirs\}\})"
                  (:name project))))
 
 (defn init 
   "Adds a sample immutant.clj configuration file to an existing project"
   [project]
-  (let [file (io/file (:root project) "immutant.clj")]
+  (let [file (io/file (:root project) "src/immutant/init.clj")]
     (if-not (.exists file)
       (do
+        (-> file (.getParentFile) (.mkdirs))
         (spit file (sample-immutant-clj project))
-        (println "Wrote sample immutant.clj"))
-      (util/abort "immutant.clj already exists"))))
+        (println "Wrote sample src/immutant/init.clj"))
+      (util/abort "src/immutant/init.clj already exists"))))
 
 (defn new
   "Creates a new project skeleton initialized for Immutant.

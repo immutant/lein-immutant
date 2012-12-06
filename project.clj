@@ -18,7 +18,7 @@
                  [org.immutant/fntest       "0.3.3"]
                  [org.clojure/tools.nrepl   "0.2.0-RC1"]]
   :profiles {:dev
-             {:dependencies [[lein-midje "2.0.0-SNAPSHOT"]
+             {:dependencies [[lein-midje "2.0.3"]
                              [midje "1.3.1"]]
               :resource-paths ["test-resources"]}}
   :pedantic :warn)

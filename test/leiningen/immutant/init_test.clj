@@ -17,7 +17,7 @@
                       :dir *tmp-dir*
                       :env base-lein-env) => 0
           (.exists (io/file project-dir)) => true
-          (.exists (io/file project-dir "immutant.clj")) => true)))
+          (.exists (io/file project-dir "src/immutant/init.clj")) => true)))
 
     (if (= 2 *generation*)
       (fact "'new immutant' should work with lein 2"
@@ -28,7 +28,7 @@
                       :dir *tmp-dir*
                       :env base-lein-env) => 0
           (.exists (io/file project-dir)) => true
-          (.exists (io/file project-dir "immutant.clj")) => true))))
+          (.exists (io/file project-dir "src/immutant/init.clj")) => true))))
     
     (fact (str "init should work for lein " *generation*)
       (with-tmp-dir
@@ -39,5 +39,5 @@
           (run-lein *generation* "immutant" "init"
                       :dir project-dir
                       :env base-lein-env) => 0
-          (.exists (io/file project-dir "immutant.clj")) => true)))))
+          (.exists (io/file project-dir "src/immutant/init.clj")) => true)))))
 

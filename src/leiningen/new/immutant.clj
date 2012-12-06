@@ -20,4 +20,4 @@
              [".gitignore" (default-render "gitignore" data)]
              ["src/{{nested-dirs}}/core.clj" (default-render "core.clj" data)]
              ["test/{{nested-dirs}}/core_test.clj" (default-render "test.clj" data)]
-             ["immutant.clj" (render "immutant.clj" data)])))
+             ["src/immutant/init.clj" (render "init.tmpl" data)])))
