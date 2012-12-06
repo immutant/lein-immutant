@@ -8,10 +8,17 @@
   [["-i" "--include-dependencies" :flag true]
    ["-n" "--name"]])
 
+(defn- strip-immutant-deps [project]
+  (update-in project [:dependencies]
+             (fn [deps] (remove #(and
+                                  (= "org.immutant" (namespace (first %)))
+                                  (.startsWith (name (first %)) "immutant"))
+                                deps))))
+
 (defn copy-dependencies* [project]
   (when project
     (let [dependencies ((lj/try-resolve 'leiningen.core.classpath/resolve-dependencies)
-                        :dependencies project)
+                        :dependencies (strip-immutant-deps project))
           lib-dir (io/file (:root project) "lib")]
       (println "Copying" (count dependencies) "dependencies to ./lib")
       (if-not (.exists lib-dir)
