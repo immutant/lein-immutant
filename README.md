@@ -52,8 +52,8 @@ Add it to your `~/.lein/profiles.clj`:
 * `lein immutant new project-name` - calls `lein new project-name` for you,
    the calls `lein immutant init`.
 
-* `lein immutant init` - creates a sample immuntant.clj configuration
-  file at the root of the current project.
+* `lein immutant init` - creates a sample `immutant.init` namespace
+  beneath `src/`
   
 * `lein immutant archive [--include-dependencies] [--name name] 
                          [path/to/project]` - 

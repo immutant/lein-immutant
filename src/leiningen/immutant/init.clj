@@ -13,7 +13,7 @@
                  (:name project))))
 
 (defn init 
-  "Adds a sample immutant.clj configuration file to an existing project"
+  "Adds a sample immutant.init namespace to an existing project"
   [project]
   (let [file (io/file (:root project) "src/immutant/init.clj")]
     (if-not (.exists file)
