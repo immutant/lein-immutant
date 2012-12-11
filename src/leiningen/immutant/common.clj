@@ -33,7 +33,10 @@
   (if-let [jboss-home (System/getenv "JBOSS_HOME")]
     (io/file jboss-home)
     (when-let [immutant-home (get-immutant-home)]
-      (io/file immutant-home "jboss"))))
+      (let [jboss-home (io/file immutant-home "jboss")]
+        (if (.exists jboss-home)
+          jboss-home
+          immutant-home)))))
 
 (defn err [& message]
   (binding [*out* *err*]
