@@ -9,7 +9,7 @@
   (if lein2?
     (((lj/try-resolve 'leiningen.new.templates/renderer) "immutant") "init.tmpl" project)
     (str/replace (slurp (io/resource "leiningen/new/immutant/init.tmpl"))
-                 #"(\{\{raw-name\}\}|\{\{namespace\}\}|\{\{nested-dirs\}\})"
+                 "{{name}}"
                  (:name project))))
 
 (defn init 
