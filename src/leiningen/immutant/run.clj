@@ -51,7 +51,7 @@ and modified."
         (println "Sending a shutdown message to" url)
         (try
           (api/shutdown)
-          (catch java.net.ConnectException _)))))
+          (catch Exception _)))))
   
   ;;TODO: fix run to use cli for options
   (defn run
