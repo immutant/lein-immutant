@@ -45,11 +45,8 @@
   ([version]
      (install version nil))
   ([version dest-dir]
-     (let [url (overlayment/url :immutant :bin
-                                (if (and version
-                                         (not (overlayment/released-version? version)))
-                                  (.toUpperCase version)
-                                  version))
+     (let [artifact (overlayment/artifact "immutant" version)
+           url (overlayment/url artifact)
            install-dir (or dest-dir (releases-dir))]
        (if-let [[existing-dir true-version] (version-exists url install-dir version)]
          (do
@@ -57,7 +54,7 @@
           (link-current existing-dir))
          (if-let [extracted-dir (binding [overlayment/*extract-dir* install-dir
                                           overlayment/*verify-sha1-sum* true]
-                                  (overlayment/download-and-extract url))]
+                                  (overlayment/download-and-extract artifact))]
            (link-current extracted-dir)
            (println "Please try the install again."))))))
 
@@ -77,7 +74,8 @@ the only supported feature set is 'torquebox'."
        (println "No Immutant installed, installing the latest incremental")
        (install))
      (binding [overlayment/*verify-sha1-sum* true]
-       (overlayment/overlay (common/get-immutant-home) feature-set))))
+       (let [version-string (when-not (nil? version) (str "-" version))]
+         (overlayment/overlay (common/get-immutant-home) (str feature-set version-string))))) )
 
 (defn version
   "Prints version info for the current Immutant"
