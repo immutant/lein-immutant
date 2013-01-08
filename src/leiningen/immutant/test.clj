@@ -48,6 +48,7 @@
     (let [deployer (with-deployment name
                      {:root root
                       :context-path (str name "-" (java.util.UUID/randomUUID))
+                      :lein-profiles [:test]
                       :swank-port nil
                       :nrepl-port (eval/get-port opts)})]
       (with-jboss #(deployer f) :lazy))))
