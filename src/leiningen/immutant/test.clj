@@ -9,8 +9,7 @@
   (:use [fntest.core :only [with-jboss with-deployment]]))
 
 (def test-options
-  [["-n" "--name"]
-   ["-d" "--dir"]
+  [["-d" "--dir"]
    ["-p" "--port"]])
 
 (def deps-command (repl/code
@@ -48,6 +47,7 @@
   (binding [fntest.jboss/*home* (common/get-jboss-home)]
     (let [deployer (with-deployment name
                      {:root root
+                      :context-path (str name "-" (java.util.UUID/randomUUID))
                       :swank-port nil
                       :nrepl-port (eval/get-port opts)})]
       (with-jboss #(deployer f) :lazy))))
@@ -55,7 +55,7 @@
 (defn test
   "Runs tests inside an Immutant, after starting one (if necessary) and deploying the project"
   [project root opts]
-  (when-not (run-in-container (or (:name opts) (util/app-name project root))
+  (when-not (run-in-container (util/app-name project root)
                               root
                               #(run-tests opts)
                               opts)
