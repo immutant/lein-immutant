@@ -1,7 +1,7 @@
 (ns leiningen.immutant.archive
   (:require [clojure.java.io               :as io]
             [leinjacker.utils              :as lj]
-            [leiningen.immutant.common     :as common]
+            [leiningen.immutant.common     :as c]
             [immutant.deploy-tools.archive :as archive]))
 
 (def archive-options
@@ -27,14 +27,15 @@
         (io/copy dep (io/file lib-dir (.getName dep)))))))
 
 (def copy-dependencies
-  (if common/lein2?
+  (if c/lein2?
     copy-dependencies*
     (lj/try-resolve 'leiningen.deps/deps)))
 
 (defn archive
   "Creates an Immutant archive from a project"
-  [project root options args]
-  (let [dest-dir (or (first args) (System/getProperty "user.dir"))]
-    (let [jar-file (archive/create project root dest-dir
-                                   (assoc options :copy-deps-fn copy-dependencies))]
-      (println "Created" (.getAbsolutePath jar-file)))))
+  [project root options]
+  (let [dest-dir (:root project root)
+        jar-file (archive/create project root dest-dir
+                                 (assoc options :copy-deps-fn copy-dependencies))]
+    (c/verify-root-arg project root "archive")
+    (println "Created" (.getAbsolutePath jar-file))))

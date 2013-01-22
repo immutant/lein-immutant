@@ -28,6 +28,20 @@
               (.exists dd)                     => true
               (:root (read-string (slurp dd))) => (.getAbsolutePath project-dir))))
 
+        (fact (str "with path arg should print a warning for lein " *generation*)
+          (with-tmp-jboss-home
+            (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
+                  dd (io/file *tmp-deployments-dir* "test-project.clj")
+                  result 
+                  (run-lein *generation* "immutant" "deploy" "yarg"
+                            :dir project-dir
+                            :env env
+                            :return-result? true)]
+              (re-find #"specified a root path of 'yarg'" (:out result)) =not=> nil
+              (:exit result)                   => 0
+              (.exists dd)                     => true
+              (:root (read-string (slurp dd))) => (.getAbsolutePath project-dir))))
+                
         (fact (str "with a --name arg should work for lein " *generation*)
           (with-tmp-jboss-home
             (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)

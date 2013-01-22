@@ -72,3 +72,13 @@
          opts)]
     [(into {} options)
      (into {} config)]))
+
+(defn verify-root-arg [project root subtask]
+  (when-not (or (nil? root)
+                (nil? project)
+                (= (.getCanonicalPath (io/file root))
+                   (.getCanonicalPath (io/file (:root project)))))
+    (println
+     (format "Note: You specified a root path of '%s', but invoked %s in a project directory.
+      If you meant to specify '%s' as a name argument, use the --name option.\n"
+             root subtask root))))

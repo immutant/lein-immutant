@@ -27,6 +27,7 @@
                                                (assoc options
                                                  :copy-deps-fn archive-task/copy-dependencies))
                         (deploy/deploy-dir jboss-home project root options config))]
+    (c/verify-root-arg project root "deploy")
     (println "Deployed" (util/app-name project root) "to" (.getAbsolutePath deployed-file))))
 
 (defn undeploy
@@ -37,6 +38,7 @@
                         (str " (as: " name ")")))
         jboss-home (c/get-jboss-home)
         deploy-path (.getAbsolutePath (util/deployment-dir jboss-home))]
+    (c/verify-root-arg project root "undeploy")
     (if (deploy/undeploy jboss-home project root opts)
       (println "Undeployed" app-name "from" deploy-path)
       (println "No action taken:" app-name "is not deployed to" deploy-path))))

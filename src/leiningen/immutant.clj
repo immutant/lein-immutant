@@ -18,6 +18,10 @@
    "test"      test/test-options
    "eval"      eval/eval-options})
 
+(defn- subtask-with-resolved-project [subtask project-or-nil root-dir options]
+  (apply subtask
+         (conj (common/resolve-project project-or-nil root-dir) options)))
+
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
   {:no-project-needed true
@@ -52,14 +56,14 @@
            "env"          (apply env/env other-args)
            "new"          (init/new (first other-args))
            "init"         (init/init project-or-nil)
-           "archive"      (apply archive/archive
-                                 (conj (common/resolve-project project-or-nil root-dir) options other-args))
-           "deploy"       (apply deploy/deploy
-                                 (conj (common/resolve-project project-or-nil root-dir) options))
-           "undeploy"     (apply deploy/undeploy
-                                 (conj (common/resolve-project project-or-nil root-dir) options))
-           "test"         (apply test/test
-                                 (conj (common/resolve-project project-or-nil root-dir) options))
+           "archive"      (subtask-with-resolved-project
+                            archive/archive project-or-nil root-dir options)
+           "deploy"       (subtask-with-resolved-project
+                            deploy/deploy project-or-nil root-dir options)
+           "undeploy"     (subtask-with-resolved-project
+                            deploy/undeploy project-or-nil root-dir options)
+           "test"         (subtask-with-resolved-project
+                            test/test project-or-nil root-dir options)
            "eval"         (eval/eval (first other-args) options)
            (common/unknown-subtask subtask))))
      (shutdown-agents)))
