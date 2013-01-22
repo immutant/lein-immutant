@@ -53,9 +53,16 @@
 
 (defn resolve-project [project root-dir]
   (let [project-file (io/file root-dir "project.clj")]
-    (if (or project (not (.exists project-file))) 
-      [project root-dir]
-      [(lj/read-lein-project (.getAbsolutePath project-file) [:default]) root-dir])))
+    (cond
+     project                            [project root-dir]
+     (not (.exists (io/file root-dir))) (lj/abort
+                                         (format "Error: '%s' does not exist"
+                                                 root-dir))
+     (.exists project-file)             [(lj/read-lein-project
+                                          (.getAbsolutePath project-file)
+                                          [:default])
+                                         root-dir]
+     :default                           [nil root-dir])))
 
 (defn as-config-option [opt]
   (with-meta opt {:config true}))

@@ -75,6 +75,15 @@
               (.exists dd)                     => true
               (:root (read-string (slurp dd))) => (.getAbsolutePath project-dir))))
 
+        (fact (str "with a non-existent path arg should work for lein " *generation*)
+          (with-tmp-jboss-home
+            (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
+                  dd (io/file *tmp-deployments-dir* "test-project.clj")]
+              (run-lein *generation* "immutant" "deploy" "/tmp/hAmBisCuit"
+                        :dir "/tmp"
+                        :env env)              => 1
+              (.exists dd)                     => false)))
+                
         (fact (str "with a --name arg and a path argshould work for lein " *generation*)
           (with-tmp-jboss-home
             (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)
