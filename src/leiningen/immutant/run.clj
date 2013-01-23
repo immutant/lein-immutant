@@ -25,13 +25,18 @@ and modified."
   [cmd & [line-fn]]
   (let [proc (.exec (Runtime/getRuntime)
                     (into-array cmd))]
-    (.start (Thread. (bound-fn []
-                       (with-open [out (io/reader (.getInputStream proc))
-                                   err (io/reader (.getErrorStream proc))]
-                         (let [pump-out (doto (Thread. (bound-fn [] (pump out *out* line-fn))) .start)
-                               pump-err (doto (Thread. (bound-fn [] (pump err *err* line-fn))) .start)]
-                           (.join pump-out)
-                           (.join pump-err))))))
+    (.start (Thread.
+             (bound-fn []
+               (with-open [out (io/reader (.getInputStream proc))
+                           err (io/reader (.getErrorStream proc))]
+                 (doto (Thread. (bound-fn []
+                                  (pump out *out* line-fn)))
+                   .start
+                   .join)
+                 (doto (Thread. (bound-fn []
+                                  (pump err *err* line-fn)))
+                   .start
+                   .join)))))
     proc))
 
 (let [mgt-url (atom nil)

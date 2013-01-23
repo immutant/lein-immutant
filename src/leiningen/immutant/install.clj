@@ -80,9 +80,9 @@
   []
   (if-let [props (util/current-immutant-build-properties
                   (common/get-jboss-home))]
-    (println "Immutant" (.getProperty props "Immutant.version")
-             (str "(revision: " (.getProperty props "Immutant.build.revision")
-                  ", built on AS7 " (.getProperty props "JBossAS.version")
-                  ")"))
+    (println (format "Immutant %s (revision: %s, built on AS7 %s)"
+                     (.getProperty props "Immutant.version")
+                     (.getProperty props "Immutant.build.revision")
+                     (.getProperty props "JBossAS.version")))
     (println "Unable to determine the Immutant version at"
              (common/get-jboss-home))))
