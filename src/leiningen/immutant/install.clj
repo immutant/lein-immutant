@@ -39,7 +39,7 @@
         nil))))
 
 (defn install
-  "Downloads and installs Immutant"
+  "Downloads and installs an Immutant version"
   ([]
      (install nil nil))
   ([version]
@@ -62,7 +62,11 @@
            (println "Please try the install again."))))))
 
 (defn overlay
-  "Overlays features onto ~/.lein/immutant/current or $IMMUTANT_HOME"
+  "Overlays a feature set onto the current Immutant
+
+This turns the Immutant into a hybrid application server, which acts as
+an Immutant and whatever feature sets are overlayed onto it. Currently,
+the only supported feature set is 'torquebox'."
   ([]
      (println "No feature set provided, assuming 'torquebox'")
      (overlay "torquebox" nil))
@@ -76,7 +80,7 @@
        (overlayment/overlay (common/get-immutant-home) feature-set))))
 
 (defn version
-  "Prints version info for the current Immutant if it can be determined"
+  "Prints version info for the current Immutant"
   []
   (if-let [props (util/current-immutant-build-properties
                   (common/get-jboss-home))]

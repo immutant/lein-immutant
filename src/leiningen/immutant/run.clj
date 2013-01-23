@@ -4,6 +4,8 @@
             [jboss-as.management        :as api]
             [immutant.deploy-tools.util :as util]))
 
+(def ^:dynamic *pump-should-sleep* true)
+
 (defn- pump
   "Borrowed from leiningen.core/eval and modified."
   [reader out line-fn]
@@ -12,7 +14,8 @@
       (when line
         (.write out (str (line-fn line) "\n"))
         (.flush out)
-        (Thread/sleep 10)
+        (when *pump-should-sleep*
+          (Thread/sleep 10))
         (recur (.readLine reader))))))
 
 (defn- add-shutdown-hook! [f]
@@ -25,18 +28,19 @@ and modified."
   [cmd & [line-fn]]
   (let [proc (.exec (Runtime/getRuntime)
                     (into-array cmd))]
-    (.start (Thread.
-             (bound-fn []
-               (with-open [out (io/reader (.getInputStream proc))
-                           err (io/reader (.getErrorStream proc))]
-                 (doto (Thread. (bound-fn []
-                                  (pump out *out* line-fn)))
-                   .start
-                   .join)
-                 (doto (Thread. (bound-fn []
-                                  (pump err *err* line-fn)))
-                   .start
-                   .join)))))
+    (.start
+     (Thread.
+      (bound-fn []
+        (with-open [out (io/reader (.getInputStream proc))
+                    err (io/reader (.getErrorStream proc))]
+          (doto (Thread. (bound-fn []
+                           (pump out *out* line-fn)))
+            .start
+            .join)
+          (doto (Thread. (bound-fn []
+                           (pump err *err* line-fn)))
+            .start
+            .join)))))
     proc))
 
 (let [mgt-url (atom nil)
@@ -57,10 +61,26 @@ and modified."
         (try
           (api/shutdown)
           (catch Exception _)))))
+
+  (def options-that-exit-immediately
+    #{"-h" "--help" "-v" "-V" "--version"})
   
   ;;TODO: fix run to use cli for options
   (defn run
-    "Starts up the Immutant specified by ~/.lein/immutant/current or $IMMUTANT_HOME, displaying its console output"
+    "Starts up the current Immutant, displaying its console output
+
+The Immutant to start is specified by the ~/.lein/immutant/current
+link or $IMMUTANT_HOME, with the environment variable taking
+precedence. You can shutdown the Immutant with ^C.
+
+This task delegates to $JBOSS_HOME/bin/standalone.[sh|bat], and
+takes any arguments the standalone script accepts. To see a full
+list, run `lein immutant run --help`.
+
+It also takes the additional convenience arguments:
+
+ --clustered  Starts the Immutant in clustered mode. This is
+              equivalent to passing '--server-config=standalone-ha.xml`"
     ([]
        (run nil))
     ([project & opts]
@@ -68,8 +88,11 @@ and modified."
          (and project (not (util/application-is-deployed? project nil nil))
               (common/err "WARNING: The current app may not be deployed - deploy with 'lein immutant deploy'"))
          (let [script (standalone-sh)
-               params (replace {"--clustered" "--server-config=standalone-ha.xml"} opts)]
+               params (replace
+                       {"--clustered" "--server-config=standalone-ha.xml"} opts)]
            (apply println "Starting Immutant:" script params)
-           (let [proc (sh (into [script] params) find-mgt-url)]
-             (add-shutdown-hook! shutdown)
-             (.waitFor proc)))))))
+           (binding [*pump-should-sleep*
+                     (not (some options-that-exit-immediately params))]
+             (let [proc (sh (into [script] params) find-mgt-url)]
+               (add-shutdown-hook! shutdown)
+               (.waitFor proc))))))))

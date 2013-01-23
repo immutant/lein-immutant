@@ -28,14 +28,15 @@ Add it to your `~/.lein/profiles.clj`:
       
 ### Running it
 
-* `lein immutant install [version [install-dir]]` - downloads and installs
-   Immutant for you. By default, it will download the latest incremental
-   build and put it in `~/.lein/immutant/releases/`. You can override the
-   version (which currently must be an incremental build number from 
-   http://immutant.org/builds/) and the install directory. Wherever it gets
-   installed, the most recently installed version will be linked from
-   `~/.lein/immutant/current`. If this link is present (and points to a 
-   valid Immutant install), you won't need to set `$IMMUTANT_HOME`
+* `lein immutant install [version [install-dir]]` - downloads and
+   installs Immutant for you. By default, it will download the latest
+   incremental build and put it in `~/.lein/immutant/releases/`. You
+   can override the version (which must be an incremental build number
+   from http://immutant.org/builds/ or a released version) and the
+   install directory. Wherever it gets installed, the most recently
+   installed version will be linked from
+   `~/.lein/immutant/current`. If this link is present (and points to
+   a valid Immutant install), you won't need to set `$IMMUTANT_HOME`
 
 * `lein immutant overlay [feature-set [version]]` - downloads and overlays a
   feature set onto the currenty installed Immutant. If it can't find

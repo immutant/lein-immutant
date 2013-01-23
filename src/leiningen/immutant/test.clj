@@ -3,6 +3,7 @@
   (:require fntest.jboss
             [leiningen.immutant.eval    :as eval]
             [leiningen.immutant.common  :as common]
+            [leinjacker.utils           :as lj]
             [immutant.deploy-tools.util :as util]
             [clojure.tools.nrepl        :as repl]
             [clojure.string             :as str])
@@ -60,6 +61,5 @@
                               root
                               #(run-tests opts)
                               opts)
-    (println "Tests failed")
-    (System/exit -1)))
+    (lj/abort "Tests failed")))
 

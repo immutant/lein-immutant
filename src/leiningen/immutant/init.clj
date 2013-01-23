@@ -5,7 +5,7 @@
             [leinjacker.utils           :as lj]
             [immutant.deploy-tools.util :as util]))
 
-(defn sample-immutant-clj [project]
+(defn sample-immutant-init [project]
   (if lein2?
     (((lj/try-resolve 'leiningen.new.templates/renderer) "immutant") "init.tmpl" project)
     (str/replace (slurp (io/resource "leiningen/new/immutant/init.tmpl"))
@@ -13,20 +13,23 @@
                  (:name project))))
 
 (defn init 
-  "Adds a sample immutant.init namespace to an existing project"
+  "Adds a sample immutant.init namespace to the current project"
   [project]
   (let [file (io/file (:root project) "src/immutant/init.clj")]
     (if-not (.exists file)
       (do
         (-> file (.getParentFile) (.mkdirs))
-        (spit file (sample-immutant-clj project))
+        (spit file (sample-immutant-init project))
         (println "Wrote sample src/immutant/init.clj"))
       (util/abort "src/immutant/init.clj already exists"))))
 
 (defn new
-  "Creates a new project skeleton initialized for Immutant.
-This delegates to lein's builtin 'new' task using the 'immutant' template,
-and is the same as calling 'lein new immutant project-name'"
+  "Creates a new project skeleton initialized for Immutant
+
+This delegates to lein's builtin 'new' task using the 'immutant'
+template, and is the same as calling 'lein new immutant project-name'.
+It creates a standard Leiningen project and adds a sample
+immutant.init namespace."
   [project-name]
   (if (nil? project-name)
     (println "You must provide a project name.")
