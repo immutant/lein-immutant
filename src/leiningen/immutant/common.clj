@@ -56,7 +56,7 @@
     (cond
      project                            [project root-dir]
      (not (.exists (io/file root-dir))) (lj/abort
-                                         (format "Error: '%s' does not exist"
+                                         (format "ERROR: '%s' does not exist"
                                                  root-dir))
      (.exists project-file)             [(lj/read-lein-project
                                           (.getAbsolutePath project-file)
@@ -85,7 +85,7 @@
                 (nil? project)
                 (= (.getCanonicalPath (io/file root))
                    (.getCanonicalPath (io/file (:root project)))))
-    (println
-     (format "Note: You specified a root path of '%s', but invoked %s in a project directory.
+    (err
+     (format "WARNING: You specified a root path of '%s', but invoked %s in a project directory.
       If you meant to specify '%s' as a name argument, use the --name option.\n"
              root subtask root))))
