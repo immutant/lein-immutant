@@ -37,7 +37,7 @@
                             :dir project-dir
                             :env env
                             :return-result? true)]
-              (re-find #"specified a root path of 'yarg'" (:out result)) =not=> nil
+              (re-find #"specified a root path of 'yarg'" (:err result)) =not=> nil
               (:exit result)                   => 0
               (.exists dd)                     => true
               (:root (read-string (slurp dd))) => (.getAbsolutePath project-dir))))
