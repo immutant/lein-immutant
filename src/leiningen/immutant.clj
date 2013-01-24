@@ -1,7 +1,6 @@
 (ns leiningen.immutant
   (:require [leiningen.immutant.deploy  :as deploy]
             [leiningen.immutant.env     :as env]
-            [leiningen.immutant.eval    :as eval]
             [leiningen.immutant.test    :as test]
             [leiningen.immutant.init    :as init]
             [leiningen.immutant.archive :as archive]
@@ -15,8 +14,7 @@
   {"deploy"    deploy/deploy-options
    "undeploy"  deploy/undeploy-options
    "archive"   archive/archive-options
-   "test"      test/test-options
-   "eval"      eval/eval-options})
+   "test"      test/test-options})
 
 (defn- subtask-with-resolved-project [subtask project-or-nil root-dir options]
   (apply subtask
@@ -35,8 +33,7 @@
               #'deploy/deploy
               #'deploy/undeploy
               #'run/run
-              #'test/test
-              #'eval/eval]}
+              #'test/test]}
   ([] 
      (common/print-help)) ;; lein1
   ([subtask]
@@ -64,6 +61,5 @@
                             deploy/undeploy project-or-nil root-dir options)
            "test"         (subtask-with-resolved-project
                             test/test project-or-nil root-dir options)
-           "eval"         (eval/eval (first other-args) options)
            (common/unknown-subtask subtask))))
      (shutdown-agents)))
