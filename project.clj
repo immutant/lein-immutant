@@ -10,14 +10,14 @@
             :distribution :repo}
   :eval-in-leiningen true
   :exclusions [org.clojure/clojure]
-  :dependencies [[org.immutant/overlay      "1.2.2"]
+  :dependencies [[org.immutant/overlay      "1.3.0"]
                  [org.immutant/deploy-tools "0.11.1"]
                  [leinjacker                "0.4.1"]
-                 [org.clojure/data.json     "0.1.1"]
+                 [org.clojure/data.json     "0.2.0"]
                  [org.clojure/tools.cli     "0.2.1"]
-                 [org.immutant/fntest       "0.3.5"]]
+                 [org.immutant/fntest       "0.3.6"]]
   :profiles {:dev
              {:dependencies [[lein-midje "2.0.3"]
-                             [midje "1.3.1"]]
+                             [midje "1.3.1" :exclusions [org.clojure/core.unify]]]
               :resource-paths ["test-resources"]}}
   :pedantic :warn)
