@@ -1,6 +1,6 @@
 (ns leiningen.immutant.test
   (:refer-clojure :exclude [test])
-  (:require [fntest.nrepl               :as fntest]
+  (:require [fntest.core                :as fntest]
             [leiningen.immutant.common  :as common]
             [leinjacker.utils           :as lj]
             [immutant.deploy-tools.util :as util]))
@@ -12,8 +12,8 @@
 (defn test
   "Runs tests inside an Immutant, after starting one (if necessary) and deploying the project"
   [project root opts]
-  (when-not (fntest/run-in-container (util/app-name project root)
-                                     root
-                                     (assoc opts :jboss-home (common/get-jboss-home)))
+  (when-not (fntest/test-in-container (util/app-name project root)
+                                      root
+                                      (assoc opts :jboss-home (common/get-jboss-home)))
     (lj/abort "Tests failed")))
 
