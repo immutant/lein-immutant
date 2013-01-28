@@ -39,7 +39,19 @@
         nil))))
 
 (defn install
-  "Downloads and installs an Immutant version"
+  "Downloads and installs an Immutant version
+
+By default, it will download the latest incremental build and put it
+in ~/.lein/immutant/releases/. You can override the version (which
+must be an incremental build number from http://immutant.org/builds/
+or a released version) and the install directory. Wherever it gets
+installed, the most recently installed version will be linked to
+~/.lein/immutant/current. If this link is present (and points to a
+valid Immutant install), you won't need to set $IMMUTANT_HOME to
+notify plugin tasks of the location of Immutant.
+
+On Windows, ~/.lein/immutant/current is actually a text file
+containing the path to the current Immutant instead of a link."
   ([]
      (install nil nil))
   ([version]
@@ -63,7 +75,11 @@
 
 This turns the Immutant into a hybrid application server, which acts as
 an Immutant and whatever feature sets are overlayed onto it. Currently,
-the only supported feature set is 'torquebox'."
+the only supported feature set is 'torquebox'.
+
+By default, the plugin will locate the current Immutant by looking at
+~/.lein/immutant/current. This can be overriden by setting the
+$IMMUTANT_HOME environment variable."
   ([]
      (println "No feature set provided, assuming 'torquebox'")
      (overlay "torquebox" nil))
@@ -78,7 +94,11 @@ the only supported feature set is 'torquebox'."
          (overlayment/overlay (common/get-immutant-home) (str feature-set version-string))))) )
 
 (defn version
-  "Prints version info for the current Immutant"
+  "Prints version info for the current Immutant
+
+By default, the plugin will locate the current Immutant by looking at
+~/.lein/immutant/current. This can be overriden by setting the
+$IMMUTANT_HOME environment variable."
   []
   (if-let [props (util/current-immutant-build-properties
                   (common/get-jboss-home))]

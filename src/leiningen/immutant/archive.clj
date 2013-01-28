@@ -32,7 +32,16 @@
     (lj/try-resolve 'leiningen.deps/deps)))
 
 (defn archive
-  "Creates an Immutant archive from a project"
+  "Creates an Immutant archive from a project
+
+Creates an Immutant archive (suffixed with '.ima') in the current
+directory. By default, the archive file will be named after the
+project name in project.clj. This can be overridden via the --name (or
+-n) option. This archive can be deployed in lieu of a descriptor
+pointing to the app directory. If the --include-dependencies (or -i)
+option is provided, all of the application's dependencies will be
+included in the archive as well. This task can be run outside of a
+project dir of the path to the project is provided."
   [project root options]
   (let [dest-dir (:root project root)
         jar-file (archive/create project root dest-dir

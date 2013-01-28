@@ -80,7 +80,11 @@ list, run `lein immutant run --help`.
 It also takes the additional convenience arguments:
 
  --clustered  Starts the Immutant in clustered mode. This is
-              equivalent to passing '--server-config=standalone-ha.xml`"
+              equivalent to passing '--server-config=standalone-ha.xml`
+
+By default, the plugin will locate the current Immutant by looking at
+~/.lein/immutant/current. This can be overriden by setting the
+$IMMUTANT_HOME environment variable."
     ([]
        (run nil))
     ([project & opts]

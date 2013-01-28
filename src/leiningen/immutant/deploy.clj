@@ -18,8 +18,27 @@
   [["-n" "--name"]])
 
 (defn deploy 
-  "Deploys a project to the Immutant specified by ~/.lein/immutant/current or $IMMUTANT_HOME"
-  [project root opts]
+  "Deploys a project to the current Immutant
+
+If passed the --archive option, it will deploy an archive of the app
+instead of a descriptor pointing to the app on disk. This will
+currently recreate the archive on every deploy.  By default, the
+deployment will be named after the project name in project.clj.  This
+can be overridden via the --name (or -n) option.
+
+You can pass a comma separated list of lein profiles via the
+--lein-profiles p1,p2 option to have them set as the
+:lein-profiles key in the descriptor and applied when the app is
+deployed. You can also override the default context-path
+(based off of the deployment name) and virtual-host with the
+--context-path and --virtual-host options, respectively. This
+task can be run outside of a project dir of the path to the project
+is provided.
+
+By default, the plugin will locate the current Immutant by looking at
+~/.lein/immutant/current. This can be overriden by setting the
+$IMMUTANT_HOME environment variable."
+[project root opts]
   (let [[options config] (c/group-options opts deploy-options)
         jboss-home (c/get-jboss-home)
         deployed-file (if (:archive options)
@@ -31,7 +50,15 @@
     (println "Deployed" (util/app-name project root) "to" (.getAbsolutePath deployed-file))))
 
 (defn undeploy
-  "Undeploys a project from the Immutant specified by ~/.lein/immutant/current or $IMMUTANT_HOME"
+  "Undeploys a project from the current Immutant
+
+If the `--name` option was used to deploy the app, you'll need to pass
+the same name to undeploy as well. This task can be run outside of a
+project dir of the path to the project is provided.
+
+By default, the plugin will locate the current Immutant by looking at
+~/.lein/immutant/current. This can be overriden by setting the
+$IMMUTANT_HOME environment variable."
   [project root opts]
   (let [app-name (str (util/app-name project root)
                       (if-let [name (:name opts)]
