@@ -49,8 +49,8 @@
     (println "\n==> Performing test env setup...")
     (println "====> Installing project...")
     (install/install (utils/read-lein-project))
-    (println "====> Installing as lein 1 plugin...")
-    (run-lein 1 "plugin" "install" "lein-immutant" plugin-version :env base-lein-env)
+    ;;(println "====> Installing as lein 1 plugin...")
+    ;;(run-lein 1 "plugin" "install" "lein-immutant" plugin-version :env base-lein-env)
     (println "====> Creating lein 2 profiles.clj...")
     (spit (io/file lein-home "profiles.clj")
           (pr-str {:user {:plugins [['lein-immutant plugin-version]]}}))
@@ -83,6 +83,7 @@
 
 
 (defmacro for-all-generations [& body]
-  `(doseq [gen# [1 2]]
+  `(doseq [gen# [2] ;;[1 2]
+           ]
      (binding [*generation* gen#]
        ~@body)))
