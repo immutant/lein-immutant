@@ -21,9 +21,11 @@ inside the running Immutant.
 By default, the plugin will locate the current Immutant by looking at
 ~/.lein/immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
-[project root opts]
-  (when-not (fntest/test-in-container (util/app-name project root)
-                                      root
-                                      (assoc opts :jboss-home (common/get-jboss-home)))
+  [project root opts]
+  (when-not (common/mapply
+              fntest/test-in-container
+              (util/app-name project root)
+              root
+              (assoc opts :jboss-home (common/get-jboss-home)))
     (lj/abort "Tests failed")))
 

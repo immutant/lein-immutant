@@ -89,3 +89,7 @@
      (format "WARNING: You specified a root path of '%s', but invoked %s in a project directory.
       If you meant to specify '%s' as a name argument, use the --name option.\n"
              root subtask root))))
+
+(defn mapply [f & args]
+  "Applies args to f, and expands the last arg into a kwarg seq if it is a map"
+  (apply f (apply concat (butlast args) (last args))))
