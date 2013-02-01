@@ -63,7 +63,18 @@
               (read-string (slurp dd)) => {:root (.getAbsolutePath project-dir)
                                            :context-path "path"
                                            :virtual-host "host"}))))
-      
+
+      (fact (str "profiles should be noticed and written to the dd for lein " *generation*)
+          (with-tmp-jboss-home
+            (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)
+                  dd (io/file *tmp-deployments-dir* "test-project.clj")]
+              (run-lein *generation* "with-profile" "foo" "immutant" "deploy"
+                        :dir project-dir
+                        :env env)      => 0
+              (.exists dd)             => true
+              (read-string (slurp dd)) => {:root (.getAbsolutePath project-dir)
+                                           :lein-profiles [:foo]})))
+              
       (facts "not in a project"
         (fact (str "with a path arg should work for lein " *generation*)
           (with-tmp-jboss-home
