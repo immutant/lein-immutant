@@ -5,38 +5,31 @@ A Leiningen plugin for deploying Immutant apps.
 ## Usage
 
 ### Installation
-
-#### Leiningen 1
-
-To install for all lein projects, execute:
     
-    lein plugin install lein-immutant 0.14.1
-    
-If you don't want to install it for all lein projects, you can add it as 
-a dev dependency in your project.clj:
+As of version 0.15.0, the plugin only supports leiningen 2.0.0 and up.
+To use it, add it to your `~/.lein/profiles.clj`:
 
-    ...
-    :dependencies [[org.clojure/clojure "1.3.0"]]
-    :dev-dependencies [[lein-immutant "0.14.1"]]
-    ...
-    
-#### Leiningen 2
-
-Add it to your `~/.lein/profiles.clj`:
-
-    {:user {:plugins [[lein-immutant "0.14.1"]]}}
+    {:user {:plugins [[lein-immutant "0.15.0"]]}}
       
-### Running it
+### Using it
+
+The plugin provides several subtasks for installing, deploying to, and
+running an Immutant. All of the subtasks are namespaced under the
+`immutant` task. You can use `lein help immutant` to see a full list,
+and use `lein help immutant SUBTASK` to get more detailed help for a 
+specific subtask. 
+
+The subtasks provided by the plugin are:
 
 * lein immutant install [version [install-dir]] - downloads and
-   installs Immutant for you. By default, it will download the latest
-   incremental build and put it in `~/.lein/immutant/releases/`. You
-   can override the version (which must be an incremental build number
-   from http://immutant.org/builds/ or a released version) and the
-   install directory. Wherever it gets installed, the most recently
-   installed version will be linked from
-   `~/.lein/immutant/current`. If this link is present (and points to
-   a valid Immutant install), you won't need to set `$IMMUTANT_HOME`
+  installs Immutant for you. By default, it will download the latest
+  incremental build and put it in `~/.lein/immutant/releases/`. You
+  can override the version (which must be an incremental build number
+  from http://immutant.org/builds/ or a released version) and the
+  install directory. Wherever it gets installed, the most recently
+  installed version will be linked from
+  `~/.lein/immutant/current`. If this link is present (and points to
+  a valid Immutant install), you won't need to set `$IMMUTANT_HOME`
 
 * lein immutant overlay [feature-set [version]] - downloads and
   overlays a feature set onto the currenty installed Immutant. If it
