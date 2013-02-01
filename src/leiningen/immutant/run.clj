@@ -91,11 +91,11 @@ $IMMUTANT_HOME environment variable."
        (util/with-jboss-home jboss-home
          (when project
            (if-not (util/application-is-deployed? project nil nil)
-             (c/err "WARNING: The current app may not be deployed - deploy with 'lein immutant deploy'"))
+             (c/err "Warning: The current app may not be deployed - deploy with 'lein immutant deploy'"))
            (if-let [profiles (c/extract-profiles project)]
              (c/err
               (format
-               "WARNING: You specified profiles, but they cannot be applied to deployed
+               "Warning: You specified profiles, but they cannot be applied to deployed
          applications from the run task. You will instead need to deploy
          the application with those profiles set:
            %s\n"

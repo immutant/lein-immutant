@@ -41,17 +41,18 @@ $IMMUTANT_HOME environment variable."
   [project root opts]
   (let [[options config] (c/group-options opts deploy-options)
         jboss-home (c/get-jboss-home)
-        deployed-file (if (:archive options)
-                        (deploy/deploy-archive jboss-home project root
-                                               (assoc options
-                                                 :copy-deps-fn archive-task/copy-dependencies))
-                        (deploy/deploy-dir jboss-home project root options
-                                           (if-let [profiles (c/extract-profiles project)]
-                                             (assoc config :lein-profiles profiles)
-                                             config)))]
+        deployed-file
+        (if (:archive options)
+          (deploy/deploy-archive jboss-home project root
+                                 (assoc options
+                                   :copy-deps-fn archive-task/copy-dependencies))
+          (deploy/deploy-dir jboss-home project root options
+                             (if-let [profiles (c/extract-profiles project)]
+                               (assoc config :lein-profiles profiles)
+                               config)))]
     (c/verify-root-arg project root "deploy")
     (if-let [given-profiles (:lein-profiles config)]
-      (c/err (format "WARNING: setting lein profiles via --lein-profiles is deprecated.
+      (c/err (format "Warning: setting lein profiles via --lein-profiles is deprecated.
          Specify profiles using lein's with-profile higher order task:
            %s\n"
                      (c/deploy-with-profiles-cmd given-profiles))))
