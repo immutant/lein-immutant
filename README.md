@@ -24,7 +24,7 @@ a dev dependency in your project.clj:
 
 Add it to your `~/.lein/profiles.clj`:
 
-    {:user {:plugins [[lein-immutant "0.14.1"]]}
+    {:user {:plugins [[lein-immutant "0.14.1"]]}}
       
 ### Running it
 
