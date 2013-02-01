@@ -24,7 +24,7 @@ a dev dependency in your project.clj:
 
 Add it to your `~/.lein/profiles.clj`:
 
-    {:user {:plugins [[lein-immutant "0.14.1"]]}
+    {:user {:plugins [[lein-immutant "0.14.1"]]}}
       
 ### Running it
 
@@ -109,7 +109,7 @@ Add it to your `~/.lein/profiles.clj`:
 
 There are two differences when using the plugin on windows:
 
-* `~/.lein/immutant/current' isn't a link to the currently active
+* `~/.lein/immutant/current` isn't a link to the currently active
   Immutant installation, but is instead a text file containing the
   path to that installation. This is to work around linking issues on
   Windows.
