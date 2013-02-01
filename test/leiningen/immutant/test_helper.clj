@@ -40,7 +40,7 @@
     (if return-result?
       result
       (do
-        (print (:out result))
+        ;(print (:out result))
         (print (:err result))
         (:exit result)))))
 
@@ -49,8 +49,6 @@
     (println "\n==> Performing test env setup...")
     (println "====> Installing project...")
     (install/install (utils/read-lein-project))
-    ;;(println "====> Installing as lein 1 plugin...")
-    ;;(run-lein 1 "plugin" "install" "lein-immutant" plugin-version :env base-lein-env)
     (println "====> Creating lein 2 profiles.clj...")
     (spit (io/file lein-home "profiles.clj")
           (pr-str {:user {:plugins [['lein-immutant plugin-version]]}}))
@@ -87,3 +85,15 @@
            ]
      (binding [*generation* gen#]
        ~@body)))
+
+(defn create-tmp-deploy [name]
+  (mapv
+   #(spit (io/file *tmp-deployments-dir* (str name ".clj" %)) "")
+   ["" ".deployed" ".dodeploy" ".failed"]))
+
+(defn tmp-deploy-removed? [name]
+  (reduce
+   (fn [acc f]
+     (or acc (.exists (io/file *tmp-jboss-home* (str name ".clj" f)))))
+   false
+   ["" ".deployed" ".dodeploy" ".failed"]))

@@ -13,7 +13,7 @@
                :return-result? true)))
 
 (for-all-generations
-  (println "\n==> Testing with lein generation" *generation*)
+  (println "\n==> Testing env with lein generation" *generation*)
 
   (facts "with IMMUTANT_HOME set"
     (let [immutant-home (io/file "/tmp" "immutant-home")

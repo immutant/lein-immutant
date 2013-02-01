@@ -3,14 +3,12 @@
         leiningen.immutant.test-helper)
   (:require [clojure.java.io :as io]))
 
-;; TODO:
-;; * deploy --archive
-;; * undeploy in all its permutations
+;; TODO: deploy --archive
 
 (setup-test-env)
 
 (for-all-generations
-  (println "\n==> Testing with lein generation" *generation*)
+  (println "\n==> Testing deploy/undeploy with lein generation" *generation*)
 
   (let [project-dir (io/file (io/resource "test-project"))]
     
@@ -105,11 +103,13 @@
         (fact (str "with a non-existent path arg should work for lein " *generation*)
           (with-tmp-jboss-home
             (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
-                  dd (io/file *tmp-deployments-dir* "test-project.clj")]
-              (run-lein *generation* "immutant" "deploy" "/tmp/hAmBisCuit"
-                        :dir "/tmp"
-                        :env env)              => 1
-              (.exists dd)                     => false)))
+                  {:keys [err exit]}
+                  (run-lein *generation* "immutant" "deploy" "/tmp/hAmBisCuit"
+                            :dir "/tmp"
+                            :env env
+                            :return-result? true)]
+              exit                                                     => 1
+              (re-find #"Error: '/tmp/hAmBisCuit' does not exist" err) =not=> nil)))
                 
         (fact (str "with a --name arg and a path argshould work for lein " *generation*)
           (with-tmp-jboss-home
@@ -134,5 +134,58 @@
               (.exists dd)             => true
               (read-string (slurp dd)) => {:root (.getAbsolutePath project-dir)
                                            :context-path "path"
-                                           :virtual-host "host"})))))))
+                                           :virtual-host "host"})))))
+    (facts "undeploy"
+      (facts "in a project"
+        (fact (str "with no args should work for lein " *generation*)
+          (with-tmp-jboss-home
+            (create-tmp-deploy "test-project")
+            (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)]
+              (run-lein *generation* "immutant" "undeploy"
+                        :dir project-dir
+                        :env env)              => 0
+              (tmp-deploy-removed? "test-project") => false)))
+
+        (fact (str "with path arg should print a warning for lein " *generation*)
+          (with-tmp-jboss-home
+            (create-tmp-deploy "test-project")
+            (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
+                  {:keys [err exit]}
+                  (run-lein *generation* "immutant" "undeploy" "yarg"
+                            :dir project-dir
+                            :env env
+                            :return-result? true)]
+              exit                                             => 0
+              (re-find #"specified a root path of 'yarg'" err) =not=> nil
+              (tmp-deploy-removed? "test-project")             => false)))
+                
+        (fact (str "with a --name arg should work for lein " *generation*)
+          (with-tmp-jboss-home
+            (create-tmp-deploy "ham")
+            (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)]
+              (run-lein *generation* "immutant" "undeploy" "--name" "ham"
+                        :dir project-dir
+                        :env env)                  => 0
+              (tmp-deploy-removed? "test-project") => false))))
+            
+      (facts "not in a project"
+        (fact (str "with a path arg should work for lein " *generation*)
+          (with-tmp-jboss-home
+            (create-tmp-deploy "test-project")
+            (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)]
+              (run-lein *generation* "immutant" "undeploy" (.getAbsolutePath project-dir)
+                        :dir "/tmp"
+                        :env env)                  => 0
+              (tmp-deploy-removed? "test-project") => false)))
+
+        (fact (str "with a non-existent path arg should work for lein " *generation*)
+          (with-tmp-jboss-home
+            (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
+                  {:keys [exit err]}
+                  (run-lein *generation* "immutant" "undeploy" "/tmp/hAmBisCuit"
+                            :dir "/tmp"
+                            :env env
+                            :return-result? true)]
+              exit                                                     => 1
+              (re-find #"Error: '/tmp/hAmBisCuit' does not exist" err) =not=> nil)))))))
 

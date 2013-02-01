@@ -6,7 +6,7 @@
 (setup-test-env)
 
 (for-all-generations
-  (println "\n==> Testing with lein generation" *generation*)
+  (println "\n==> Testing new/init with lein generation" *generation*)
 
   (let [project-name (str "testproj-" *generation*)]
     
