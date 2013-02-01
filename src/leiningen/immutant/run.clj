@@ -1,6 +1,6 @@
 (ns leiningen.immutant.run
   (:require [clojure.java.io            :as io]
-            [leiningen.immutant.common  :as common]
+            [leiningen.immutant.common  :as c]
             [jboss-as.management        :as api]
             [immutant.deploy-tools.util :as util]))
 
@@ -44,10 +44,10 @@ and modified."
     proc))
 
 (let [mgt-url (atom nil)
-      jboss-home (common/get-jboss-home)]
+      jboss-home (c/get-jboss-home)]
   (defn- standalone-sh []
     (str (.getAbsolutePath jboss-home) "/bin/standalone."
-         (if common/windows? "bat" "sh")))
+         (if c/windows? "bat" "sh")))
 
   (defn- find-mgt-url [line]
     (if-let [match (re-find #"Http management interface listening on (.*/management)" line)]
@@ -89,8 +89,17 @@ $IMMUTANT_HOME environment variable."
        (run nil))
     ([project & opts]
        (util/with-jboss-home jboss-home
-         (and project (not (util/application-is-deployed? project nil nil))
-              (common/err "WARNING: The current app may not be deployed - deploy with 'lein immutant deploy'"))
+         (when project
+           (if-not (util/application-is-deployed? project nil nil)
+             (c/err "WARNING: The current app may not be deployed - deploy with 'lein immutant deploy'"))
+           (if-let [profiles (c/extract-profiles project)]
+             (c/err
+              (format
+               "WARNING: You specified profiles, but they cannot be applied to deployed
+         applications from the run task. You will instead need to deploy
+         the application with those profiles set:
+           %s\n"
+               (c/deploy-with-profiles-cmd profiles)))))
          (let [script (standalone-sh)
                params (replace
                        {"--clustered" "--server-config=standalone-ha.xml"} opts)]

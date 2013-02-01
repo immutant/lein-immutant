@@ -1,7 +1,8 @@
 (ns leiningen.immutant.common
-  (:require [clojure.java.io         :as io]
-            [leiningen.help          :as lhelp]
-            [leinjacker.utils        :as lj]))
+  (:require [clojure.java.io  :as io]
+            [clojure.string   :as str]
+            [leiningen.help   :as lhelp]
+            [leinjacker.utils :as lj]))
 
 (def ^{:doc "True if running under lein2"}
   lein2? (= 2 (lj/lein-generation)))
@@ -87,9 +88,24 @@
                    (.getCanonicalPath (io/file (:root project)))))
     (err
      (format "WARNING: You specified a root path of '%s', but invoked %s in a project directory.
-      If you meant to specify '%s' as a name argument, use the --name option.\n"
+         If you meant to specify '%s' as a name argument, use the --name option.\n"
              root subtask root))))
 
 (defn mapply [f & args]
   "Applies args to f, and expands the last arg into a kwarg seq if it is a map"
   (apply f (apply concat (butlast args) (last args))))
+
+(defn extract-profiles [project]
+  (let [profiles (-> project meta :included-profiles)]
+    (if (and profiles (not= profiles [:default]))
+      profiles)))
+
+(defn deploy-with-profiles-cmd [profiles]
+  (format
+   "lein with-profile %s immutant deploy"
+   (->> profiles
+        (map name)
+        (map #(if (= \: (first %))
+                (.substring % 1)
+                %))
+        (str/join \,))))

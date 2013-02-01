@@ -28,7 +28,7 @@ Add it to your `~/.lein/profiles.clj`:
       
 ### Running it
 
-* `lein immutant install [version [install-dir]]` - downloads and
+* lein immutant install [version [install-dir]] - downloads and
    installs Immutant for you. By default, it will download the latest
    incremental build and put it in `~/.lein/immutant/releases/`. You
    can override the version (which must be an incremental build number
@@ -38,7 +38,7 @@ Add it to your `~/.lein/profiles.clj`:
    `~/.lein/immutant/current`. If this link is present (and points to
    a valid Immutant install), you won't need to set `$IMMUTANT_HOME`
 
-* `lein immutant overlay [feature-set [version]]` - downloads and
+* lein immutant overlay [feature-set [version]] - downloads and
   overlays a feature set onto the currenty installed Immutant. If it
   can't find an Immutant install (either via the `current` link or
   `$IMMUTANT_HOME`), it will download and install the latest
@@ -47,18 +47,18 @@ Add it to your `~/.lein/profiles.clj`:
   can also be any recent build number from
   http://torquebox.org/2x/builds/.
 
-* `lein immutant env [key]` - prints out information about the
+* lein immutant env [key] - prints out information about the
   Immutant environment. It currently only displays the path to the
   current Immutant, and the path to JBoss.
   
-* `lein immutant new project-name` - calls `lein new project-name` for
+* lein immutant new project-name - calls `lein new project-name` for
    you, the calls `lein immutant init`.
 
-* `lein immutant init` - creates a sample `immutant.init` namespace
+* lein immutant init - creates a sample `immutant.init` namespace
   beneath `src/`
   
-* `lein immutant archive [--include-dependencies] [--name name]
-                         [path/to/project]` - 
+* lein immutant archive [--include-dependencies] [--name name]
+                         [path/to/project] - 
   creates an Immutant archive (suffixed with `.ima`) in the current
   directory.  By default, the archive file will be named after the
   project name in project.clj.  This can be overridden via the
@@ -69,33 +69,35 @@ Add it to your `~/.lein/profiles.clj`:
   well. This task can be run outside of a project dir of the path to
   the project is provided.
   
-* `lein immutant deploy [--archive [--include-dependencies]] [--name name] 
-                        [--context-path path] [--virtual-host host] 
-                        [--lein-profiles :p1,:p2] [path/to/project]` - 
+* lein immutant deploy [--archive [--include-dependencies]] [--name name] 
+                       [--context-path path] [--virtual-host host] 
+                       [path/to/project] - 
   deploys the current app to the current Immutant. If passed the
   `--archive` option, it will deploy an archive of the app instead of
   a descriptor pointing to the app on disk. This will currently
   recreate the archive on every deploy.  By default, the deployment
   will be named after the project name in project.clj.  This can be
-  overridden via the `--name` (or `-n`) option.  You can pass a comma
-  separated list of lein profiles via the `--lein-profiles :p1,:p2`
-  option to have them set as the `:lein-profiles` key in the
-  descriptor and applied when the app is deployed. You can also
-  override the default context-path (based off of the deployment name)
-  and virtual-host with the `--context-path` and `--virtual-host`
-  options, respectively. This task can be run outside of a project dir
-  of the path to the project is provided.
+  overridden via the `--name` (or `-n`) option.  
 
-* `lein immutant undeploy [--name name] [path/to/project]` - undeploys
+  Any profiles that are active (via with-profile) will be captured in
+  the `:lein-profiles` key in the descriptor and applied when the app is
+  deployed.
+
+  You can override the default context-path (based off of the
+  deployment name) and virtual-host with the `--context-path` and
+  `--virtual-host` options, respectively. This task can be run outside
+  of a project dir of the path to the project is provided.
+
+* lein immutant undeploy [--name name] [path/to/project] - undeploys
   the current app from the current Immutant. If the `--name` option
   was used to deploy the app, you'll need to pass the same name to
   undeploy as well. This task can be run outside of a project dir of
   the path to the project is provided.
   
-* `lein immutant run` - launches the current Immutant. 
+* lein immutant run - launches the current Immutant. 
 
-* `lein immutant test [--name name] [--dir test] [--port 7888]
-  [path/to/project]` - runs the current Immutant, if necessary,
+* lein immutant test [--name name] [--dir test] [--port 7888]
+  [path/to/project] - runs the current Immutant, if necessary,
   deploys the project to it, runs all tests found beneath the `test/`
   directory, undeploys the app, and then shuts down the Immutant it
   started. The `--port` option specifies the nREPL service port

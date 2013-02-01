@@ -26,27 +26,35 @@ currently recreate the archive on every deploy.  By default, the
 deployment will be named after the project name in project.clj.  This
 can be overridden via the --name (or -n) option.
 
-You can pass a comma separated list of lein profiles via the
---lein-profiles p1,p2 option to have them set as the
-:lein-profiles key in the descriptor and applied when the app is
-deployed. You can also override the default context-path
-(based off of the deployment name) and virtual-host with the
---context-path and --virtual-host options, respectively. This
-task can be run outside of a project dir of the path to the project
-is provided.
+Any profiles that are active (via with-profile) will be captured in
+the :lein-profiles key in the descriptor and applied when the app is
+deployed.
+
+You can override the default context-path (based off of the deployment
+name) and virtual-host with the --context-path and --virtual-host
+options, respectively. This task can be run outside of a project dir
+of the path to the project is provided.
 
 By default, the plugin will locate the current Immutant by looking at
 ~/.lein/immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
-[project root opts]
+  [project root opts]
   (let [[options config] (c/group-options opts deploy-options)
         jboss-home (c/get-jboss-home)
         deployed-file (if (:archive options)
                         (deploy/deploy-archive jboss-home project root
                                                (assoc options
                                                  :copy-deps-fn archive-task/copy-dependencies))
-                        (deploy/deploy-dir jboss-home project root options config))]
+                        (deploy/deploy-dir jboss-home project root options
+                                           (if-let [profiles (c/extract-profiles project)]
+                                             (assoc config :lein-profiles profiles)
+                                             config)))]
     (c/verify-root-arg project root "deploy")
+    (if-let [given-profiles (:lein-profiles config)]
+      (c/err (format "WARNING: setting lein profiles via --lein-profiles is deprecated.
+         Specify profiles using lein's with-profile higher order task:
+           %s\n"
+                     (c/deploy-with-profiles-cmd given-profiles))))
     (println "Deployed" (util/app-name project root) "to" (.getAbsolutePath deployed-file))))
 
 (defn undeploy
