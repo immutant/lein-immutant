@@ -70,8 +70,10 @@
                         :dir project-dir
                         :env env)      => 0
               (.exists dd)             => true
-              (read-string (slurp dd)) => {:root (.getAbsolutePath project-dir)
-                                           :lein-profiles [:foo]})))
+              (let [dd-data (read-string (slurp dd))]
+                dd-data                  => {:root (.getAbsolutePath project-dir)
+                                             :lein-profiles [:foo]}
+                (:lein-profiles dd-data) => vector?))))
 
       (fact (str "profiles passed via --with-profiles should be in dd, and print a dep warning for lein " *generation*)
           (with-tmp-jboss-home
@@ -86,8 +88,10 @@
               (re-find #"via --lein-profiles is deprecated" err) =not=> nil
               (re-find #"lein with-profile foo,bar immutant deploy" err) =not=> nil
               (.exists dd)             => true
-              (read-string (slurp dd)) => {:root (.getAbsolutePath project-dir)
-                                           :lein-profiles ["foo" "bar"]})))
+              (let [dd-data (read-string (slurp dd))]
+                dd-data                  => {:root (.getAbsolutePath project-dir)
+                                             :lein-profiles ["foo" "bar"]}
+                (:lein-profiles dd-data) => vector?))))
             
       (facts "not in a project"
         (fact (str "with a path arg should work for lein " *generation*)
