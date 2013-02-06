@@ -96,9 +96,9 @@
   (apply f (apply concat (butlast args) (last args))))
 
 (defn extract-profiles [project]
-  (let [profiles (-> project meta :included-profiles)]
+  (let [profiles (seq (-> project meta :included-profiles))]
     (if (and profiles (not= profiles [:default]))
-      profiles)))
+      (vec profiles))))
 
 (defn deploy-with-profiles-cmd [profiles]
   (format
