@@ -2,7 +2,8 @@
   (:require [leinjacker.lein-runner :as runner]
             [leinjacker.utils       :as utils]
             [leiningen.install      :as install]
-            [clojure.java.io        :as io]))
+            [clojure.java.io        :as io]
+            [clojure.java.shell     :as sh]))
 
 (def lein-home
   (io/file (io/resource "lein-home")))
@@ -77,6 +78,12 @@
        (binding [*tmp-jboss-home* (io/file *tmp-dir* "jboss-home")]
          (binding [*tmp-deployments-dir* (io/file *tmp-jboss-home* "standalone/deployments")]
            (.mkdirs *tmp-deployments-dir*)
+           (let [bin-dir# (io/file *tmp-jboss-home* "bin")]
+             (.mkdirs bin-dir#)
+             ;; we have to use cp here to preserve perms
+             (sh/sh "cp"
+                    (.getAbsolutePath (io/file (io/resource "standalone.sh")))
+                    (.getAbsolutePath (io/file bin-dir# "standalone.sh"))))
            ~@body)))))
 
 

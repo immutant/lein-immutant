@@ -12,8 +12,6 @@
 
   (let [project-dir (io/file (io/resource "test-project"))]
     
-    (with-tmp-dir)
-    
     (facts "deploy"
       (facts "in a project"
         (fact (str "with no args should work for lein " *generation*)
