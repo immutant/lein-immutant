@@ -7,7 +7,6 @@
             [leiningen.immutant.install :as install]
             [leiningen.immutant.run     :as run]
             [leiningen.immutant.common  :as common]
-            [clojure.java.io            :as io]
             [clojure.tools.cli          :as cli]))
 
 (def cli-options
@@ -34,12 +33,8 @@
               #'deploy/undeploy
               #'run/run
               #'test/test]}
-  ([] 
-     (common/print-help)) ;; lein1
   ([subtask]
-     (if common/lein2?
-       (common/print-help)
-       (immutant nil subtask)))
+     (common/print-help))
   ([project-or-nil subtask & args]
      (if (= "run" subtask)
        ;; run currently handles its own options

@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [test])
   (:require [fntest.core                :as fntest]
             [leiningen.immutant.common  :as common]
-            [leinjacker.utils           :as lj]
             [immutant.deploy-tools.util :as util]
             [clojure.java.io            :as io]
             [clojure.string             :as str]))
@@ -32,5 +31,5 @@ $IMMUTANT_HOME environment variable."
               (assoc opts
                 :jboss-home (common/get-jboss-home)
                 :dirs (:test-paths project)))
-    (lj/abort "Tests failed")))
+    (common/abort "Tests failed")))
 

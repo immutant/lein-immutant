@@ -2,15 +2,12 @@
   (:use leiningen.immutant.common)
   (:require [clojure.java.io            :as io]
             [clojure.string             :as str]
-            [leinjacker.utils           :as lj]
+            [leiningen.new              :as new]
+            [leiningen.new.templates    :as tmpl]
             [immutant.deploy-tools.util :as util]))
 
 (defn sample-immutant-init [project]
-  (if lein2?
-    (((lj/try-resolve 'leiningen.new.templates/renderer) "immutant") "init.tmpl" project)
-    (str/replace (slurp (io/resource "leiningen/new/immutant/init.tmpl"))
-                 "{{name}}"
-                 (:name project))))
+  ((tmpl/renderer "immutant") "init.tmpl" project))
 
 (defn init 
   "Adds a sample immutant.init namespace to the current project"
@@ -33,13 +30,5 @@ immutant.init namespace."
   [project-name]
   (if (nil? project-name)
     (println "You must provide a project name.")
-    (if lein2?
-      ((lj/try-resolve 'leiningen.new/create) "immutant" project-name)
-      (do
-        ((lj/try-resolve 'leiningen.new/new) project-name)
-        (init (lj/read-lein-project
-               (-> (System/getProperty "leiningen.original.pwd")
-                   (io/file (name (symbol project-name)) "project.clj")
-                   (.getAbsolutePath))
-               nil))))))
+    (new/create "immutant" project-name)))
 

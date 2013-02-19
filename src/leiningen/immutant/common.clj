@@ -1,11 +1,10 @@
 (ns leiningen.immutant.common
-  (:require [clojure.java.io  :as io]
-            [clojure.string   :as str]
-            [leiningen.help   :as lhelp]
-            [leinjacker.utils :as lj]))
-
-(def ^{:doc "True if running under lein2"}
-  lein2? (= 2 (lj/lein-generation)))
+  (:require [clojure.java.io        :as io]
+            [clojure.string         :as str]
+            [leiningen.help         :as lhelp]
+            [leiningen.core.user    :as user]
+            [leiningen.core.main    :as main]
+            [leiningen.core.project :as project]))
 
 (def windows?
   (re-find #"(?i)^windows" (System/getProperty "os.name")))
@@ -16,7 +15,7 @@
 
 (defn immutant-storage-dir []
   (.getAbsolutePath
-   (doto (io/file (lj/lein-home) "immutant")
+   (doto (io/file (user/leiningen-home) "immutant")
      .mkdirs)))
 
 (def current-path
@@ -44,22 +43,22 @@
     (apply println message)))
 
 (defn print-help []
-  (println (if lein2?
-             (lhelp/help-for nil "immutant")
-             (lhelp/help-for "immutant"))))
+  (println (lhelp/help-for nil "immutant")))
 
 (defn unknown-subtask [subtask]
   (err "Unknown subtask" subtask)
   (print-help))
 
+(def abort main/abort)
+
 (defn resolve-project [project root-dir]
   (let [project-file (io/file root-dir "project.clj")]
     (cond
      project                            [project root-dir]
-     (not (.exists (io/file root-dir))) (lj/abort
+     (not (.exists (io/file root-dir))) (abort
                                          (format "Error: '%s' does not exist"
                                                  root-dir))
-     (.exists project-file)             [(lj/read-lein-project
+     (.exists project-file)             [(project/read
                                           (.getAbsolutePath project-file)
                                           [:default])
                                          root-dir]
