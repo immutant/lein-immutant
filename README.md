@@ -9,7 +9,7 @@ A Leiningen plugin for deploying Immutant apps.
 As of version 0.15.0, the plugin only supports leiningen 2.0.0 and up.
 To use it, add it to your `~/.lein/profiles.clj`:
 
-    {:user {:plugins [[lein-immutant "0.15.1"]]}}
+    {:user {:plugins [[lein-immutant "0.16.0"]]}}
       
 ### Using it
 
@@ -22,14 +22,16 @@ specific subtask.
 The subtasks provided by the plugin are:
 
 * lein immutant install [version [install-dir]] - downloads and
-  installs Immutant for you. By default, it will download the latest
-  incremental build and put it in `~/.lein/immutant/releases/`. You
-  can override the version (which must be an incremental build number
-  from http://immutant.org/builds/ or a released version) and the
-  install directory. Wherever it gets installed, the most recently
-  installed version will be linked from
-  `~/.lein/immutant/current`. If this link is present (and points to
-  a valid Immutant install), you won't need to set `$IMMUTANT_HOME`
+  installs Immutant for you. By default, it will download the *slim*
+  distribution of the latest incremental build and put it in
+  `~/.lein/immutant/releases/`. You can override the version (which
+  must be an incremental build number from http://immutant.org/builds/
+  or a released version) and the install directory. Wherever it gets
+  installed, the most recently installed version will be linked from
+  `~/.lein/immutant/current`. If this link is present (and points to a
+  valid Immutant install), you won't need to set `$IMMUTANT_HOME`. You
+  can have it install the *full* distribution by passing it the
+  `--full` flag.
 
 * lein immutant overlay [feature-set [version]] - downloads and
   overlays a feature set onto the currenty installed Immutant. If it
