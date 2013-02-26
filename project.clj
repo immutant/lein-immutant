@@ -9,12 +9,12 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo}
   :eval-in-leiningen true
-  :exclusions [org.clojure/clojure]
-  :dependencies [[org.immutant/overlay      "1.3.1"]
+  :exclusions [org.clojure/clojure dynapath]
+  :dependencies [[org.immutant/overlay      "1.4.0"]
                  [org.immutant/deploy-tools "0.11.1"]
                  [org.clojure/data.json     "0.2.1"]
                  [org.clojure/tools.cli     "0.2.1"]
-                 [org.immutant/fntest       "0.3.9"]]
+                 [org.immutant/fntest       "0.3.10"]]
   :profiles {:dev
              {:dependencies [[lein-midje "2.0.3"]
                              [leinjacker "0.4.1"]

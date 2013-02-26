@@ -10,8 +10,11 @@
                 (constantly (io/file (System/getProperty "java.io.tmpdir")
                                      (str "lein-immutant-" (java.util.UUID/randomUUID)))))
 
-(defn releases-dir []
-  (doto (io/file (common/immutant-storage-dir) "releases")
+(def install-options
+  [["-f" "--full" :flag true]])
+
+(defn releases-dir [dist-type]
+  (doto (io/file (common/immutant-storage-dir) "releases" dist-type)
     .mkdirs))
 
 (defn link-current [target]
@@ -38,6 +41,18 @@
       (catch Exception e
         nil))))
 
+(defn suss-dist-type [full? version]
+  (let [release? (overlayment/released-version? version)]
+    (if (or
+         (nil? version)
+         (and release?
+              (or (= "0.9.0" version)
+                  (= "1" (re-find #"^\d" version))))  
+         (and (not release?)
+              (< 750 (Integer/parseInt version))))
+      (if full? "full" "slim")
+      "bin")))
+
 (defn install
   "Downloads and installs an Immutant version
 
@@ -50,19 +65,24 @@ installed, the most recently installed version will be linked to
 valid Immutant install), you won't need to set $IMMUTANT_HOME to
 notify plugin tasks of the location of Immutant.
 
-On Windows, ~/.lein/immutant/current is actually a text file
+This task will install the 'slim' distribution unless given the
+'--full' option.
+
+ On Windows, ~/.lein/immutant/current is actually a text file
 containing the path to the current Immutant instead of a link."
-  ([]
-     (install nil nil))
-  ([version]
-     (install version nil))
-  ([version dest-dir]
-     (let [artifact (overlayment/artifact "immutant" version)
+  ([options]
+     (install options nil nil))
+  ([options version]
+     (install options version nil))
+  ([options version dest-dir]
+     (let [dist-type (suss-dist-type (:full options) version)
+           artifact (overlayment/artifact "immutant" version dist-type)
            url (overlayment/url artifact)
-           install-dir (or dest-dir (releases-dir))]
+           install-dir (or dest-dir (releases-dir dist-type))]
        (if-let [[existing-dir true-version] (version-exists url install-dir version)]
          (do
-          (println (str "Version " true-version " already installed to " install-dir ", not downloading."))
+           (println (format "Version %s (%s) already installed to %s, not downloading."
+                             true-version dist-type install-dir))
           (link-current existing-dir))
          (if-let [extracted-dir (binding [overlayment/*extract-dir* install-dir
                                           overlayment/*verify-sha1-sum* true]

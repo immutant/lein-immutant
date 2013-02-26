@@ -10,7 +10,8 @@
             [clojure.tools.cli          :as cli]))
 
 (def cli-options
-  {"deploy"    deploy/deploy-options
+  {"install"   install/install-options
+   "deploy"    deploy/deploy-options
    "undeploy"  deploy/undeploy-options
    "archive"   archive/archive-options
    "test"      test/test-options})
@@ -42,7 +43,7 @@
        (let [[options other-args banner] (apply cli/cli args (cli-options subtask))
              root-dir (common/get-application-root other-args)]
          (case subtask
-           "install"      (apply install/install other-args)
+           "install"      (apply install/install options other-args)
            "overlay"      (apply install/overlay other-args)
            "version"      (install/version)
            "env"          (apply env/env other-args)
