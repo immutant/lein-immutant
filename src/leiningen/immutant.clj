@@ -32,6 +32,7 @@
               #'archive/archive
               #'deploy/deploy
               #'deploy/undeploy
+              #'deploy/list
               #'run/run
               #'test/test]}
   ([subtask]
@@ -55,6 +56,7 @@
                             deploy/deploy project-or-nil root-dir options)
            "undeploy"     (subtask-with-resolved-project
                             deploy/undeploy project-or-nil root-dir options)
+           "list"         (deploy/list)
            "test"         (subtask-with-resolved-project
                             test/test project-or-nil root-dir options)
            (common/unknown-subtask subtask))))

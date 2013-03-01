@@ -1,4 +1,5 @@
 (ns leiningen.immutant.deploy
+  (:refer-clojure :exclude [list])
   (:require [clojure.string                :as str]
             [leiningen.immutant.archive    :as archive-task]
             [leiningen.immutant.common     :as c]
@@ -79,3 +80,23 @@ $IMMUTANT_HOME environment variable."
       (println "Undeployed" app-name "from" deploy-path)
       (println "No action taken:" app-name "is not deployed to" deploy-path))))
 
+(defn list
+  "Lists currently deployed applications along with the status of each
+
+This will currently only list disk-based deployments, and won't list
+anything deployed via the JBoss CLI or management interface."
+  []
+  (println (format "The following applications are deployed to %s:"
+                   (c/get-immutant-home)))
+  (->>
+   (for [f (file-seq (util/deployment-dir (c/get-jboss-home)))
+         :when (re-find #"(\.clj|\.ima)$" (.getName f))]
+     (format "  %-40s (status: %s)"
+             (.getName f)
+             (condp #(.exists (%1 %2)) f
+               util/dodeploy-marker "deploying"
+               util/deployed-marker "deployed"
+               util/failed-marker   "failed"
+               "unknown")))
+   (str/join "\n")
+   println))
