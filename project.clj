@@ -10,7 +10,7 @@
             :distribution :repo}
   :eval-in-leiningen true
   :exclusions [org.clojure/clojure dynapath]
-  :dependencies [[org.immutant/overlay      "1.4.0"]
+  :dependencies [[org.immutant/overlay      "1.4.1"]
                  [org.immutant/deploy-tools "0.11.1"]
                  [org.clojure/data.json     "0.2.1"]
                  [org.clojure/tools.cli     "0.2.1"]
