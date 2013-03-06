@@ -20,4 +20,5 @@
                              [leinjacker "0.4.1"]
                              [midje      "1.3.1" :exclusions [org.clojure/core.unify]]]
               :resource-paths ["test-resources"]}}
-  :pedantic :warn)
+  :pedantic :warn
+  :lein-release {:deploy-via :clojars})
