@@ -108,7 +108,7 @@ $IMMUTANT_HOME environment variable."
   ([feature-set version]
      (when-not (and (common/get-jboss-home) (.exists (common/get-jboss-home)))
        (println "No Immutant installed, installing the latest incremental")
-       (install))
+       (install nil))
      (binding [overlayment/*verify-sha1-sum* true]
        (let [version-string (when-not (nil? version) (str "-" version))]
          (overlayment/overlay (common/get-immutant-home) (str feature-set version-string))))) )
