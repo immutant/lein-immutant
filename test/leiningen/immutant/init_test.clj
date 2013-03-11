@@ -8,7 +8,7 @@
 (for-all-generations
   (println "\n==> Testing new/init with lein generation" *generation*)
 
-  (let [project-name (str "testproj-" *generation*)]
+  (let [project-name (str "testproj" *generation*)]
     
     (fact (str "new should work for lein " *generation*)
       (with-tmp-dir
@@ -24,7 +24,7 @@
     (if (= 2 *generation*)
       (fact "'new immutant' should work with lein 2"
       (with-tmp-dir
-        (let [project-name (str project-name "-new")
+        (let [project-name (str project-name "new")
               project-dir (io/file *tmp-dir* project-name)]
           (run-lein *generation* "new" "immutant" project-name
                       :dir *tmp-dir*
@@ -32,7 +32,12 @@
           (.exists (io/file project-dir)) => true
           (.exists (io/file project-dir "src/immutant/init.clj")) => true
           (.contains (slurp (io/file project-dir "src/immutant/init.clj"))
-                     (str ":use " project-name ".core")) => true))))
+                     (str ":use " project-name ".core")) => true
+          (.contains (slurp (io/file project-dir (str "src/" project-name "/core.clj")))
+                     (str "(ns " project-name ".core")) => true
+          (let [test-file (slurp (io/file project-dir (str "test/" project-name "/core_test.clj")))]
+            (.contains test-file (str "(ns " project-name ".core-test")) => true
+            (.contains test-file (str project-name ".core)")) => true)))))
     
     (fact (str "init should work for lein " *generation*)
       (with-tmp-dir
