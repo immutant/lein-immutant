@@ -36,9 +36,9 @@
         (delete-file-recursively child))
       (io/delete-file file true))))
 
-(defn run-lein [generation & args]
+(defn run-lein [& args]
   (let [[_ {:keys [return-result?]}] (split-with string? args)
-        result (apply runner/run-lein generation args)]
+        result (apply runner/run-lein 2 args)]
     (if return-result?
       result
       (do
@@ -51,13 +51,12 @@
     (println "\n==> Performing test env setup...")
     (println "====> Installing project...")
     (install/install (utils/read-lein-project))
-    (println "====> Creating lein 2 profiles.clj...")
+    (println "====> Creating lein profiles.clj...")
     (spit (io/file lein-home "profiles.clj")
           (pr-str {:user {:plugins [['lein-immutant plugin-version]]}}))
     (println "==> Test env setup complete.\n")))
 
 (def ^:dynamic *tmp-dir* nil)
-(def ^:dynamic *generation* nil)
 (def ^:dynamic *tmp-jboss-home* nil)
 (def ^:dynamic *tmp-deployments-dir* nil)
 
@@ -86,13 +85,6 @@
                     (.getAbsolutePath (io/file (io/resource "standalone.sh")))
                     (.getAbsolutePath (io/file bin-dir# "standalone.sh"))))
            ~@body)))))
-
-
-(defmacro for-all-generations [& body]
-  `(doseq [gen# [2] ;;[1 2]
-           ]
-     (binding [*generation* gen#]
-       ~@body)))
 
 (defn create-tmp-deploy [name]
   (mapv
