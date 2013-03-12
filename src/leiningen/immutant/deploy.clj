@@ -10,9 +10,7 @@
 (def deploy-options
   (concat
    [["-a" "--archive" :flag true]
-    (c/as-config-option ["-p" "--profiles" "--lein-profiles" :parse-fn #(str/split % #",")])  
-    (c/as-config-option ["--context-path"])
-    (c/as-config-option ["--virtual-host"])]
+    (c/as-config-option ["-p" "--profiles" "--lein-profiles" :parse-fn #(str/split % #",")])]
    archive-task/archive-options))
 
 (def undeploy-options

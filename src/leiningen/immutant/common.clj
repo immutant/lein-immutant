@@ -108,3 +108,7 @@
                 (.substring % 1)
                 %))
         (str/join \,))))
+
+(def descriptor-options
+  [(as-config-option ["--context-path"])
+   (as-config-option ["--virtual-host"])])

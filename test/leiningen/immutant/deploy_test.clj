@@ -10,10 +10,12 @@
 (println "\n==> Testing deploy/undeploy")
 
 (let [project-dir (io/file (io/resource "test-project"))]
+
+  (future-fact "test --archive")
   
   (facts "deploy"
     (facts "in a project"
-      (fact (str "with no args should work")
+      (fact "with no args should work"
         (with-tmp-jboss-home
           (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
                 dd (io/file *tmp-deployments-dir* "test-project.clj")]
@@ -23,7 +25,7 @@
                       (.exists dd)                     => true
                       (:root (read-string (slurp dd))) => (.getAbsolutePath project-dir))))
 
-      (fact (str "with path arg should print a warning")
+      (fact "with path arg should print a warning"
         (with-tmp-jboss-home
           (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
                 dd (io/file *tmp-deployments-dir* "test-project.clj")
@@ -37,7 +39,7 @@
             (.exists dd)                     => true
             (:root (read-string (slurp dd))) => (.getAbsolutePath project-dir))))
       
-      (fact (str "with a --name arg should work")
+      (fact "with a --name arg should work"
         (with-tmp-jboss-home
           (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)
                 dd (io/file *tmp-deployments-dir* "ham.clj")]
@@ -47,7 +49,7 @@
                       (.exists dd)                     => true
                       (:root (read-string (slurp dd))) => (.getAbsolutePath project-dir))))
       
-      (fact (str "with a --context-path and --virtual-host should work")
+      (fact "with a --context-path and --virtual-host should work"
         (with-tmp-jboss-home
           (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)
                 dd (io/file *tmp-deployments-dir* "test-project.clj")]
@@ -59,7 +61,7 @@
                                                    :context-path "path"
                                                    :virtual-host "host"}))))
 
-    (fact (str "profiles should be noticed and written to the dd")
+    (fact "profiles should be noticed and written to the dd"
       (with-tmp-jboss-home
         (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)
               dd (io/file *tmp-deployments-dir* "test-project.clj")]
@@ -72,7 +74,7 @@
                                                    :lein-profiles [:foo]}
                       (:lein-profiles dd-data) => vector?))))
 
-    (fact (str "profiles passed via --with-profiles should be in dd, and print a dep warning")
+    (fact "profiles passed via --with-profiles should be in dd, and print a dep warning"
       (with-tmp-jboss-home
         (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)
               dd (io/file *tmp-deployments-dir* "test-project.clj")
@@ -91,7 +93,7 @@
             (:lein-profiles dd-data) => vector?))))
     
     (facts "not in a project"
-      (fact (str "with a path arg should work")
+      (fact "with a path arg should work"
         (with-tmp-jboss-home
           (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
                 dd (io/file *tmp-deployments-dir* "test-project.clj")]
@@ -101,7 +103,7 @@
                       (.exists dd)                     => true
                       (:root (read-string (slurp dd))) => (.getAbsolutePath project-dir))))
 
-      (fact (str "with a non-existent path arg should work")
+      (fact "with a non-existent path arg should work"
         (with-tmp-jboss-home
           (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
                 {:keys [err exit]}
@@ -112,7 +114,7 @@
             exit                                                     => 1
             (re-find #"Error: '/tmp/hAmBisCuit' does not exist" err) =not=> nil)))
       
-      (fact (str "with a --name arg and a path argshould work")
+      (fact "with a --name arg and a path arg should work"
         (with-tmp-jboss-home
           (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)
                 dd (io/file *tmp-deployments-dir* "ham.clj")]
@@ -122,7 +124,7 @@
                       (.exists dd)                     => true
                       (:root (read-string (slurp dd))) => (.getAbsolutePath project-dir))))
 
-      (fact (str "with a --context-path, --virtual-host, and an path arg should work")
+      (fact "with a --context-path, --virtual-host, and an path arg should work"
         (with-tmp-jboss-home
           (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)
                 dd (io/file *tmp-deployments-dir* "test-project.clj")]
@@ -135,10 +137,24 @@
                       (.exists dd)             => true
                       (read-string (slurp dd)) => {:root (.getAbsolutePath project-dir)
                                                    :context-path "path"
-                                                   :virtual-host "host"})))))
+                                                   :virtual-host "host"})))
+
+      (future-fact "profiles should be noticed and written to the dd"
+        (with-tmp-jboss-home
+          (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)
+                dd (io/file *tmp-deployments-dir* "test-project.clj")]
+          (run-lein "with-profile" "foo" "immutant" "deploy" (.getAbsolutePath project-dir)
+                    :dir "/tmp"
+                    :env env)      => 0
+          (.exists dd)             => true
+          (let [dd-data (read-string (slurp dd))]
+            dd-data                  => {:root (.getAbsolutePath project-dir)
+                                         :lein-profiles [:foo]}
+            (:lein-profiles dd-data) => vector?))))))
+  
   (facts "undeploy"
     (facts "in a project"
-      (fact (str "with no args should work")
+      (fact "with no args should work"
         (with-tmp-jboss-home
           (create-tmp-deploy "test-project")
           (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)]
@@ -147,7 +163,7 @@
                       :env env)              => 0
                       (tmp-deploy-removed? "test-project") => false)))
 
-      (fact (str "with path arg should print a warning")
+      (fact "with path arg should print a warning"
         (with-tmp-jboss-home
           (create-tmp-deploy "test-project")
           (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
@@ -160,7 +176,7 @@
             (re-find #"specified a root path of 'yarg'" err) =not=> nil
             (tmp-deploy-removed? "test-project")             => false)))
       
-      (fact (str "with a --name arg should work")
+      (fact "with a --name arg should work"
         (with-tmp-jboss-home
           (create-tmp-deploy "ham")
           (let [env (assoc base-lein-env "JBOSS_HOME"  *tmp-jboss-home*)]
@@ -170,7 +186,7 @@
                       (tmp-deploy-removed? "test-project") => false))))
     
     (facts "not in a project"
-      (fact (str "with a path arg should work")
+      (fact "with a path arg should work"
         (with-tmp-jboss-home
           (create-tmp-deploy "test-project")
           (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)]
@@ -179,7 +195,7 @@
                       :env env)                  => 0
                       (tmp-deploy-removed? "test-project") => false)))
 
-      (fact (str "with a non-existent path arg should work")
+      (fact "with a non-existent path arg should work"
         (with-tmp-jboss-home
           (let [env (assoc base-lein-env "JBOSS_HOME" *tmp-jboss-home*)
                 {:keys [exit err]}

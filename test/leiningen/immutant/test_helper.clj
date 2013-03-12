@@ -120,3 +120,11 @@
                  (set/difference expected a)
                  "extra -"
                  (set/difference a expected)))))
+
+(defn file-from-archive [archive name]
+  (with-open [zip (java.util.zip.ZipFile. archive)]
+    (let [f (io/file *tmp-dir* name)]
+      (when-let [entry (some #(and (= (.getName %) name) %)
+                             (enumeration-seq (.entries zip)))]
+        (io/copy (.getInputStream zip entry) f)
+        f))))

@@ -5,8 +5,10 @@
             [immutant.deploy-tools.archive :as archive]))
 
 (def archive-options
-  [["-i" "--include-dependencies" :flag true]
-   ["-n" "--name"]])
+  (concat
+   [["-i" "--include-dependencies" :flag true]
+    ["-n" "--name"]]
+   c/descriptor-options))
 
 (defn- strip-immutant-deps [project]
   (update-in project [:dependencies]
@@ -33,14 +35,26 @@ Creates an Immutant archive (suffixed with '.ima') in the current
 directory. By default, the archive file will be named after the
 project name in project.clj. This can be overridden via the --name (or
 -n) option. This archive can be deployed in lieu of a descriptor
-pointing to the app directory. If the --include-dependencies (or -i)
-option is provided, all of the application's dependencies will be
-included in the archive as well. This task can be run outside of a
-project dir of the path to the project is provided."
+pointing to the app directory.
+
+Any profiles that are active (via with-profile) will be captured and
+applied when the app is deployed.
+
+You can override the default context-path (based off of the deployment
+name) and virtual-host with the --context-path and --virtual-host
+options, respectively. 
+
+If the --include-dependencies (or -i) option is provided, all of the
+application's dependencies will be included in the archive as well.
+
+This task can be run outside of a project dir of the path to the
+project is provided."
   [project root options]
   (let [jar-file (archive/create project
                                  (io/file (:root project root))
                                  (System/getProperty "user.dir")
-                                 (assoc options :copy-deps-fn copy-dependencies))]
+                                 (assoc options
+                                   :copy-deps-fn copy-dependencies
+                                   :lein-profiles (c/extract-profiles project)))]
     (c/verify-root-arg project root "archive")
     (println "Created" (.getAbsolutePath jar-file))))

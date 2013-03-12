@@ -53,12 +53,17 @@ The subtasks provided by the plugin are:
   beneath `src/`
   
 * `lein immutant archive [--include-dependencies] [--name name]
+                         [--context-path path] [--virtual-host host] 
                          [path/to/project]` - 
   creates an Immutant archive (suffixed with `.ima`) in the current
   directory.  By default, the archive file will be named after the
   project name in project.clj.  This can be overridden via the
   `--name` (or `-n`) option.  This archive can be deployed in lieu of
-  a descriptor pointing to the app directory. If the
+  a descriptor pointing to the app directory. Any profiles that are
+  active (via with-profile) will be captured and applied when the app
+  is deployed.  You can override the default context-path (based off
+  of the deployment name) and virtual-host with the --context-path and
+  --virtual-host options, respectively. If the
   `--include-dependencies` (or `-i`) option is provided, all of the
   application's dependencies will be included in the archive as
   well. This task can be run outside of a project dir of the path to
