@@ -38,8 +38,9 @@ option is provided, all of the application's dependencies will be
 included in the archive as well. This task can be run outside of a
 project dir of the path to the project is provided."
   [project root options]
-  (let [dest-dir (:root project root)
-        jar-file (archive/create project root dest-dir
+  (let [jar-file (archive/create project
+                                 (io/file (:root project root))
+                                 (System/getProperty "user.dir")
                                  (assoc options :copy-deps-fn copy-dependencies))]
     (c/verify-root-arg project root "archive")
     (println "Created" (.getAbsolutePath jar-file))))

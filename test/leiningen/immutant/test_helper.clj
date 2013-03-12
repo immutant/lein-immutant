@@ -3,7 +3,8 @@
             [leinjacker.utils       :as utils]
             [leiningen.install      :as install]
             [clojure.java.io        :as io]
-            [clojure.java.shell     :as sh]))
+            [clojure.java.shell     :as sh]
+            [clojure.set            :as set]))
 
 (def lein-home
   (io/file (io/resource "lein-home")))
@@ -104,3 +105,26 @@
      (or acc (.exists (io/file *tmp-jboss-home* (str name ".clj" f)))))
    false
    ["" ".deployed" ".dodeploy" ".failed"]))
+
+(defn copy-resource-to-tmp [r]
+  (let [f (-> r io/resource io/file)]
+    (sh/sh "cp" "-r"
+           (.getAbsolutePath f)
+           (.getAbsolutePath *tmp-dir*))
+    (io/file *tmp-dir* (.getName f))))
+
+(defn archive-set [f]
+  (with-open [zip (java.util.zip.ZipFile. f)]
+    (->> zip
+         .entries
+         enumeration-seq
+         (map (memfn getName))
+         set)))
+
+(defn verify-archive [f expected]
+  (let [a (archive-set f)]
+    (or (= a expected)
+        (println "FAIL archive diff: missing -"
+                 (set/difference expected a)
+                 "extra -"
+                 (set/difference a expected)))))
