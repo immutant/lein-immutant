@@ -3,8 +3,9 @@
         leiningen.immutant.test-helper)
   (:require [clojure.java.io :as io]))
 
-;; TODO: everyting
+(println "\n==> Testing test")
 
+(future-fact "everything")
 
 
 

@@ -21,7 +21,7 @@
         jboss-home (io/file immutant-home "jboss")]
     (.mkdirs jboss-home)
     
-    (fact (str "env should work")
+    (fact "env should work"
       (let [result (run-lein-env env)]
         (:exit result) => 0
         (:out result)  => (re-pattern
@@ -33,7 +33,7 @@
                                 (.getAbsolutePath jboss-home)
                                 " \\n"))))
     
-    (fact (str "env with an arg should work")
+    (fact "env with an arg should work"
       (let [result (run-lein-env env "immutant-home")]
         (:exit result) => 0
         (:out result)  => (.getAbsolutePath immutant-home))
@@ -41,7 +41,7 @@
         (:exit result) => 0
         (:out result)  => (.getAbsolutePath jboss-home)))
     
-    (fact (str "env with an invalid arg should work")
+    (fact "env with an invalid arg should work"
       (let [result (run-lein-env env "ham")]
         (:exit result) => 0
         (:out result)  => ""
@@ -53,7 +53,7 @@
                 "IMMUTANT_HOME" (.getAbsolutePath immutant-home))]
       (.mkdirs immutant-home)
       
-      (fact (str "env should work")
+      (fact "env should work"
         (let [result (run-lein-env env)]
           (:exit result) => 0
           (:out result)  => (re-pattern
@@ -65,7 +65,7 @@
                                   (.getAbsolutePath immutant-home)
                                   " \\n"))))
       
-      (fact (str "env with an arg should work")
+      (fact "env with an arg should work"
         (let [result (run-lein-env env "immutant-home")]
           (:exit result) => 0
           (:out result)  => (.getAbsolutePath immutant-home))
@@ -76,7 +76,7 @@
 (facts "with IMMUTANT_HOME not set"
   (let [immutant-home (io/file (io/resource "lein-home/immutant/current"))
         jboss-home (io/file immutant-home "jboss")]
-    (fact (str "env should work")
+    (fact "env should work"
       (let [result (run-lein-env base-lein-env)]
         (:exit result) => 0
         (:out result)  => (re-pattern
@@ -88,7 +88,7 @@
                                 (.getAbsolutePath jboss-home)
                                 " \\n"))))
     
-    (fact (str "env with an arg should work")
+    (fact "env with an arg should work"
       (let [result (run-lein-env base-lein-env "immutant-home")]
         (:exit result) => 0
         (:out result)  => (.getAbsolutePath immutant-home))

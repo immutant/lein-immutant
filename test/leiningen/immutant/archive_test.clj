@@ -18,7 +18,7 @@
 
 (facts "archive"
   (facts "in a project"
-    (fact (str "with no args should work")
+    (fact "with no args should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
               archive (io/file project-dir "test-project.ima")]
@@ -29,7 +29,7 @@
           (verify-archive archive
                           base-project-contents) => true)))
 
-    (fact (str "with no args and non-default project settings should work")
+    (fact "with no args and non-default project settings should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "non-defaults-project")
               archive (io/file project-dir "test-project.ima")]
@@ -45,7 +45,7 @@
                  "schmasses/Foo.class"
                  "schmrc/test_project/ham.clj")) => true)))
 
-    (fact (str "with no args and no project.clj should work")
+    (fact "with no args and no project.clj should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "projectless-project")
               archive (io/file project-dir "projectless-project.ima")]
@@ -61,7 +61,7 @@
                 "native/bar.so"
                 "classes/Bar.class")))   => true)))
         
-    (fact (str "with path arg should print a warning")
+    (fact "with path arg should print a warning"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
               archive (io/file project-dir "test-project.ima")
@@ -76,7 +76,7 @@
           (verify-archive archive
                           base-project-contents)   => true)))
     
-    (fact (str "with a --name arg should work")
+    (fact "with a --name arg should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
               archive (io/file project-dir "blarg.ima")]
@@ -88,7 +88,7 @@
                           base-project-contents) => true)))
 
 
-    (fact (str "with options should add an internal descriptor")
+    (fact "with options should add an internal descriptor"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
               archive (io/file project-dir "test-project.ima")]
@@ -135,7 +135,7 @@
             (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:ham]
                                                                      :context-path "biscuit"})))
         
-    (fact (str "with a --include-dependencies arg should work")
+    (fact "with a --include-dependencies arg should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
               archive (io/file project-dir "test-project.ima")]
@@ -150,7 +150,7 @@
 
   
   (facts "not in a project"
-    (fact (str "with a path arg should work")
+    (fact "with a path arg should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
               archive (io/file *tmp-dir* "test-project.ima")]
@@ -161,7 +161,7 @@
           (verify-archive archive
                           base-project-contents)   => true)))
 
-    (fact (str "with a path and non-default project settings should work")
+    (fact "with a path and non-default project settings should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "non-defaults-project")
               archive (io/file *tmp-dir* "test-project.ima")]
@@ -177,7 +177,7 @@
                  "schmasses/Foo.class"
                  "schmrc/test_project/ham.clj"))   => true)))
 
-    (fact (str "with a path and no project.clj should work")
+    (fact "with a path and no project.clj should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "projectless-project")
               archive (io/file *tmp-dir* "projectless-project.ima")]
@@ -193,7 +193,7 @@
                 "native/bar.so"
                 "classes/Bar.class")))   => true)))
     
-    (fact (str "with a non-existent path arg should work")
+    (fact "with a non-existent path arg should work"
       (let [{:keys [err exit]}
             (run-lein "immutant" "archive" "/tmp/hAmBisCuit"
                       :dir "/tmp"
@@ -202,7 +202,7 @@
         exit                                                     => 1
         (re-find #"Error: '/tmp/hAmBisCuit' does not exist" err) =not=> nil))
     
-    (fact (str "with a --name arg and a path arg should work")
+    (fact "with a --name arg and a path arg should work"
       (with-tmp-dir
         (copy-resource-to-tmp "test-project")
         (let [archive (io/file *tmp-dir* "blarg.ima")]
@@ -213,7 +213,7 @@
           (verify-archive archive
                           base-project-contents) => true)))
 
-    (fact (str "with a --name arg, --include-dependencies, and a path arg should work")
+    (fact "with a --name arg, --include-dependencies, and a path arg should work"
       (with-tmp-dir
         (copy-resource-to-tmp "test-project")
         (let [archive (io/file *tmp-dir* "blarg.ima")]
