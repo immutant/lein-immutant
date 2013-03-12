@@ -21,7 +21,7 @@ specific subtask.
 
 The subtasks provided by the plugin are:
 
-* lein immutant install [version [install-dir]] - downloads and
+* `lein immutant install [version [install-dir]]` - downloads and
   installs Immutant for you. By default, it will download the *slim*
   distribution of the latest incremental build and put it in
   `~/.lein/immutant/releases/`. You can override the version (which
@@ -33,7 +33,7 @@ The subtasks provided by the plugin are:
   can have it install the *full* distribution by passing it the
   `--full` flag.
 
-* lein immutant overlay [feature-set [version]] - downloads and
+* `lein immutant overlay [feature-set [version]]` - downloads and
   overlays a feature set onto the currenty installed Immutant. If it
   can't find an Immutant install (either via the `current` link or
   `$IMMUTANT_HOME`), it will download and install the latest
@@ -42,18 +42,18 @@ The subtasks provided by the plugin are:
   can also be any recent build number from
   http://torquebox.org/2x/builds/.
 
-* lein immutant env [key] - prints out information about the
+* `lein immutant env [key]` - prints out information about the
   Immutant environment. It currently only displays the path to the
   current Immutant, and the path to JBoss.
   
-* lein immutant new project-name - calls `lein new project-name` for
-   you, the calls `lein immutant init`.
+* `lein immutant new project-`name - calls `lein new project-name` for
+   you, then calls `lein immutant init`.
 
-* lein immutant init - creates a sample `immutant.init` namespace
+* `lein immutant init` - creates a sample `immutant.init` namespace
   beneath `src/`
   
-* lein immutant archive [--include-dependencies] [--name name]
-                         [path/to/project] - 
+* `lein immutant archive [--include-dependencies] [--name name]
+                         [path/to/project]` - 
   creates an Immutant archive (suffixed with `.ima`) in the current
   directory.  By default, the archive file will be named after the
   project name in project.clj.  This can be overridden via the
@@ -64,9 +64,9 @@ The subtasks provided by the plugin are:
   well. This task can be run outside of a project dir of the path to
   the project is provided.
   
-* lein immutant deploy [--archive [--include-dependencies]] [--name name] 
-                       [--context-path path] [--virtual-host host] 
-                       [path/to/project] - 
+* `lein immutant deploy [--archive [--include-dependencies]] [--name name] 
+                        [--context-path path] [--virtual-host host] 
+                        [path/to/project]` - 
   deploys the current app to the current Immutant. If passed the
   `--archive` option, it will deploy an archive of the app instead of
   a descriptor pointing to the app on disk. This will currently
@@ -83,16 +83,16 @@ The subtasks provided by the plugin are:
   `--virtual-host` options, respectively. This task can be run outside
   of a project dir of the path to the project is provided.
 
-* lein immutant undeploy [--name name] [path/to/project] - undeploys
+* `lein immutant undeploy [--name name] [path/to/project]` - undeploys
   the current app from the current Immutant. If the `--name` option
   was used to deploy the app, you'll need to pass the same name to
   undeploy as well. This task can be run outside of a project dir of
   the path to the project is provided.
   
-* lein immutant run - launches the current Immutant. 
+* `lein immutant run` - launches the current Immutant. 
 
-* lein immutant test [--name name] [--dir test] [--port 7888]
-  [path/to/project] - runs the current Immutant, if necessary,
+* `lein immutant test [--name name] [--dir test] [--port 7888]
+  [path/to/project]` - runs the current Immutant, if necessary,
   deploys the project to it, runs all tests found beneath the `test/`
   directory, undeploys the app, and then shuts down the Immutant it
   started. The `--port` option specifies the nREPL service port
