@@ -5,15 +5,6 @@
 
 (setup-test-env)
 
-(def base-contents #{"project.clj"
-                     "resources/resource.txt"
-                     "src/test_project/core.clj"})
-
-(def base-project-contents
-  (conj base-contents
-        "target/classes/Foo.class"
-        "target/native/foo.so"))
-
 (println "\n==> Testing archive")
 
 (facts "archive"
@@ -27,7 +18,7 @@
                     :env base-lein-env)          => 0
           (.exists archive)                      => true
           (verify-archive archive
-                          base-project-contents) => true)))
+                          base-project-archive-contents) => true)))
 
     (fact "with no args and non-default project settings should work"
       (with-tmp-dir
@@ -39,7 +30,7 @@
           (.exists archive)                      => true
           (verify-archive
            archive
-           (conj base-contents
+           (conj base-archive-contents
                  "schmative/foo.so"
                  "prod-resources/resource2.txt"
                  "schmasses/Foo.class"
@@ -55,7 +46,7 @@
           (.exists archive)                => true
           (verify-archive
            archive
-           (-> base-project-contents
+           (-> base-project-archive-contents
                (disj "project.clj")
                (conj
                 "native/bar.so"
@@ -74,7 +65,7 @@
           (:exit result)                   => 0
           (.exists archive)                => true
           (verify-archive archive
-                          base-project-contents)   => true)))
+                          base-project-archive-contents)   => true)))
     
     (fact "with a --name arg should work"
       (with-tmp-dir
@@ -85,7 +76,7 @@
                     :env base-lein-env)  => 0
           (.exists archive)              => true
           (verify-archive archive
-                          base-project-contents) => true)))
+                          base-project-archive-contents) => true)))
 
 
     (fact "with options should add an internal descriptor"
@@ -98,7 +89,7 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (conj base-project-contents
+           (conj base-project-archive-contents
                  ".immutant.clj"))       => true
            (read-string
             (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "/"
@@ -114,7 +105,7 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (conj base-project-contents
+           (conj base-project-archive-contents
                  ".immutant.clj"))       => true
            (read-string
             (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:ham]})))
@@ -129,7 +120,7 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (conj base-project-contents
+           (conj base-project-archive-contents
                  ".immutant.clj"))       => true
            (read-string
             (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:ham]
@@ -145,7 +136,7 @@
           (.exists archive)                => true
           (verify-archive
            archive
-           (conj base-project-contents
+           (conj base-project-archive-contents
                  "lib/clojure-1.4.0.jar")) => true))))
 
   
@@ -159,7 +150,7 @@
                     :env base-lein-env)    => 0
           (.exists archive)                => true
           (verify-archive archive
-                          base-project-contents)   => true)))
+                          base-project-archive-contents)   => true)))
 
     (fact "with a path and non-default project settings should work"
       (with-tmp-dir
@@ -171,7 +162,7 @@
           (.exists archive)                => true
           (verify-archive
            archive
-           (conj base-contents
+           (conj base-archive-contents
                  "schmative/foo.so"
                  "prod-resources/resource2.txt"
                  "schmasses/Foo.class"
@@ -187,7 +178,7 @@
           (.exists archive)                => true
           (verify-archive
            archive
-           (-> base-project-contents
+           (-> base-project-archive-contents
                (disj "project.clj")
                (conj
                 "native/bar.so"
@@ -211,7 +202,7 @@
                     :env base-lein-env)  => 0
           (.exists archive)              => true
           (verify-archive archive
-                          base-project-contents) => true)))
+                          base-project-archive-contents) => true)))
 
     (fact "with a --name arg, --include-dependencies, and a path arg should work"
       (with-tmp-dir
@@ -223,7 +214,7 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (conj base-project-contents
+           (conj base-project-archive-contents
                  "lib/clojure-1.4.0.jar")) => true)))
 
     (future-fact "with a path, profiles, and options should add an internal descriptor"
@@ -236,7 +227,7 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (conj base-project-contents
+           (conj base-project-archive-contents
                  ".immutant.clj"))       => true
            (read-string
             (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:ham]

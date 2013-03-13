@@ -86,17 +86,23 @@
                     (.getAbsolutePath (io/file bin-dir# "standalone.sh"))))
            ~@body)))))
 
-(defn create-tmp-deploy [name]
-  (mapv
-   #(spit (io/file *tmp-deployments-dir* (str name ".clj" %)) "")
-   ["" ".deployed" ".dodeploy" ".failed"]))
+(defn create-tmp-deploy
+  ([name]
+     (create-tmp-deploy name ".clj"))
+  ([name suffix]
+     (mapv
+      #(spit (io/file *tmp-deployments-dir* (str name suffix %)) "")
+      ["" ".deployed" ".dodeploy" ".failed"])))
 
-(defn tmp-deploy-removed? [name]
-  (reduce
-   (fn [acc f]
-     (or acc (.exists (io/file *tmp-jboss-home* (str name ".clj" f)))))
-   false
-   ["" ".deployed" ".dodeploy" ".failed"]))
+(defn tmp-deploy-removed?
+  ([name]
+     (tmp-deploy-removed? name ".clj"))
+  ([name suffix]
+     (reduce
+      (fn [acc f]
+        (or acc (.exists (io/file *tmp-jboss-home* (str name suffix f)))))
+      false
+      ["" ".deployed" ".dodeploy" ".failed"])))
 
 (defn copy-resource-to-tmp [r]
   (let [f (-> r io/resource io/file)]
@@ -128,3 +134,14 @@
                              (enumeration-seq (.entries zip)))]
         (io/copy (.getInputStream zip entry) f)
         f))))
+
+
+(def base-archive-contents #{"project.clj"
+                             "resources/resource.txt"
+                             "src/test_project/core.clj"})
+
+(def base-project-archive-contents
+  (conj base-archive-contents
+        "target/classes/Foo.class"
+        "target/native/foo.so"))
+

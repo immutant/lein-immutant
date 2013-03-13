@@ -1,6 +1,7 @@
 (ns leiningen.immutant.deploy
   (:refer-clojure :exclude [list])
-  (:require [clojure.string                :as str]
+  (:require [clojure.java.io               :as io]
+            [clojure.string                :as str]
             [leiningen.immutant.archive    :as archive-task]
             [leiningen.immutant.common     :as c]
             [immutant.deploy-tools.archive :as archive]
@@ -40,13 +41,20 @@ $IMMUTANT_HOME environment variable."
   [project root opts]
   (let [[options config] (c/group-options opts deploy-options)
         jboss-home (c/get-jboss-home)
+        profiles (c/extract-profiles project)
         deployed-file
         (if (:archive options)
-          (deploy/deploy-archive jboss-home project root
-                                 (assoc options
-                                   :copy-deps-fn archive-task/copy-dependencies))
+          (deploy/deploy-archive jboss-home
+                                 project
+                                 (io/file (:root project root))
+                                 (System/getProperty "user.dir")
+                                 (-> options
+                                     (merge config)
+                                     (dissoc :archive)
+                                     (assoc :copy-deps-fn archive-task/copy-dependencies
+                                            :lein-profiles profiles)))
           (deploy/deploy-dir jboss-home project root options
-                             (if-let [profiles (c/extract-profiles project)]
+                             (if profiles
                                (assoc config :lein-profiles profiles)
                                config)))]
     (c/verify-root-arg project root "deploy")
