@@ -51,16 +51,22 @@
 
 (def abort main/abort)
 
+(defn extract-profiles [project]
+  (let [profiles (seq (-> project meta :included-profiles))]
+    (if (and profiles (not= profiles [:default]))
+      (vec profiles))))
+
 (defn resolve-project [project root-dir]
-  (let [project-file (io/file root-dir "project.clj")]
+  (let [project-file (io/file root-dir "project.clj")
+        profiles (extract-profiles project)]
     (cond
-     project                            [project root-dir]
+     (:root project)                    [project root-dir]
      (not (.exists (io/file root-dir))) (abort
                                          (format "Error: '%s' does not exist"
                                                  root-dir))
      (.exists project-file)             [(project/read
                                           (.getAbsolutePath project-file)
-                                          [:default])
+                                          (or profiles [:default]))
                                          root-dir]
      :default                           [nil root-dir])))
 
@@ -82,9 +88,9 @@
 
 (defn verify-root-arg [project root subtask]
   (when-not (or (nil? root)
-                (nil? project)
-                (= (.getCanonicalPath (io/file root))
-                   (.getCanonicalPath (io/file (:root project)))))
+                (nil? (:root project))
+                 (= (.getCanonicalPath (io/file root))
+                    (.getCanonicalPath (io/file (:root project)))))
     (err
      (format "Warning: You specified a root path of '%s', but invoked %s in a project directory.
          If you meant to specify '%s' as a name argument, use the --name option.\n"
@@ -93,11 +99,6 @@
 (defn mapply [f & args]
   "Applies args to f, and expands the last arg into a kwarg seq if it is a map"
   (apply f (apply concat (butlast args) (last args))))
-
-(defn extract-profiles [project]
-  (let [profiles (seq (-> project meta :included-profiles))]
-    (if (and profiles (not= profiles [:default]))
-      (vec profiles))))
 
 (defn deploy-with-profiles-cmd [profiles]
   (format

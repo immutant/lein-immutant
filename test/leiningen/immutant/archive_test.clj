@@ -217,13 +217,13 @@
            (conj base-project-archive-contents
                  "lib/clojure-1.4.0.jar")) => true)))
 
-    (future-fact "with a path, profiles, and options should add an internal descriptor"
+    (fact "with a path, profiles, and options should add an internal descriptor"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
               archive (io/file *tmp-dir* "test-project.ima")]
           (run-lein "with-profile" "ham" "immutant" "archive" "--context-path" "biscuit" "test-project"
                     :dir *tmp-dir*
-                    :env) base-lein-env  => 0
+                    :env base-lein-env)  => 0
           (.exists archive)              => true
           (verify-archive
            archive

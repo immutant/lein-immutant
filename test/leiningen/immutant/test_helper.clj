@@ -42,7 +42,7 @@
     (if return-result?
       result
       (do
-        ;(print (:out result))
+        (if (System/getenv "PRINT_OUT") (print (:out result)))
         (print (:err result))
         (:exit result)))))
 

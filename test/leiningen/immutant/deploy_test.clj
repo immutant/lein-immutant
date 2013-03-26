@@ -190,17 +190,17 @@
                                                  {:context-path "path"
                                                   :virtual-host "host"}))))
 
-    (future-fact "profiles should be noticed and written to the dd"
-                 (with-tmp-jboss-home
-                   (let [{:keys [env project-dir dd]} (setup-env-dir-dd)]
-                     (run-lein "with-profile" "foo" "immutant" "deploy" (.getAbsolutePath project-dir)
-                               :dir *tmp-dir*
-                               :env env)      => 0
-                     (.exists dd)             => true
-                     (verify-root dd project-dir) => true          
-                     (let [profiles (:lein-profiles (read-string (slurp dd)))]
-                       profiles => [:foo]
-                       profiles => vector?))))
+    (fact "profiles should be noticed and written to the dd"
+      (with-tmp-jboss-home
+        (let [{:keys [env project-dir dd]} (setup-env-dir-dd)]
+          (run-lein "with-profile" "foo" "immutant" "deploy" (.getAbsolutePath project-dir)
+                    :dir *tmp-dir*
+                    :env env)      => 0
+                    (.exists dd)             => true
+          (verify-root dd project-dir) => true          
+          (let [profiles (:lein-profiles (read-string (slurp dd)))]
+            profiles => [:foo]
+            profiles => vector?))))
 
 
     (fact "--archive should work"
@@ -237,19 +237,19 @@
             (read-string
              (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "ham"})))
 
-    (future-fact "--archive with options and profiles should work"
-                 (with-tmp-jboss-home
-                   (let [{:keys [env project-dir archive]} (setup-env-dir-dd "test-project" "bam")]
-                     (run-lein "with-profile" "biscuit" "immutant" "deploy" "--archive" "--context-path" "ham" (.getAbsolutePath project-dir)
-                               :dir *tmp-dir*
-                               :env env)                    => 0
-                     (.exists archive)                      => true
-                     (verify-archive archive
-                                     (conj
-                                      base-project-archive-contents
-                                      ".immutant.clj")) => true
-                     (read-string
-                      (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:biscuit]
+    (fact "--archive with options and profiles should work"
+      (with-tmp-jboss-home
+        (let [{:keys [env project-dir archive]} (setup-env-dir-dd)]
+          (run-lein "with-profile" "biscuit" "immutant" "deploy" "--archive" "--context-path" "ham" (.getAbsolutePath project-dir)
+                    :dir *tmp-dir*
+                    :env env)                    => 0
+                    (.exists archive)                      => true
+          (verify-archive archive
+                          (conj
+                           base-project-archive-contents
+                           ".immutant.clj")) => true
+          (read-string
+           (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:biscuit]
                                                                                                           :context-path "ham"})))))
 
 (facts "undeploy"
