@@ -47,6 +47,9 @@ options, respectively.
 If the --include-dependencies (or -i) option is provided, all of the
 application's dependencies will be included in the archive as well.
 
+If the standard leiningen jar options :omit-source or :jar-exclusions
+are set, they will be honored for archive creation.
+
 This task can be run outside of a project dir of the path to the
 project is provided."
   [project root options]

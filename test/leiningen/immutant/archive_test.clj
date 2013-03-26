@@ -137,7 +137,31 @@
           (verify-archive
            archive
            (conj base-project-archive-contents
-                 "lib/clojure-1.4.0.jar")) => true))))
+                 "lib/clojure-1.4.0.jar")) => true)))
+
+    (fact ":omit-source should be honored"
+      (with-tmp-dir
+        (let [project-dir (copy-resource-to-tmp "jar-options-project")
+              archive (io/file project-dir "test-project.ima")]
+          (run-lein "immutant" "archive"
+                    :dir project-dir
+                    :env base-lein-env)          => 0
+          (.exists archive)                      => true
+          (verify-archive archive
+                          (-> base-project-archive-contents
+                              (disj "src/test_project/core.clj"))) => true)))
+
+    (fact ":jar-exclusions should be honored"
+      (with-tmp-dir
+        (let [project-dir (copy-resource-to-tmp "jar-options-project")
+              archive (io/file project-dir "test-project.ima")]
+          (run-lein "immutant" "archive"
+                    :dir project-dir
+                    :env base-lein-env)          => 0
+          (.exists archive)                      => true
+          (verify-archive archive
+                          (disj base-project-archive-contents
+                                "src/test_project/core.clj")) => true))))
 
   
   (facts "not in a project"

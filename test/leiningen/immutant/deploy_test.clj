@@ -106,6 +106,17 @@
                     (verify-archive archive
                                     base-project-archive-contents) => true)))
 
+    (fact "--archive with jar options should work"
+      (with-tmp-jboss-home
+        (let [{:keys [env project-dir archive]} (setup-env-dir-dd "jar-options-project" "test-project")]
+          (run-lein "immutant" "deploy" "--archive" 
+                    :dir project-dir
+                    :env env)                    => 0
+          (.exists archive)                      => true
+          (verify-archive archive
+                          (disj base-project-archive-contents
+                                "src/test_project/core.clj")) => true)))
+        
     (fact "--archive with --name should work"
       (with-tmp-jboss-home
         (let [{:keys [env project-dir archive]} (setup-env-dir-dd "test-project" "bam")]
@@ -212,7 +223,7 @@
           (.exists archive)                      => true
           (verify-archive archive
                           base-project-archive-contents) => true)))
-    
+        
     (fact "--archive with --name should work"
       (with-tmp-jboss-home
         (let [{:keys [env project-dir archive]} (setup-env-dir-dd "test-project" "bam")]
@@ -250,7 +261,7 @@
                            ".immutant.clj")) => true
           (read-string
            (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:biscuit]
-                                                                                                          :context-path "ham"})))))
+                                                                    :context-path "ham"})))))
 
 (facts "undeploy"
   (facts "in a project"
