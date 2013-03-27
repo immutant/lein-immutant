@@ -98,11 +98,17 @@
   ([name]
      (tmp-deploy-removed? name ".clj"))
   ([name suffix]
-     (reduce
-      (fn [acc f]
-        (or acc (.exists (io/file *tmp-jboss-home* (str name suffix f)))))
-      false
-      ["" ".deployed" ".dodeploy" ".failed"])))
+     (not (reduce
+           (fn [acc f]
+             (or acc
+                 (let [file (io/file *tmp-deployments-dir*
+                                     (str name suffix f))
+                       exists (.exists file)]
+                   ;; (if exists
+                   ;;   (println "DEPLOYMENT EXISTS:" file))
+                   exists)))
+           false
+           ["" ".deployed" ".dodeploy" ".failed"]))))
 
 (defn copy-resource-to-tmp [r]
   (let [f (-> r io/resource io/file)]

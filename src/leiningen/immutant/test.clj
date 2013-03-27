@@ -19,6 +19,10 @@ specifies the nREPL service port through which the tests are invoked
 inside the running Immutant. All tests specified in the :test-paths
 from project.clj will be executed.
 
+If passed a bare argument, the task will assume it is a path to a
+project to be tested, and will switch to the context of that
+project. This works when lein is invoked in or out of a project.
+
 By default, the plugin will locate the current Immutant by looking at
 ~/.lein/immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."

@@ -12,13 +12,14 @@
 (def cli-options
   {"install"   install/install-options
    "deploy"    deploy/deploy-options
-   "undeploy"  deploy/undeploy-options
    "archive"   archive/archive-options
    "test"      test/test-options})
 
-(defn- subtask-with-resolved-project [subtask project-or-nil root-dir options]
+(defn- subtask-with-resolved-project
+  [subtask project-or-nil root-dir options]
   (apply subtask
-         (conj (common/resolve-project project-or-nil root-dir) options)))
+         (conj (common/resolve-project project-or-nil root-dir true)
+               options)))
 
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
@@ -54,8 +55,13 @@
                             archive/archive project-or-nil root-dir options)
            "deploy"       (subtask-with-resolved-project
                             deploy/deploy project-or-nil root-dir options)
-           "undeploy"     (subtask-with-resolved-project
-                            deploy/undeploy project-or-nil root-dir options)
+           "undeploy"     (if-let [descriptors (-> other-args
+                                                   first
+                                                   deploy/matching-deployments
+                                                   seq)]
+                            (deploy/undeploy-descriptors descriptors)
+                            (subtask-with-resolved-project
+                              deploy/undeploy project-or-nil root-dir options))
            "list"         (deploy/list)
            "test"         (subtask-with-resolved-project
                             test/test project-or-nil root-dir options)

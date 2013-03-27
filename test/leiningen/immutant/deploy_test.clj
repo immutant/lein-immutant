@@ -33,7 +33,7 @@
                     (.exists dd)                     => true
                     (verify-root dd project-dir)     => true)))
 
-    (fact "with path arg should print a warning"
+    (fact "with non-existent path arg should print a warning"
       (with-tmp-jboss-home
         (let [{:keys [env project-dir dd]} (setup-env-dir-dd)
               result 
@@ -41,11 +41,20 @@
                         :dir project-dir
                         :env env
                         :return-result? true)]
-          (re-find #"specified a root path of 'yarg'" (:err result)) =not=> nil
-          (:exit result)                   => 0
-          (.exists dd)                     => true
-          (verify-root dd project-dir)     => true)))
-    
+          (re-find #"Error: 'yarg' does not exist" (:err result)) =not=> nil
+          (:exit result)                   => 1
+          (.exists dd)                     => false)))
+
+    (fact "with a path arg to a different app"
+      (with-tmp-jboss-home
+        (let [{:keys [env project-dir dd]} (setup-env-dir-dd)
+              other-project (setup-env-dir-dd "jar-options-project")]
+          (run-lein "immutant" "deploy" (.getAbsolutePath project-dir)
+                    :dir (:project-dir other-project)
+                    :env env)                  => 0
+          (.exists dd) => true
+          (.exists (:dd other-project)) => false)))
+        
     (fact "with a --name arg should work"
       (with-tmp-jboss-home
         (let [{:keys [env project-dir dd]} (setup-env-dir-dd "test-project" "ham")]
@@ -79,6 +88,19 @@
             profiles => [:foo]
             profiles => vector?))))
 
+    (fact "profiles should be noticed and written to the dd when switching context"
+      (with-tmp-jboss-home
+        (let [{:keys [env project-dir dd]} (setup-env-dir-dd)
+              other-project (setup-env-dir-dd "jar-options-project")]
+          (run-lein "with-profile" "foo" "immutant" "deploy" (.getAbsolutePath project-dir)
+                    :dir (:project-dir other-project)
+                    :env env)      => 0
+          (.exists dd)             => true
+          (verify-root dd project-dir)     => true
+          (let [profiles (:lein-profiles (read-string (slurp dd)))]
+            profiles => [:foo]
+            profiles => vector?))))
+        
     (fact "profiles passed via --with-profiles should be in dd, and print a dep warning"
       (with-tmp-jboss-home
         (let [{:keys [env project-dir dd]} (setup-env-dir-dd)
@@ -108,7 +130,7 @@
 
     (fact "--archive with jar options should work"
       (with-tmp-jboss-home
-        (let [{:keys [env project-dir archive]} (setup-env-dir-dd "jar-options-project" "test-project")]
+        (let [{:keys [env project-dir archive]} (setup-env-dir-dd "jar-options-project")]
           (run-lein "immutant" "deploy" "--archive" 
                     :dir project-dir
                     :env env)                    => 0
@@ -272,8 +294,20 @@
           (run-lein "immutant" "undeploy"
                     :dir project-dir
                     :env env)              => 0
-                    (tmp-deploy-removed? "test-project") => false)))
+                    (tmp-deploy-removed? "test-project") => true)))
 
+    (fact "with a path arg to a different app"
+      (with-tmp-jboss-home
+        (create-tmp-deploy "test-project")
+        (create-tmp-deploy "jar-options-project")
+        (let [{:keys [env project-dir]} (setup-env-dir-dd)
+              other-project (setup-env-dir-dd "jar-options-project")]
+          (run-lein "immutant" "undeploy" (.getAbsolutePath (:project-dir other-project))
+                    :dir project-dir
+                    :env env)                  => 0
+          (tmp-deploy-removed? "test-project") => false
+          (tmp-deploy-removed? "jar-options-project") => true)))
+        
     (fact "with no args should work for an archive"
       (with-tmp-jboss-home
         (create-tmp-deploy "test-project" ".ima")
@@ -281,29 +315,29 @@
           (run-lein "immutant" "undeploy"
                     :dir project-dir
                     :env env)              => 0
-                    (tmp-deploy-removed? "test-project" ".ima") => false)))
-        
-    (fact "with path arg should print a warning"
-      (with-tmp-jboss-home
-        (create-tmp-deploy "test-project")
-        (let [{:keys [env project-dir]} (setup-env-dir-dd)
-              {:keys [err exit]}
-              (run-lein "immutant" "undeploy" "yarg"
-                        :dir project-dir
-                        :env env
-                        :return-result? true)]
-          exit                                             => 0
-          (re-find #"specified a root path of 'yarg'" err) =not=> nil
-          (tmp-deploy-removed? "test-project")             => false)))
-    
-    (fact "with a --name arg should work"
-      (with-tmp-jboss-home
-        (create-tmp-deploy "ham")
-        (let [{:keys [env project-dir]} (setup-env-dir-dd)]
-          (run-lein "immutant" "undeploy" "--name" "ham"
-                    :dir project-dir
-                    :env env)                  => 0
-                    (tmp-deploy-removed? "test-project") => false))))
+          (tmp-deploy-removed? "test-project" ".ima") => true)))
+
+    (facts "with a name argument or glob"
+      (let [deployments #{"ham" "hama-blam" "foo" "food" "bar"}]
+        (doseq [[arg undeployed]
+                {"ham" ["ham"]
+                 "ham*" ["ham" "hama-blam"]
+                 "foo?" ["foo" "food"]
+                 "foo.clj" ["foo"]}]
+          (fact (format "with %s" arg)
+            (with-tmp-jboss-home
+              (doseq [d deployments]
+                (create-tmp-deploy d))
+              (let [{:keys [env project-dir]} (setup-env-dir-dd)]
+                (run-lein "immutant" "undeploy" arg
+                          :dir project-dir
+                          :env env)              => 0
+                (doseq [d undeployed]
+                  (fact
+                    (tmp-deploy-removed? d) => true))
+                (doseq [d (apply disj deployments undeployed)]
+                  (fact
+                    (tmp-deploy-removed? d) => false)))))))))
   
   (facts "not in a project"
     (fact "with a path arg should work"
@@ -313,7 +347,7 @@
           (run-lein "immutant" "undeploy" (.getAbsolutePath project-dir)
                     :dir *tmp-dir*
                     :env env)                  => 0
-                    (tmp-deploy-removed? "test-project") => false)))
+                    (tmp-deploy-removed? "test-project") => true)))
 
     (fact "with a non-existent path arg should work"
       (with-tmp-jboss-home

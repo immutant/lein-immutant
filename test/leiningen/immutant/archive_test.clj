@@ -52,7 +52,7 @@
                 "native/bar.so"
                 "classes/Bar.class")))   => true)))
         
-    (fact "with path arg should print a warning"
+    (fact "with non-existent path arg should print a warning"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
               archive (io/file project-dir "test-project.ima")
@@ -61,11 +61,9 @@
                         :dir project-dir
                         :env base-lein-env
                         :return-result? true)]
-          (re-find #"specified a root path of 'yarg'" (:err result)) =not=> nil
-          (:exit result)                   => 0
-          (.exists archive)                => true
-          (verify-archive archive
-                          base-project-archive-contents)   => true)))
+          (re-find #"Error: 'yarg' does not exist" (:err result)) =not=> nil
+          (:exit result)                   => 1
+          (.exists archive)                => false)))
     
     (fact "with a --name arg should work"
       (with-tmp-dir
@@ -142,7 +140,7 @@
     (fact ":omit-source should be honored"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "jar-options-project")
-              archive (io/file project-dir "test-project.ima")]
+              archive (io/file project-dir "jar-options-project.ima")]
           (run-lein "immutant" "archive"
                     :dir project-dir
                     :env base-lein-env)          => 0
@@ -154,7 +152,7 @@
     (fact ":jar-exclusions should be honored"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "jar-options-project")
-              archive (io/file project-dir "test-project.ima")]
+              archive (io/file project-dir "jar-options-project.ima")]
           (run-lein "immutant" "archive"
                     :dir project-dir
                     :env base-lein-env)          => 0

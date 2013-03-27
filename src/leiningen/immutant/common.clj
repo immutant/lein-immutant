@@ -56,19 +56,36 @@
     (if (and profiles (not= profiles [:default]))
       (vec profiles))))
 
-(defn resolve-project [project root-dir]
+(defn resolve-project
+  [project root-dir root-trumps-project?]
   (let [project-file (io/file root-dir "project.clj")
         profiles (extract-profiles project)]
     (cond
-     (:root project)                    [project root-dir]
-     (not (.exists (io/file root-dir))) (abort
-                                         (format "Error: '%s' does not exist"
-                                                 root-dir))
-     (.exists project-file)             [(project/read
-                                          (.getAbsolutePath project-file)
-                                          (or profiles [:default]))
-                                         root-dir]
-     :default                           [nil root-dir])))
+     (and (:root project)
+          (or (.equals (io/file (:root project)) root-dir)
+              (not root-trumps-project?))),
+     [project root-dir]
+     
+     (not (.exists (io/file root-dir))),
+     (abort
+      (format "Error: '%s' does not exist"
+              root-dir))
+     
+     (.exists project-file),
+     (do
+       (if (:root project)
+         (println "Switching project scope to"
+                  (.getCanonicalPath root-dir)))
+       [(project/read
+         (.getAbsolutePath project-file)
+         (or profiles [:default]))
+        root-dir])
+     
+     (:root project),
+     [project root-dir]
+     
+     :default,
+     [nil root-dir])))
 
 (defn as-config-option [opt]
   (with-meta opt {:config true}))
@@ -85,16 +102,6 @@
          opts)]
     [(into {} options)
      (into {} config)]))
-
-(defn verify-root-arg [project root subtask]
-  (when-not (or (nil? root)
-                (nil? (:root project))
-                 (= (.getCanonicalPath (io/file root))
-                    (.getCanonicalPath (io/file (:root project)))))
-    (err
-     (format "Warning: You specified a root path of '%s', but invoked %s in a project directory.
-         If you meant to specify '%s' as a name argument, use the --name option.\n"
-             root subtask root))))
 
 (defn mapply [f & args]
   "Applies args to f, and expands the last arg into a kwarg seq if it is a map"

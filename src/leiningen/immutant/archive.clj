@@ -40,6 +40,10 @@ pointing to the app directory.
 Any profiles that are active (via with-profile) will be captured and
 applied when the app is deployed.
 
+If passed a bare argument, the task will assume it is a path to a
+project to be archived, and will switch to the context of that
+project. This works when lein is invoked in or out of a project.
+
 You can override the default context-path (based off of the deployment
 name) and virtual-host with the --context-path and --virtual-host
 options, respectively. 
@@ -48,10 +52,7 @@ If the --include-dependencies (or -i) option is provided, all of the
 application's dependencies will be included in the archive as well.
 
 If the standard leiningen jar options :omit-source or :jar-exclusions
-are set, they will be honored for archive creation.
-
-This task can be run outside of a project dir of the path to the
-project is provided."
+are set, they will be honored for archive creation."
   [project root options]
   (let [jar-file (archive/create project
                                  (io/file (:root project root))
@@ -59,5 +60,4 @@ project is provided."
                                  (assoc options
                                    :copy-deps-fn copy-dependencies
                                    :lein-profiles (c/extract-profiles project)))]
-    (c/verify-root-arg project root "archive")
     (println "Created" (.getAbsolutePath jar-file))))

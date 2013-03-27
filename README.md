@@ -59,17 +59,25 @@ The subtasks provided by the plugin are:
   directory.  By default, the archive file will be named after the
   project name in project.clj.  This can be overridden via the
   `--name` (or `-n`) option.  This archive can be deployed in lieu of
-  a descriptor pointing to the app directory. Any profiles that are
-  active (via with-profile) will be captured and applied when the app
-  is deployed.  You can override the default context-path (based off
-  of the deployment name) and virtual-host with the --context-path and
-  --virtual-host options, respectively. If the
+  a descriptor pointing to the app directory. 
+
+  Any profiles that are active (via with-profile) will be captured and
+  applied when the app is deployed.  
+
+  If passed a bare argument, the task will assume it is a path to a
+  project to be archived, and will switch to the context of that
+  project. This works when lein is invoked in or out of a project.
+
+  You can override the default context-path (based off of the
+  deployment name) and virtual-host with the `--context-path` and
+  `--virtual-host` options, respectively. If the
   `--include-dependencies` (or `-i`) option is provided, all of the
   application's dependencies will be included in the archive as
-  well. If the standard leiningen jar options `:omit-source` or 
-  `:jar-exclusions` are set, they will be honored for archive creation.
-  This task can be run outside of a project dir of the path to
-  the project is provided.
+  well. 
+
+  If the standard leiningen jar options `:omit-source` or
+  `:jar-exclusions` are set, they will be honored for archive
+  creation.
 
 * `lein immutant deploy [--archive [--include-dependencies]] [--name name] 
                         [--context-path path] [--virtual-host host] 
@@ -81,29 +89,55 @@ The subtasks provided by the plugin are:
   will be named after the project name in project.clj.  This can be
   overridden via the `--name` (or `-n`) option.  
 
+  If passed a bare argument, the task will assume it is a path to a
+  project to be deployed, and will switch to the context of that
+  project. This works when lein is invoked in or out of a project.
+
   Any profiles that are active (via with-profile) will be captured in
   the `:lein-profiles` key in the descriptor and applied when the app is
   deployed.
 
   You can override the default context-path (based off of the
   deployment name) and virtual-host with the `--context-path` and
-  `--virtual-host` options, respectively. This task can be run outside
-  of a project dir of the path to the project is provided.
+  `--virtual-host` options, respectively.
 
-* `lein immutant undeploy [--name name] [path/to/project]` - undeploys
-  the current app from the current Immutant. If the `--name` option
-  was used to deploy the app, you'll need to pass the same name to
-  undeploy as well. This task can be run outside of a project dir of
-  the path to the project is provided.
+* `lein immutant undeploy [name or glob or path/to/project]` - undeploys
+  an application (or applications) from the current Immutant.  
+  If passed a bare argument, the task will first treat it as a glob
+  argument specifying one or more deployments to undeploy. If it does
+  not match any current deployments, it is assumed to be a path to a
+  project to be undeployed, and will switch to the context of that
+  project. This works when lein is invoked in or out of a project.
+
+  Examples of matching deployment names with globs:
+
+  Given    Will undeploy
+  -----    -------------
+  ham      ham.clj, ham.ima
+  ham.clj  ham.clj
+  ha?      ham.clj, ham.ima, hat.clj, hat.ima
+  *h*      ham.clj, ham.ima, ship.clj, ship.ima, moh.clj, moh.ima
+  h*.clj   ham.clj, hat.clj
+  *        everything
+
+  Note that depending on your shell, you may have to quote or escape *
+  and ? in globs.
   
 * `lein immutant run` - launches the current Immutant. 
 
 * `lein immutant test [--name name] [--dir test] [--port 7888]
-  [path/to/project]` - runs the current Immutant, if necessary,
-  deploys the project to it, runs all tests found beneath the `test/`
-  directory, undeploys the app, and then shuts down the Immutant it
-  started. The `--port` option specifies the nREPL service port
-  through which the tests are invoked inside the running Immutant.
+  [path/to/project]` - Runs a project's tests inside the current Immutant
+  Runs the current Immutant, if necessary, deploys the project to it,
+  runs all tests found beneath the test/ directory, undeploys the app,
+  and then shuts down the Immutant it started. The `--port` option
+  specifies the nREPL service port through which the tests are invoked
+  inside the running Immutant. All tests specified in the `:test-paths`
+  from project.clj will be executed.
+
+  If passed a bare argument, the task will assume it is a path to a
+  project to be tested, and will switch to the context of that
+  project. This works when lein is invoked in or out of a project.
+
   This is a very simple way to automate your integration testing on a
   [CI](http://en.wikipedia.org/wiki/Continuous_integration) host.
   

@@ -11,7 +11,7 @@
   :eval-in-leiningen true
   :exclusions [org.clojure/clojure dynapath]
   :dependencies [[org.immutant/overlay      "1.4.2"]
-                 [org.immutant/deploy-tools "0.13.0"]
+                 [org.immutant/deploy-tools "0.13.1-SNAPSHOT"]
                  [org.clojure/data.json     "0.2.1"]
                  [org.clojure/tools.cli     "0.2.1"]
                  [org.immutant/fntest       "0.3.11"]]
