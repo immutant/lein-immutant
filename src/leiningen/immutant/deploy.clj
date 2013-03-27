@@ -137,7 +137,7 @@ anything deployed via the JBoss CLI or management interface."
      (format "  %-40s (status: %s)"
              (.getName f)
              (condp #(.exists (%1 %2)) f
-               util/dodeploy-marker "deploying"
+               util/dodeploy-marker "pending"
                util/deployed-marker "deployed"
                util/failed-marker   "failed"
                "unknown")))
