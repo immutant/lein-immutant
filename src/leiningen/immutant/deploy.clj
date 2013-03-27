@@ -31,9 +31,10 @@
 
 (defn ^:internal  matching-deployments [pattern-str]
   (if pattern-str
-    (filter
-     #(re-find (glob->regex pattern-str) (.getName %))
-     (deployed-files))))
+    (seq
+     (filter
+      #(re-find (glob->regex pattern-str) (.getName %))
+      (deployed-files)))))
 
 (defn ^:internal undeploy-descriptors [descriptors]
   (doseq [f descriptors]
@@ -122,7 +123,9 @@ $IMMUTANT_HOME environment variable."
         deploy-path (.getAbsolutePath (util/deployment-dir jboss-home))]
     (if-let [deployments (matching-deployments app-name)]
       (undeploy-descriptors deployments)
-      (println "No action taken:" app-name "is not deployed to" deploy-path))))
+      (c/abort
+       (format "No action taken: %s is not deployed to %s"
+               app-name deploy-path)))))
 
 (defn list
   "Lists currently deployed applications along with the status of each

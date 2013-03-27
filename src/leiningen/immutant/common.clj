@@ -56,36 +56,34 @@
     (if (and profiles (not= profiles [:default]))
       (vec profiles))))
 
+(defn- switch-scope [project dir]
+  (if (:root project)
+    (println "Switching project scope to"
+             (.getCanonicalPath dir))))
+
+(defn- project-root-matches-dir? [project dir]
+  (and (:root project)
+       (= (.getCanonicalPath (io/file (:root project)))
+          (.getCanonicalPath dir))))
+
 (defn resolve-project
-  [project root-dir root-trumps-project?]
+  [project root-dir]
   (let [project-file (io/file root-dir "project.clj")
         profiles (extract-profiles project)]
     (cond
-     (and (:root project)
-          (or (.equals (io/file (:root project)) root-dir)
-              (not root-trumps-project?))),
-     [project root-dir]
-     
-     (not (.exists (io/file root-dir))),
-     (abort
-      (format "Error: '%s' does not exist"
-              root-dir))
-     
-     (.exists project-file),
-     (do
-       (if (:root project)
-         (println "Switching project scope to"
-                  (.getCanonicalPath root-dir)))
-       [(project/read
-         (.getAbsolutePath project-file)
-         (or profiles [:default]))
-        root-dir])
-     
-     (:root project),
-     [project root-dir]
-     
-     :default,
-     [nil root-dir])))
+     (project-root-matches-dir? project root-dir) [project root-dir]
+     (not (.exists (io/file root-dir))) (abort
+                                         (format "Error: path '%s' does not exist"
+                                                 root-dir))
+     (.exists project-file) (do
+                              (switch-scope project root-dir)
+                              [(project/read
+                                (.getAbsolutePath project-file)
+                                (or profiles [:default]))
+                               root-dir])
+     :default (do
+                (switch-scope project root-dir)
+                [nil root-dir]))))
 
 (defn as-config-option [opt]
   (with-meta opt {:config true}))

@@ -41,7 +41,7 @@
                         :dir project-dir
                         :env env
                         :return-result? true)]
-          (re-find #"Error: 'yarg' does not exist" (:err result)) =not=> nil
+          (re-find #"Error: path 'yarg' does not exist" (:err result)) =not=> nil
           (:exit result)                   => 1
           (.exists dd)                     => false)))
 
@@ -197,7 +197,7 @@
                         :env env
                         :return-result? true)]
           exit                                                     => 1
-          (re-find #"Error: '/tmp/hAmBisCuit' does not exist" err) =not=> nil)))
+          (re-find #"Error: path '/tmp/hAmBisCuit' does not exist" err) =not=> nil)))
     
     (fact "with a --name arg and a path arg should work"
       (with-tmp-jboss-home
@@ -358,5 +358,5 @@
                         :env env
                         :return-result? true)]
           exit                                                     => 1
-          (re-find #"Error: '/tmp/hAmBisCuit' does not exist" err) =not=> nil)))))
+          (re-find #"Error: path '/tmp/hAmBisCuit' does not exist" err) =not=> nil)))))
 

@@ -18,8 +18,24 @@
 (defn- subtask-with-resolved-project
   [subtask project-or-nil root-dir options]
   (apply subtask
-         (conj (common/resolve-project project-or-nil root-dir true)
+         (conj (common/resolve-project project-or-nil root-dir)
                options)))
+
+(defn- handle-undeploy [project-or-nil root-dir options other-args]
+  (let [glob-or-path (first other-args)
+        descriptors (seq (deploy/matching-deployments glob-or-path))
+        path-undeploy #(subtask-with-resolved-project
+                         deploy/undeploy project-or-nil
+                         root-dir options)]
+    (cond
+     (and glob-or-path
+          descriptors) (deploy/undeploy-descriptors descriptors)
+     glob-or-path      (do
+                         (println
+                          (format "'%s' didn't match any deployments, assuming it's a path"
+                                  glob-or-path))
+                         (path-undeploy))
+    :default           (path-undeploy))))
 
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
@@ -55,13 +71,7 @@
                             archive/archive project-or-nil root-dir options)
            "deploy"       (subtask-with-resolved-project
                             deploy/deploy project-or-nil root-dir options)
-           "undeploy"     (if-let [descriptors (-> other-args
-                                                   first
-                                                   deploy/matching-deployments
-                                                   seq)]
-                            (deploy/undeploy-descriptors descriptors)
-                            (subtask-with-resolved-project
-                              deploy/undeploy project-or-nil root-dir options))
+           "undeploy"     (handle-undeploy project-or-nil root-dir options other-args)
            "list"         (deploy/list)
            "test"         (subtask-with-resolved-project
                             test/test project-or-nil root-dir options)
