@@ -6,18 +6,13 @@
             [clojure.java.io            :as io]
             [clojure.string             :as str]))
 
-(def test-options
-  [["-p" "--port"]])
-
 (defn test
   "Runs a project's tests inside the current Immutant
 
 Runs the current Immutant, if necessary, deploys the project to it,
 runs all tests found beneath the test/ directory, undeploys the app,
-and then shuts down the Immutant it started. The --port option
-specifies the nREPL service port through which the tests are invoked
-inside the running Immutant. All tests specified in the :test-paths
-from project.clj will be executed.
+and then shuts down the Immutant it started. All tests specified in
+the :test-paths from project.clj will be executed.
 
 If passed a bare argument, the task will assume it is a path to a
 project to be tested, and will switch to the context of that

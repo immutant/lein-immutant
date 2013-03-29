@@ -125,14 +125,11 @@ The subtasks provided by the plugin are:
   
 * `lein immutant run` - launches the current Immutant. 
 
-* `lein immutant test [--name name] [--dir test] [--port 7888]
-  [path/to/project]` - Runs a project's tests inside the current Immutant
-  Runs the current Immutant, if necessary, deploys the project to it,
-  runs all tests found beneath the test/ directory, undeploys the app,
-  and then shuts down the Immutant it started. The `--port` option
-  specifies the nREPL service port through which the tests are invoked
-  inside the running Immutant. All tests specified in the `:test-paths`
-  from project.clj will be executed.
+* `lein immutant test [path/to/project]` - Runs a project's tests
+  inside the current Immutant. Runs the current Immutant, if
+  necessary, deploys the project to it, runs all tests, undeploys the
+  app, and then shuts down the Immutant it started. All tests
+  specified in the `:test-paths` from project.clj will be executed.
 
   If passed a bare argument, the task will assume it is a path to a
   project to be tested, and will switch to the context of that

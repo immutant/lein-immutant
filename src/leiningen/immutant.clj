@@ -12,8 +12,7 @@
 (def cli-options
   {"install"   install/install-options
    "deploy"    deploy/deploy-options
-   "archive"   archive/archive-options
-   "test"      test/test-options})
+   "archive"   archive/archive-options})
 
 (defn- subtask-with-resolved-project
   [subtask project-or-nil root-dir options]
