@@ -47,6 +47,7 @@
          (nil? version)
          (and release?
               (or (= "0.9.0" version)
+                  (= "0.10.0" version)
                   (= "1" (re-find #"^\d" version))))  
          (and (not release?)
               (< 750 (Integer/parseInt version))))
