@@ -23,21 +23,22 @@ The subtasks provided by the plugin are:
 
 * `lein immutant install [version [install-dir]]` - downloads and
   installs Immutant for you. By default, it will download the *slim*
-  distribution of the latest incremental build and put it in
+  distribution of the latest versioned release and put it in
   `~/.lein/immutant/releases/`. You can override the version (which
-  must be an incremental build number from http://immutant.org/builds/
-  or a released version) and the install directory. Wherever it gets
-  installed, the most recently installed version will be linked from
-  `~/.lein/immutant/current`. If this link is present (and points to a
-  valid Immutant install), you won't need to set `$IMMUTANT_HOME`. You
-  can have it install the *full* distribution by passing it the
-  `--full` flag.
+  must be an incremental build number from
+  http://immutant.org/builds/, a released version, or :latest for
+  the most recent incremental build) and the install
+  directory. Wherever it gets installed, the most recently installed
+  version will be linked from `~/.lein/immutant/current`. If this link
+  is present (and points to a valid Immutant install), you won't need
+  to set `$IMMUTANT_HOME`. You can have it install the *full*
+  distribution by passing it the `--full` flag.
 
 * `lein immutant overlay [feature-set [version]]` - downloads and
   overlays a feature set onto the currenty installed Immutant. If it
   can't find an Immutant install (either via the `current` link or
   `$IMMUTANT_HOME`), it will download and install the latest
-  incremental build first. Currently, the only supported feature set
+  versioned release first. Currently, the only supported feature set
   is 'torquebox'. The version defaults to the latest incremental, but
   can also be any recent build number from
   http://torquebox.org/2x/builds/.
@@ -62,7 +63,7 @@ The subtasks provided by the plugin are:
   a descriptor pointing to the app directory. 
 
   Any profiles that are active (via with-profile) will be captured and
-  applied when the app is deployed.  
+  applied when the app is deployed.
 
   If passed a bare argument, the task will assume it is a path to a
   project to be archived, and will switch to the context of that

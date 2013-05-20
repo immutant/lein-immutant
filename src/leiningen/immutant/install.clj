@@ -29,6 +29,14 @@
         (println  "Linking" current-path "to" target-path)
         (shell/sh "ln" "-s" target-path current-path)))))
 
+(defn latest-release []
+  (try
+    (with-open [r (io/reader "http://immutant.org/latest-release.txt")]
+      (-> r slurp clojure.string/trim))
+    (catch Exception _
+      (println "Unable to determine latest versioned release, installing latest incremental")
+      "LATEST")))
+
 (defn version-exists [url dest-dir version]
   (if (overlayment/released-version? version)
     (let [dir (io/file dest-dir (format "immutant-%s" version))]
@@ -38,13 +46,22 @@
                            (:build_number (json/read-str (slurp r) :key-fn keyword)))
             dir (io/file dest-dir  (format "immutant-1.x.incremental.%s" incr-version))]
         (and (.exists dir) [dir (str "1.x.incremental." incr-version)]))
-      (catch Exception e
+      (catch Exception _
         nil))))
+
+(defn normalize-version [version]
+  (if (nil? version)
+    (latest-release)
+    (.toUpperCase
+     (if (.startsWith version ":")
+       (.substring version 1)
+       version))))
 
 (defn suss-dist-type [full? version]
   (let [release? (overlayment/released-version? version)]
     (if (or
          (nil? version)
+         (= "LATEST" version)
          (and release?
               (or (= "0.9.0" version)
                   (= "0.10.0" version)
@@ -57,11 +74,12 @@
 (defn install
   "Downloads and installs an Immutant version
 
-By default, it will download the latest incremental build and put it
+By default, it will download the latest versioned release and put it
 in ~/.lein/immutant/releases/. You can override the version (which
-must be an incremental build number from http://immutant.org/builds/
-or a released version) and the install directory. Wherever it gets
-installed, the most recently installed version will be linked to
+must be an incremental build number from http://immutant.org/builds/,
+a released version, or :latest for the most recent incremental
+build) and the install directory. Wherever it gets installed, the most
+recently installed version will be linked to
 ~/.lein/immutant/current. If this link is present (and points to a
 valid Immutant install), you won't need to set $IMMUTANT_HOME to
 notify plugin tasks of the location of Immutant.
@@ -76,7 +94,8 @@ containing the path to the current Immutant instead of a link."
   ([options version]
      (install options version nil))
   ([options version dest-dir]
-     (let [dist-type (suss-dist-type (:full options) version)
+     (let [version (normalize-version version)
+           dist-type (suss-dist-type (:full options) version)
            artifact (overlayment/artifact "immutant" version dist-type)
            url (overlayment/url artifact)
            install-dir (or dest-dir (releases-dir dist-type))]
@@ -108,7 +127,7 @@ $IMMUTANT_HOME environment variable."
      (overlay feature-set nil))
   ([feature-set version]
      (when-not (and (common/get-jboss-home) (.exists (common/get-jboss-home)))
-       (println "No Immutant installed, installing the latest incremental")
+       (println "No Immutant installed, installing the latest versioned release")
        (install nil))
      (binding [overlayment/*verify-sha1-sum* true]
        (let [version-string (when-not (nil? version) (str "-" version))]
