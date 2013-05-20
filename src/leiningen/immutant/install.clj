@@ -13,8 +13,8 @@
 (def install-options
   [["-f" "--full" :flag true]])
 
-(defn releases-dir [dist-type]
-  (doto (io/file (common/immutant-storage-dir) "releases" dist-type)
+(defn releases-dir []
+  (doto (io/file (common/immutant-storage-dir) "releases")
     .mkdirs))
 
 (defn link-current [target]
@@ -37,15 +37,20 @@
       (println "Unable to determine latest versioned release, installing latest incremental")
       "LATEST")))
 
-(defn version-exists [url dest-dir version]
+(defn version-dir-exists [dest-dir version dist-type]
+    (let [legacy-dir (io/file dest-dir dist-type (format "immutant-%s" version))
+          dir        (io/file dest-dir (format "immutant-%s-%s" version dist-type))]
+      (cond
+       (.exists legacy-dir) [legacy-dir version]
+       (.exists dir)        [dir version])))
+
+(defn version-exists [url dest-dir version dist-type]
   (if (overlayment/released-version? version)
-    (let [dir (io/file dest-dir (format "immutant-%s" version))]
-      (and (.exists dir) [dir version]))
+    (version-dir-exists dest-dir version dist-type)
     (try
       (let [incr-version (with-open [r (io/reader (overlayment/metadata-url url))]
-                           (:build_number (json/read-str (slurp r) :key-fn keyword)))
-            dir (io/file dest-dir  (format "immutant-1.x.incremental.%s" incr-version))]
-        (and (.exists dir) [dir (str "1.x.incremental." incr-version)]))
+                           (:build_number (json/read-str (slurp r) :key-fn keyword)))]
+        (version-dir-exists dest-dir (str "1.x.incremental." incr-version) dist-type))
       (catch Exception _
         nil))))
 
@@ -70,6 +75,23 @@
               (< 750 (Integer/parseInt version))))
       (if full? "full" "slim")
       "bin")))
+
+(defn adjust-legacy-dist [dir dist-type]
+  (if (.endsWith (.getName dir) dist-type)
+    dir
+    (do
+      ;; we're installing a version from before IMMUTANT-276
+      (let [new-dir (io/file (.getParentFile dir)
+                     (format "%s-%s" (.getName dir) dist-type))]
+        (println (format "Renaming %s to %s"
+                         (.getName dir)
+                         (.getName new-dir)))
+        (if (.renameTo extracted-dir new-dir)
+          new-dir
+          (do
+            (println
+             "WARNING: Rename failed - the plugin won't be able to detect this version was installed in the future")
+            dir))))))
 
 (defn install
   "Downloads and installs an Immutant version
@@ -98,15 +120,17 @@ containing the path to the current Immutant instead of a link."
            dist-type (suss-dist-type (:full options) version)
            artifact (overlayment/artifact "immutant" version dist-type)
            url (overlayment/url artifact)
-           install-dir (or dest-dir (releases-dir dist-type))]
-       (if-let [[existing-dir true-version] (version-exists url install-dir version)]
+           install-dir (or dest-dir (releases-dir))]
+       (if-let [[existing-dir true-version] (version-exists url install-dir version dist-type)]
          (do
            (println (format "Version %s (%s) already installed to %s, not downloading."
                              true-version dist-type install-dir))
           (link-current existing-dir))
          (if-let [extracted-dir (binding [overlayment/*extract-dir* install-dir
                                           overlayment/*verify-sha1-sum* true]
-                                  (overlayment/download-and-extract artifact))]
+                                  (-> artifact
+                                      overlayment/download-and-extract
+                                      (adjust-legacy-dist dist-type)))]
            (link-current extracted-dir)
            (println "Please try the install again."))))))
 
