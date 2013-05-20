@@ -86,7 +86,7 @@
         (println (format "Renaming %s to %s"
                          (.getName dir)
                          (.getName new-dir)))
-        (if (.renameTo extracted-dir new-dir)
+        (if (.renameTo dir new-dir)
           new-dir
           (do
             (println
