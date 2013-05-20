@@ -35,7 +35,7 @@
                    (str "(ns " project-name ".core")) => true
         (let [test-file (slurp (io/file project-dir (str "test/" project-name "/core_test.clj")))]
           (.contains test-file (str "(ns " project-name ".core-test")) => true
-          (.contains test-file (str project-name ".core)")) => true))))
+          (.contains test-file (str project-name ".core")) => true))))
   
   (fact "init should work"
     (with-tmp-dir
