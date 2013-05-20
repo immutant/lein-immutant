@@ -15,10 +15,10 @@
         (run-lein "immutant" "new" project-name
                   :dir *tmp-dir*
                   :env base-lein-env) => 0
-                  (.exists (io/file project-dir)) => true
-                  (.exists (io/file project-dir "src/immutant/init.clj")) => true
-                  (.contains (slurp (io/file project-dir "src/immutant/init.clj"))
-                             (str ":use " project-name ".core")) => true)))
+        (.exists (io/file project-dir)) => true
+        (.exists (io/file project-dir "src/immutant/init.clj")) => true
+        (.contains (slurp (io/file project-dir "src/immutant/init.clj"))
+                   (str ":use " project-name ".core")) => true)))
 
   (fact "'new immutant' should work"
     (with-tmp-dir
@@ -27,15 +27,15 @@
         (run-lein "new" "immutant" project-name
                   :dir *tmp-dir*
                   :env base-lein-env) => 0
-                  (.exists (io/file project-dir)) => true
-                  (.exists (io/file project-dir "src/immutant/init.clj")) => true
-                  (.contains (slurp (io/file project-dir "src/immutant/init.clj"))
+        (.exists (io/file project-dir)) => true
+        (.exists (io/file project-dir "src/immutant/init.clj")) => true
+        (.contains (slurp (io/file project-dir "src/immutant/init.clj"))
                              (str ":use " project-name ".core")) => true
-                             (.contains (slurp (io/file project-dir (str "src/" project-name "/core.clj")))
-                                        (str "(ns " project-name ".core")) => true
-                                        (let [test-file (slurp (io/file project-dir (str "test/" project-name "/core_test.clj")))]
-                                          (.contains test-file (str "(ns " project-name ".core-test")) => true
-                                          (.contains test-file (str project-name ".core)")) => true))))
+        (.contains (slurp (io/file project-dir (str "src/" project-name "/core.clj")))
+                   (str "(ns " project-name ".core")) => true
+        (let [test-file (slurp (io/file project-dir (str "test/" project-name "/core_test.clj")))]
+          (.contains test-file (str "(ns " project-name ".core-test")) => true
+          (.contains test-file (str project-name ".core)")) => true))))
   
   (fact "init should work"
     (with-tmp-dir
@@ -46,7 +46,7 @@
         (run-lein "immutant" "init"
                   :dir project-dir
                   :env base-lein-env) => 0
-                  (.exists (io/file project-dir "src/immutant/init.clj")) => true
-                  (.contains (slurp (io/file project-dir "src/immutant/init.clj"))
-                             (str ":use " project-name ".core")) => true))))
+        (.exists (io/file project-dir "src/immutant/init.clj")) => true
+        (.contains (slurp (io/file project-dir "src/immutant/init.clj"))
+                   (str ":use " project-name ".core")) => true))))
 
