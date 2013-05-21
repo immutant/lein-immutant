@@ -17,6 +17,8 @@
   (doto (io/file (common/immutant-storage-dir) "releases")
     .mkdirs))
 
+(declare list-installs)
+
 (defn link-current [target]
   (.delete common/current-path)
   (let [current-path (.getAbsolutePath common/current-path)
@@ -27,7 +29,8 @@
         (spit current-path target-path))
       (do
         (println  "Linking" current-path "to" target-path)
-        (shell/sh "ln" "-s" target-path current-path)))))
+        (shell/sh "ln" "-s" target-path current-path))))
+  (list-installs))
 
 (defn latest-release []
   (try
