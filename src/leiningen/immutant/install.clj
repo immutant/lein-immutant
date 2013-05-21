@@ -62,19 +62,22 @@
        (.substring version 1)
        version))))
 
-(defn suss-dist-type [full? version]
-  (let [release? (overlayment/released-version? version)]
-    (if (or
-         (nil? version)
-         (= "LATEST" version)
-         (and release?
-              (or (= "0.9.0" version)
-                  (= "0.10.0" version)
-                  (= "1" (re-find #"^\d" version))))  
-         (and (not release?)
-              (< 750 (Integer/parseInt version))))
-      (if full? "full" "slim")
-      "bin")))
+(defn suss-dist-type
+  ([full? version]
+     (suss-dist-type full? version "bin"))
+  ([full? version default]
+      (let [release? (overlayment/released-version? version)]
+        (if (or
+             (nil? version)
+             (= "LATEST" version)
+             (and release?
+                  (or (= "0.9.0" version)
+                      (= "0.10.0" version)
+                      (= "1" (re-find #"^\d" version))))  
+             (and (not release?)
+                  (< 750 (Integer/parseInt version))))
+          (if full? "full" "slim")
+          default))))
 
 (defn adjust-legacy-dist [dir dist-type]
   (if (.endsWith (.getName dir) dist-type)
@@ -92,6 +95,48 @@
             (println
              "WARNING: Rename failed - the plugin won't be able to detect this version was installed in the future")
             dir))))))
+
+(defn installed-versions
+  ([]
+     (into {}
+           (concat
+            (installed-versions (releases-dir))
+            (installed-versions (io/file (releases-dir) "bin") true)
+            (installed-versions (io/file (releases-dir) "full") true)
+            (installed-versions (io/file (releases-dir) "slim") false))))
+  ([parent-dir full?]
+     (map (fn [[file {:keys [version] :as data}]]
+            [file (assoc data :type (suss-dist-type full? version "full"))])
+          (installed-versions parent-dir)))
+  ([parent-dir]
+     (->> (.listFiles parent-dir)
+          (filter
+           #(re-find #"immutant-.*$" (.getName %)))
+          (map (fn [f]
+                 (let [[_ version _ type] (re-find #"immutant-(.*?)($|-(.*)$)" (.getName f))]
+                   [f {:type type :version version}]))))))
+
+(defn list-installs
+  "Lists currently installed versions of Immutant"
+  []
+  (println
+   (format "The following versions of Immutant are installed to %s\n(* is currently active via %s):\n"
+           (common/immutant-storage-dir)
+           (if (System/getenv "IMMUTANT_HOME")
+             "$IMMUTANT_HOME"
+             (.getAbsolutePath common/current-path))))
+  (->>
+   (for [[file {:keys [type version]}] (installed-versions)]
+     [(if (= (.getCanonicalPath file)
+              (.getCanonicalPath (common/get-immutant-home)))
+         "*"
+         " ")
+      version
+      (or type "?")])
+   (sort-by second)
+   (map #(apply format " %s %-30s (type: %s)" %))
+   (clojure.string/join "\n")
+   println))
 
 (defn install
   "Downloads and installs an Immutant version

@@ -43,6 +43,9 @@ The subtasks provided by the plugin are:
   can also be any recent build number from
   http://torquebox.org/2x/builds/.
 
+* `lein immutant list-installs` - Lists currently installed versions
+  of Immutant.
+
 * `lein immutant env [key]` - prints out information about the
   Immutant environment. It currently only displays the path to the
   current Immutant, and the path to JBoss.

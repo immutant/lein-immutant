@@ -41,6 +41,7 @@
   {:no-project-needed true
    :subtasks [#'init/new
               #'install/install
+              #'install/list-installs
               #'install/overlay
               #'install/version
               #'env/env
@@ -61,6 +62,7 @@
              root-dir (common/get-application-root other-args)]
          (case subtask
            "install"          (apply install/install options other-args)
+           "list-installs"    (install/list-installs)
            "overlay"          (apply install/overlay other-args)
            "version"          (install/version)
            "env"              (apply env/env other-args)
