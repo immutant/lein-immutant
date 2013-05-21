@@ -18,9 +18,11 @@
 
 (defn- subtask-with-resolved-project
   [subtask project-or-nil root-dir options]
-  (apply subtask
-         (conj (common/resolve-project project-or-nil root-dir)
-               options)))
+  (let [project-and-root (common/resolve-project project-or-nil root-dir)]
+    (common/bind-config
+     (first project-and-root)
+     (apply subtask
+            (conj project-and-root options)))))
 
 (defn- handle-undeploy [project-or-nil root-dir options other-args]
   (let [glob-or-path (first other-args)
@@ -56,25 +58,27 @@
   ([subtask]
      (common/print-help))
   ([project-or-nil subtask & args]
-     (if (= "run" subtask)
-       ;; run currently handles its own options
-       (apply run/run project-or-nil args)
-       (let [[options other-args banner] (apply cli/cli args (cli-options subtask))
-             root-dir (common/get-application-root other-args)]
-         (case subtask
-           "install"          (apply install/install options other-args)
-           "overlay"          (apply install/overlay other-args)
-           "version"          (install/version)
-           "env"              (apply env/env other-args)
-           "new"              (init/new (first other-args))
-           "init"             (init/init project-or-nil)
-           "archive"          (subtask-with-resolved-project
-                               archive/archive project-or-nil root-dir options)
-           "deploy"           (subtask-with-resolved-project
-                               deploy/deploy project-or-nil root-dir options)
-           "undeploy"         (handle-undeploy project-or-nil root-dir options other-args)
-           "list"             (list/list options)
-           "test"             (subtask-with-resolved-project
-                               test/test project-or-nil root-dir options)
-           (common/unknown-subtask subtask))))
+     (common/bind-config
+      project-or-nil
+      (if (= "run" subtask)
+        ;; run currently handles its own options
+        (apply run/run project-or-nil args)
+        (let [[options other-args banner] (apply cli/cli args (cli-options subtask))
+              root-dir (common/get-application-root other-args)]
+          (case subtask
+            "install"  (apply install/install options other-args)
+            "overlay"  (apply install/overlay other-args)
+            "version"  (install/version)
+            "env"      (apply env/env other-args)
+            "new"      (init/new (first other-args))
+            "init"     (init/init project-or-nil)
+            "archive"  (subtask-with-resolved-project
+                        archive/archive project-or-nil root-dir options)
+            "deploy"   (subtask-with-resolved-project
+                        deploy/deploy project-or-nil root-dir options)
+            "undeploy" (handle-undeploy project-or-nil root-dir options other-args)
+            "list"     (list/list options)
+            "test"     (subtask-with-resolved-project
+                        test/test project-or-nil root-dir options)
+                        (common/unknown-subtask subtask)))))
      (shutdown-agents)))

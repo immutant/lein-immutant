@@ -20,8 +20,8 @@
 (declare list-installs)
 
 (defn link-current [target]
-  (.delete common/current-path)
-  (let [current-path (.getAbsolutePath common/current-path)
+  (.delete (common/current-path))
+  (let [current-path (.getAbsolutePath (common/current-path))
         target-path (.getAbsolutePath target)]
     (if common/windows?
       (do
@@ -127,7 +127,7 @@
            (common/immutant-storage-dir)
            (if (System/getenv "IMMUTANT_HOME")
              "$IMMUTANT_HOME"
-             (.getAbsolutePath common/current-path))))
+             (.getAbsolutePath (common/current-path)))))
   (->>
    (for [[file {:keys [type version]}] (installed-versions)]
      [(if (= (.getCanonicalPath file)

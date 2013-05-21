@@ -24,12 +24,12 @@ The subtasks provided by the plugin are:
 * `lein immutant install [version [install-dir]]` - downloads and
   installs Immutant for you. By default, it will download the *slim*
   distribution of the latest versioned release and put it in
-  `~/.lein/immutant/releases/`. You can override the version (which
+  `<immutant base dir>/releases/`. You can override the version (which
   must be an incremental build number from
   http://immutant.org/builds/, a released version, or :latest for
   the most recent incremental build) and the install
   directory. Wherever it gets installed, the most recently installed
-  version will be linked from `~/.lein/immutant/current`. If this link
+  version will be linked from `<immutant base dir>/current`. If this link
   is present (and points to a valid Immutant install), you won't need
   to set `$IMMUTANT_HOME`. You can have it install the *full*
   distribution by passing it the `--full` flag.
@@ -146,11 +146,17 @@ The subtasks provided by the plugin are:
   This is a very simple way to automate your integration testing on a
   [CI](http://en.wikipedia.org/wiki/Continuous_integration) host.
   
+By default, the plugin places its files (installed Immutants, the
+current link) under `./lein/immutant/`. You can override this by
+setting `$LEIN_IMMUTANT_BASE_DIR` or by adding `:lein-immutant
+{:base-dir "/path"}` to your user profile in `.lein/profiles.clj` or
+to your `project.clj`.
+
 #### Using the plugin on Windows
 
 There are two differences when using the plugin on windows:
 
-* `~/.lein/immutant/current` isn't a link to the currently active
+* `<immutant base dir>/current` isn't a link to the currently active
   Immutant installation, but is instead a text file containing the
   path to that installation. This is to work around linking issues on
   Windows.

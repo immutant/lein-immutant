@@ -5,7 +5,7 @@
   (if (not (nil? (System/getenv var-name)))
     var-name))
 
-(def the-env 
+(defn get-env []
   (array-map "immutant-home" {:value (get-immutant-home)
                              :from-env-var (env-var-set? "IMMUTANT_HOME") }
              "jboss-home" {:value (get-jboss-home)
@@ -36,12 +36,13 @@ prints out just that path, suitable for usage in a shell script:
   /home/hambone/.lein/immutant/current"
   ([]
      (doall
-      (for [[key entry] the-env]
+      (for [[key entry] (get-env)]
         (display-entry key entry))))
   ([key]
-     (if (contains? the-env key)
-       (when-let [{:keys [value]} (the-env key)]
-         (print (.getAbsolutePath value))
-         (flush))
-       (binding [*out* *err*]
-         (println key "is an unknown env key. Valid keys are:" (keys the-env))))))
+     (let [e (get-env)]
+       (if (contains? e key)
+         (when-let [{:keys [value]} (e key)]
+           (print (.getAbsolutePath value))
+           (flush))
+         (binding [*out* *err*]
+           (println key "is an unknown env key. Valid keys are:" (keys e)))))))

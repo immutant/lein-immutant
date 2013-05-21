@@ -13,21 +13,49 @@
   (io/file (or (first args)
                (System/getProperty "user.dir"))))
 
+(let [last-msg (atom nil)]
+  (defn println-no-repeat [& args]
+    (when-not (= args @last-msg)
+      (reset! last-msg args)
+      (binding [*out* *err*]
+        (apply println args)))))
+
+(def ^:dynamic *custom-config* {})
+
+(defmacro bind-config [project & body]
+  `(binding [*custom-config* (merge *custom-config* (:lein-immutant ~project))]
+     ~@body))
+
+(defn base-dir-from-env []
+  (when-let [base-dir (System/getenv "LEIN_IMMUTANT_BASE_DIR")]
+    (println-no-repeat
+     "Using Immutant base dir from $LEIN_IMMUTANT_BASE_DIR:" base-dir)
+    base-dir))
+
+(defn base-dir-from-config []
+  (when-let [base-dir (:base-dir *custom-config*)]
+    (println-no-repeat
+     "Using Immutant base dir from project config:" base-dir)
+    base-dir))
+
 (defn immutant-storage-dir []
   (.getAbsolutePath
-   (doto (io/file (user/leiningen-home) "immutant")
+   (doto (io/file
+          (or (base-dir-from-env)
+              (base-dir-from-config)
+              (io/file (user/leiningen-home) "immutant")))
      .mkdirs)))
 
-(def current-path
+(defn current-path []
   (io/file (immutant-storage-dir) "current"))
 
 (defn get-immutant-home []
   (if-let [immutant-home (System/getenv "IMMUTANT_HOME")]
     (io/file immutant-home)
-    (when (.exists current-path)
+    (when (.exists (current-path))
       (if windows?
-        (io/file (slurp current-path))
-        current-path))))
+        (io/file (slurp (current-path)))
+        (current-path)))))
 
 (defn get-jboss-home []
   (if-let [jboss-home (System/getenv "JBOSS_HOME")]
@@ -58,8 +86,9 @@
 
 (defn- switch-scope [project dir]
   (if (:root project)
-    (println "Switching project scope to"
-             (.getCanonicalPath dir))))
+    (binding [*out* *err*]
+      (println "Switching project scope to"
+               (.getCanonicalPath dir)))))
 
 (defn- project-root-matches-dir? [project dir]
   (and (:root project)
@@ -75,12 +104,11 @@
      (not (.exists (io/file root-dir))) (abort
                                          (format "Error: path '%s' does not exist"
                                                  root-dir))
-     (.exists project-file) (do
+     (.exists project-file) (let [project (project/read
+                                           (.getAbsolutePath project-file)
+                                           (or profiles [:default]))]
                               (switch-scope project root-dir)
-                              [(project/read
-                                (.getAbsolutePath project-file)
-                                (or profiles [:default]))
-                               root-dir])
+                              [project root-dir])
      :default (do
                 (switch-scope project root-dir)
                 [nil root-dir]))))
