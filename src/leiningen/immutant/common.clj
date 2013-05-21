@@ -13,21 +13,42 @@
   (io/file (or (first args)
                (System/getProperty "user.dir"))))
 
-(defn immutant-storage-dir []
-  (.getAbsolutePath
-   (doto (io/file (user/leiningen-home) "immutant")
-     .mkdirs)))
+(def ^:dynamic *custom-config* {})
 
-(def current-path
+(defmacro bind-config [project & body]
+  `(binding [*custom-config* (merge *custom-config* (:lein-immutant ~project))]
+     ~@body))
+
+(defn base-dir-from-env []
+  (when-let [base-dir (System/getenv "LEIN_IMMUTANT_BASE_DIR")]
+    (println "Note: using base Immutant install dir from $LEIN_IMMUTANT_BASE_DIR:" base-dir)
+    base-dir))
+
+(defn base-dir-from-config []
+  (when-let [base-dir (:base-dir *custom-config*)]
+    (println "Note: using base Immutant install dir from project config:" base-dir)
+    base-dir))
+
+(def immutant-storage-dir
+  ;(memoize)
+  (fn []
+    (.getAbsolutePath
+     (doto (io/file
+            (or (base-dir-from-env)
+                (base-dir-from-config)
+                (io/file (user/leiningen-home) "immutant")))
+       .mkdirs))))
+
+(defn current-path []
   (io/file (immutant-storage-dir) "current"))
 
 (defn get-immutant-home []
   (if-let [immutant-home (System/getenv "IMMUTANT_HOME")]
     (io/file immutant-home)
-    (when (.exists current-path)
+    (when (.exists (current-path))
       (if windows?
-        (io/file (slurp current-path))
-        current-path))))
+        (io/file (slurp (current-path)))
+        (current-path)))))
 
 (defn get-jboss-home []
   (if-let [jboss-home (System/getenv "JBOSS_HOME")]
