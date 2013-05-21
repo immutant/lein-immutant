@@ -48,7 +48,7 @@
               #'archive/archive
               #'deploy/deploy
               #'deploy/undeploy
-              #'deploy/list
+              #'deploy/list-deployments
               #'run/run
               #'test/test]}
   ([subtask]
@@ -60,19 +60,22 @@
        (let [[options other-args banner] (apply cli/cli args (cli-options subtask))
              root-dir (common/get-application-root other-args)]
          (case subtask
-           "install"      (apply install/install options other-args)
-           "overlay"      (apply install/overlay other-args)
-           "version"      (install/version)
-           "env"          (apply env/env other-args)
-           "new"          (init/new (first other-args))
-           "init"         (init/init project-or-nil)
-           "archive"      (subtask-with-resolved-project
-                            archive/archive project-or-nil root-dir options)
-           "deploy"       (subtask-with-resolved-project
-                            deploy/deploy project-or-nil root-dir options)
-           "undeploy"     (handle-undeploy project-or-nil root-dir options other-args)
-           "list"         (deploy/list)
-           "test"         (subtask-with-resolved-project
-                            test/test project-or-nil root-dir options)
+           "install"          (apply install/install options other-args)
+           "overlay"          (apply install/overlay other-args)
+           "version"          (install/version)
+           "env"              (apply env/env other-args)
+           "new"              (init/new (first other-args))
+           "init"             (init/init project-or-nil)
+           "archive"          (subtask-with-resolved-project
+                               archive/archive project-or-nil root-dir options)
+           "deploy"           (subtask-with-resolved-project
+                               deploy/deploy project-or-nil root-dir options)
+           "undeploy"         (handle-undeploy project-or-nil root-dir options other-args)
+           "list"             (do
+                                (common/err "Warning: the list subtask is deprecated, use list-deployments instead.")
+                                (deploy/list-deployments))
+           "list-deployments" (deploy/list-deployments)
+           "test"             (subtask-with-resolved-project
+                               test/test project-or-nil root-dir options)
            (common/unknown-subtask subtask))))
      (shutdown-agents)))

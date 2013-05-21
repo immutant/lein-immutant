@@ -124,6 +124,11 @@ The subtasks provided by the plugin are:
   Note that depending on your shell, you may have to quote or escape *
   and ? in globs.
   
+* `lein immutant list-deployments` - Lists currently deployed
+  applications along with the status of each.
+  This will currently only list disk-based deployments, and won't list
+  anything deployed via the JBoss CLI or management interface.
+  
 * `lein immutant run` - launches the current Immutant. 
 
 * `lein immutant test [path/to/project]` - Runs a project's tests

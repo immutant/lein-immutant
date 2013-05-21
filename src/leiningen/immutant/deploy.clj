@@ -1,5 +1,4 @@
 (ns leiningen.immutant.deploy
-  (:refer-clojure :exclude [list])
   (:require [clojure.java.io               :as io]
             [clojure.string                :as str]
             [leiningen.immutant.archive    :as archive-task]
@@ -41,6 +40,26 @@
     (deploy/rm-deployment-files [f])
     (println "Undeployed" (.getCanonicalPath f))))
 
+(defn list-deployments
+  "Lists currently deployed applications along with the status of each
+
+This will currently only list disk-based deployments, and won't list
+anything deployed via the JBoss CLI or management interface."
+  []
+  (println (format "The following applications are deployed to %s:"
+                   (c/get-immutant-home)))
+  (->>
+   (for [f (deployed-files)]
+     (format "  %-40s (status: %s)"
+             (.getName f)
+             (condp #(.exists (%1 %2)) f
+               util/dodeploy-marker "pending"
+               util/deployed-marker "deployed"
+               util/failed-marker   "failed"
+               "unknown")))
+   (str/join "\n")
+   println))
+
 (defn deploy 
   "Deploys a project to the current Immutant
 
@@ -66,30 +85,32 @@ By default, the plugin will locate the current Immutant by looking at
 ~/.lein/immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
   [project root opts]
-  (let [[options config] (c/group-options opts deploy-options)
-        jboss-home (c/get-jboss-home)
-        profiles (c/extract-profiles project)
-        deployed-file
-        (if (:archive options)
-          (deploy/deploy-archive jboss-home
-                                 project
-                                 (io/file (:root project root))
-                                 (System/getProperty "user.dir")
-                                 (-> options
-                                     (merge config)
-                                     (dissoc :archive)
-                                     (assoc :copy-deps-fn archive-task/copy-dependencies
-                                            :lein-profiles profiles)))
-          (deploy/deploy-dir jboss-home project root options
-                             (if profiles
-                               (assoc config :lein-profiles profiles)
-                               config)))]
-    (if-let [given-profiles (:lein-profiles config)]
-      (c/err (format "Warning: setting lein profiles via --lein-profiles is deprecated.
+  (if (:list opts)
+    (list-deployments)
+    (let [[options config] (c/group-options opts deploy-options)
+          jboss-home (c/get-jboss-home)
+          profiles (c/extract-profiles project)
+          deployed-file
+          (if (:archive options)
+            (deploy/deploy-archive jboss-home
+                                   project
+                                   (io/file (:root project root))
+                                   (System/getProperty "user.dir")
+                                   (-> options
+                                       (merge config)
+                                       (dissoc :archive)
+                                       (assoc :copy-deps-fn archive-task/copy-dependencies
+                                              :lein-profiles profiles)))
+            (deploy/deploy-dir jboss-home project root options
+                               (if profiles
+                                 (assoc config :lein-profiles profiles)
+                                 config)))]
+      (if-let [given-profiles (:lein-profiles config)]
+        (c/err (format "Warning: setting lein profiles via --lein-profiles is deprecated.
          Specify profiles using lein's with-profile higher order task:
            %s\n"
-                     (c/deploy-with-profiles-cmd given-profiles))))
-    (println "Deployed" (util/app-name project root) "to" (.getAbsolutePath deployed-file))))
+                       (c/deploy-with-profiles-cmd given-profiles))))
+      (println "Deployed" (util/app-name project root) "to" (.getAbsolutePath deployed-file)))))
 
 (defn undeploy
   "Undeploys a project from the current Immutant
@@ -127,22 +148,3 @@ $IMMUTANT_HOME environment variable."
        (format "No action taken: %s is not deployed to %s"
                app-name deploy-path)))))
 
-(defn list
-  "Lists currently deployed applications along with the status of each
-
-This will currently only list disk-based deployments, and won't list
-anything deployed via the JBoss CLI or management interface."
-  []
-  (println (format "The following applications are deployed to %s:"
-                   (c/get-immutant-home)))
-  (->>
-   (for [f (deployed-files)]
-     (format "  %-40s (status: %s)"
-             (.getName f)
-             (condp #(.exists (%1 %2)) f
-               util/dodeploy-marker "pending"
-               util/deployed-marker "deployed"
-               util/failed-marker   "failed"
-               "unknown")))
-   (str/join "\n")
-   println))
