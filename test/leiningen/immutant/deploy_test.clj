@@ -30,8 +30,8 @@
           (run-lein "immutant" "deploy"
                     :dir project-dir
                     :env env)              => 0
-                    (.exists dd)                     => true
-                    (verify-root dd project-dir)     => true)))
+          (.exists dd)                     => true
+          (verify-root dd project-dir)     => true)))
 
     (fact "with non-existent path arg should print a warning"
       (with-tmp-jboss-home
@@ -70,11 +70,11 @@
           (run-lein "immutant" "deploy" "--virtual-host" "host" "--context-path" "path"
                     :dir project-dir
                     :env env)      => 0
-                    (.exists dd)             => true
-                    (verify-root dd project-dir)     => true
-                    (read-string (slurp dd)) => (contains
-                                                 {:context-path "path"
-                                                  :virtual-host "host"}))))
+          (.exists dd)             => true
+          (verify-root dd project-dir)     => true
+          (read-string (slurp dd)) => (contains
+                                       {:context-path "path"
+                                        :virtual-host "host"}))))
 
     (fact "profiles should be noticed and written to the dd"
       (with-tmp-jboss-home
@@ -124,9 +124,9 @@
           (run-lein "immutant" "deploy" "--archive"
                     :dir project-dir
                     :env env)                    => 0
-                    (.exists archive)                      => true
-                    (verify-archive archive
-                                    base-project-archive-contents) => true)))
+          (.exists archive)                      => true
+          (verify-archive archive
+                          base-project-archive-contents) => true)))
 
     (fact "--archive with jar options should work"
       (with-tmp-jboss-home
@@ -145,9 +145,9 @@
           (run-lein "immutant" "deploy" "--archive" "--name" "bam"
                     :dir project-dir
                     :env env)                    => 0
-                    (.exists archive)                      => true
-                    (verify-archive archive
-                                    base-project-archive-contents) => true)))
+          (.exists archive)                      => true
+          (verify-archive archive
+                          base-project-archive-contents) => true)))
     
     (fact "--archive with options should work"
       (with-tmp-jboss-home
@@ -155,13 +155,13 @@
           (run-lein "immutant" "deploy" "--archive" "--context-path" "ham"
                     :dir project-dir
                     :env env)                    => 0
-                    (.exists archive)                      => true
-                    (verify-archive archive
-                                    (conj
-                                     base-project-archive-contents
-                                     ".immutant.clj")) => true
-                                     (read-string
-                                      (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "ham"})))
+          (.exists archive)                      => true
+          (verify-archive archive
+                          (conj
+                           base-project-archive-contents
+                           ".immutant.clj")) => true
+          (read-string
+           (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "ham"})))
 
     (fact "--archive with options and profiles should work"
       (with-tmp-jboss-home
@@ -169,14 +169,14 @@
           (run-lein "with-profile" "biscuit" "immutant" "deploy" "--archive" "--context-path" "ham"
                     :dir project-dir
                     :env env)                    => 0
-                    (.exists archive)                      => true
-                    (verify-archive archive
-                                    (conj
-                                     base-project-archive-contents
-                                     ".immutant.clj")) => true
-                                     (read-string
-                                      (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:biscuit]
-                                                                                               :context-path "ham"}))))
+          (.exists archive)                      => true
+          (verify-archive archive
+                          (conj
+                           base-project-archive-contents
+                           ".immutant.clj")) => true
+          (read-string
+           (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:biscuit]
+                                                                    :context-path "ham"}))))
   
   (facts "not in a project"
     (fact "with a path arg should work"
@@ -185,8 +185,8 @@
           (run-lein "immutant" "deploy" (.getAbsolutePath project-dir)
                     :dir *tmp-dir*
                     :env env)              => 0
-                    (.exists dd)                 => true
-                    (verify-root dd project-dir) => true)))
+          (.exists dd)                 => true
+          (verify-root dd project-dir) => true)))
 
     (fact "with a non-existent path arg should work"
       (with-tmp-jboss-home
@@ -205,8 +205,8 @@
           (run-lein "immutant" "deploy" "--name" "ham" (.getAbsolutePath project-dir)
                     :dir *tmp-dir*
                     :env env)              => 0
-                    (.exists dd)                     => true
-                    (verify-root dd project-dir) => true)))
+          (.exists dd)                     => true
+          (verify-root dd project-dir) => true)))
 
     (fact "with a --context-path, --virtual-host, and an path arg should work"
       (with-tmp-jboss-home
@@ -217,11 +217,11 @@
                     (.getAbsolutePath project-dir)
                     :dir *tmp-dir*
                     :env env)      => 0
-                    (.exists dd)             => true
-                    (verify-root dd project-dir) => true
-                    (read-string (slurp dd)) => (contains
-                                                 {:context-path "path"
-                                                  :virtual-host "host"}))))
+          (.exists dd)             => true
+          (verify-root dd project-dir) => true
+          (read-string (slurp dd)) => (contains
+                                       {:context-path "path"
+                                        :virtual-host "host"}))))
 
     (fact "profiles should be noticed and written to the dd"
       (with-tmp-jboss-home
@@ -294,7 +294,7 @@
           (run-lein "immutant" "undeploy"
                     :dir project-dir
                     :env env)              => 0
-                    (tmp-deploy-removed? "test-project") => true)))
+          (tmp-deploy-removed? "test-project") => true)))
 
     (fact "with a path arg to a different app"
       (with-tmp-jboss-home
@@ -347,7 +347,7 @@
           (run-lein "immutant" "undeploy" (.getAbsolutePath project-dir)
                     :dir *tmp-dir*
                     :env env)                  => 0
-                    (tmp-deploy-removed? "test-project") => true)))
+          (tmp-deploy-removed? "test-project") => true)))
 
     (fact "with a non-existent path arg should work"
       (with-tmp-jboss-home
