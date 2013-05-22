@@ -21,4 +21,5 @@
                              [midje      "1.3.1" :exclusions [org.clojure/core.unify]]]
               :resource-paths ["test-resources"]}}
   :pedantic :warn
+  {:signing {:gpg-key "BFC757F9"}}
   :lein-release {:deploy-via :clojars})
