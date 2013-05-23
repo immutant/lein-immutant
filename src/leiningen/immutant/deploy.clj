@@ -7,11 +7,6 @@
             [immutant.deploy-tools.deploy  :as deploy]
             [immutant.deploy-tools.util    :as util]))
 
-(defn ^:internal deployed-files []
-  (filter
-   #(re-find #"(\.clj|\.ima)$" (.getName %))
-   (file-seq (util/deployment-dir (c/get-jboss-home)))))
-
 (def deploy-options
   (concat
    [["-a" "--archive" :flag true]
@@ -27,6 +22,11 @@
           (str % "$")
           (str % "\\.(clj|ima)$"))) 
       re-pattern))
+
+(defn ^:internal deployed-files []
+  (filter
+   #(re-find #"(\.clj|\.ima)$" (.getName %))
+   (file-seq (util/deployment-dir (c/get-jboss-home)))))
 
 (defn ^:internal  matching-deployments [pattern-str]
   (if pattern-str

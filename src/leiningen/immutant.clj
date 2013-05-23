@@ -1,18 +1,20 @@
 (ns leiningen.immutant
-  (:require [leiningen.immutant.deploy  :as deploy]
-            [leiningen.immutant.env     :as env]
-            [leiningen.immutant.test    :as test]
-            [leiningen.immutant.init    :as init]
-            [leiningen.immutant.archive :as archive]
-            [leiningen.immutant.install :as install]
-            [leiningen.immutant.run     :as run]
+  (:require [leiningen.immutant.archive :as archive]
             [leiningen.immutant.common  :as common]
+            [leiningen.immutant.deploy  :as deploy]
+            [leiningen.immutant.env     :as env]
+            [leiningen.immutant.init    :as init]
+            [leiningen.immutant.install :as install]
+            [leiningen.immutant.list    :as list]
+            [leiningen.immutant.run     :as run]
+            [leiningen.immutant.test    :as test]
             [clojure.tools.cli          :as cli]))
 
 (def cli-options
-  {"install"   install/install-options
+  {"archive"   archive/archive-options
    "deploy"    deploy/deploy-options
-   "archive"   archive/archive-options})
+   "install"   install/install-options
+   "list"      list/list-options})
 
 (defn- subtask-with-resolved-project
   [subtask project-or-nil root-dir options]
@@ -41,7 +43,6 @@
   {:no-project-needed true
    :subtasks [#'init/new
               #'install/install
-              #'install/list-installs
               #'install/overlay
               #'install/version
               #'env/env
@@ -49,7 +50,7 @@
               #'archive/archive
               #'deploy/deploy
               #'deploy/undeploy
-              #'deploy/list-deployments
+              #'list/list
               #'run/run
               #'test/test]}
   ([subtask]
@@ -62,7 +63,6 @@
              root-dir (common/get-application-root other-args)]
          (case subtask
            "install"          (apply install/install options other-args)
-           "list-installs"    (install/list-installs)
            "overlay"          (apply install/overlay other-args)
            "version"          (install/version)
            "env"              (apply env/env other-args)
@@ -73,10 +73,7 @@
            "deploy"           (subtask-with-resolved-project
                                deploy/deploy project-or-nil root-dir options)
            "undeploy"         (handle-undeploy project-or-nil root-dir options other-args)
-           "list"             (do
-                                (common/err "Warning: the list subtask is deprecated, use list-deployments instead.")
-                                (deploy/list-deployments))
-           "list-deployments" (deploy/list-deployments)
+           "list"             (list/list options)
            "test"             (subtask-with-resolved-project
                                test/test project-or-nil root-dir options)
            (common/unknown-subtask subtask))))

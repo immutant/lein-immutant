@@ -43,8 +43,12 @@ The subtasks provided by the plugin are:
   can also be any recent build number from
   http://torquebox.org/2x/builds/.
 
-* `lein immutant list-installs` - Lists currently installed versions
-  of Immutant.
+* `lein immutant list [--installs]` - Lists deployments or Immutant
+  installs. If called with no options, lists deployed applications. If
+  given `--installs` (or `-i`), lists installed versions of immutant
+  instead. When listing deploymens, it will only list disk-based ones,
+  and won't list anything deployed via the JBoss CLI or management
+  interface.
 
 * `lein immutant env [key]` - prints out information about the
   Immutant environment. It currently only displays the path to the
@@ -126,11 +130,6 @@ The subtasks provided by the plugin are:
 
   Note that depending on your shell, you may have to quote or escape *
   and ? in globs.
-  
-* `lein immutant list-deployments` - Lists currently deployed
-  applications along with the status of each.
-  This will currently only list disk-based deployments, and won't list
-  anything deployed via the JBoss CLI or management interface.
   
 * `lein immutant run` - launches the current Immutant. 
 
