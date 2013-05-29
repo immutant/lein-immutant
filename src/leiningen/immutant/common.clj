@@ -43,7 +43,7 @@
    (doto (io/file
           (or (base-dir-from-env)
               (base-dir-from-config)
-              (io/file (user/leiningen-home) "immutant")))
+              (io/file (System/getProperty "user.home") ".immutant")))
      .mkdirs)))
 
 (defn current-path []

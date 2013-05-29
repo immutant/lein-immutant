@@ -69,7 +69,7 @@ and modified."
   (defn run
     "Starts up the current Immutant, displaying its console output
 
-The Immutant to start is specified by the ~/.lein/immutant/current
+The Immutant to start is specified by the ~/.immutant/current
 link or $IMMUTANT_HOME, with the environment variable taking
 precedence. You can shutdown the Immutant with ^C.
 
@@ -83,7 +83,7 @@ It also takes the additional convenience arguments:
               equivalent to passing '--server-config=standalone-ha.xml`
 
 By default, the plugin will locate the current Immutant by looking at
-~/.lein/immutant/current. This can be overriden by setting the
+~/.immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
     ([]
        (run nil))

@@ -145,19 +145,27 @@
   "Downloads and installs an Immutant version
 
 By default, it will download the latest versioned release and put it
-in ~/.lein/immutant/releases/. You can override the version (which
-must be an incremental build number from http://immutant.org/builds/,
-a released version, or :latest for the most recent incremental
-build) and the install directory. Wherever it gets installed, the most
-recently installed version will be linked to
-~/.lein/immutant/current. If this link is present (and points to a
-valid Immutant install), you won't need to set $IMMUTANT_HOME to
-notify plugin tasks of the location of Immutant.
+in ~/.immutant/releases/. You can override the version (which must be
+an incremental build number from http://immutant.org/builds/, a
+released version, or :latest for the most recent incremental build)
+and the install directory. Wherever it gets installed, the most
+recently installed version will be linked to ~/.immutant/current. If
+this link is present (and points to a valid Immutant install), you
+won't need to set $IMMUTANT_HOME to notify plugin tasks of the
+location of Immutant.
 
 This task will install the 'slim' distribution unless given the
 '--full' option.
 
- On Windows, ~/.lein/immutant/current is actually a text file
+By default, the install places its files (installed Immutants, the
+current link) under ~/.immutant/. You can override this by setting
+$LEIN_IMMUTANT_BASE_DIR or by adding :lein-immutant {:base-dir
+\"/path\"} to your user profile in .lein/profiles.clj or to your
+project.clj. Setting the base directory in project.clj will override
+the setting in .lein/profiles.clj. Using the environment variable will
+override both.
+
+ On Windows, ~/.immutant/current is actually a text file
 containing the path to the current Immutant instead of a link."
   ([options]
      (install options nil nil))
@@ -190,7 +198,7 @@ an Immutant and whatever feature sets are overlayed onto it. Currently,
 the only supported feature set is 'torquebox'.
 
 By default, the plugin will locate the current Immutant by looking at
-~/.lein/immutant/current. This can be overriden by setting the
+~/.immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
   ([]
      (println "No feature set provided, assuming 'torquebox'")
@@ -209,7 +217,7 @@ $IMMUTANT_HOME environment variable."
   "Prints version info for the current Immutant
 
 By default, the plugin will locate the current Immutant by looking at
-~/.lein/immutant/current. This can be overriden by setting the
+~/.immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
   []
   (if-let [props (util/current-immutant-build-properties

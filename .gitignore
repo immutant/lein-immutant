@@ -9,3 +9,4 @@ pom.xml*
 .jline-warn
 /target/
 lein-immutant*.jar
+/test-resources/user-home/.m2

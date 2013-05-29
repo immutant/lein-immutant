@@ -19,7 +19,7 @@ project to be tested, and will switch to the context of that
 project. This works when lein is invoked in or out of a project.
 
 By default, the plugin will locate the current Immutant by looking at
-~/.lein/immutant/current. This can be overriden by setting the
+~/.immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
   [project root opts]
   (println "Running tests inside Immutant...")

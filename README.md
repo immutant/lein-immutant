@@ -147,10 +147,12 @@ The subtasks provided by the plugin are:
   [CI](http://en.wikipedia.org/wiki/Continuous_integration) host.
   
 By default, the plugin places its files (installed Immutants, the
-current link) under `./lein/immutant/`. You can override this by
-setting `$LEIN_IMMUTANT_BASE_DIR` or by adding `:lein-immutant
-{:base-dir "/path"}` to your user profile in `.lein/profiles.clj` or
-to your `project.clj`.
+current link) under `~/.immutant/`. You can override this by setting
+`$LEIN_IMMUTANT_BASE_DIR` or by adding `:lein-immutant {:base-dir
+"/path"}` to your user profile in `.lein/profiles.clj` or to your
+`project.clj`. Setting the base directory in `project.clj` will
+override the setting in `.lein/profiles.clj`. Using the environment
+variable will override both.
 
 #### Using the plugin on Windows
 

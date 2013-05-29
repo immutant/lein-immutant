@@ -26,14 +26,14 @@ If called with no arguments, it will print out the immutant-home and
 jboss-home values it is using:
 
   $ lein immutant env
-   immutant-home: /home/hambone/.lein/immutant/current 
-      jboss-home: /home/hambone/.lein/immutant/current/jboss 
+   immutant-home: /home/hambone/.immutant/current 
+      jboss-home: /home/hambone/.immutant/current/jboss 
 
 If given a key argument (one of 'immutant-home' or 'jboss-home'), it
 prints out just that path, suitable for usage in a shell script:
 
   $ lein immutant env immutant-home
-  /home/hambone/.lein/immutant/current"
+  /home/hambone/.immutant/current"
   ([]
      (doall
       (for [[key entry] (get-env)]

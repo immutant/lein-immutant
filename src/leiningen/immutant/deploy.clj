@@ -82,7 +82,7 @@ name) and virtual-host with the --context-path and --virtual-host
 options, respectively. 
 
 By default, the plugin will locate the current Immutant by looking at
-~/.lein/immutant/current. This can be overriden by setting the
+~/.immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
   [project root opts]
   (if (:list opts)
@@ -136,7 +136,7 @@ Note that depending on your shell, you may have to quote or escape *
 and ? in globs.
 
 By default, the plugin will locate the current Immutant by looking at
-~/.lein/immutant/current. This can be overriden by setting the
+~/.immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
   [project root opts]
   (let [app-name (util/app-name project root)

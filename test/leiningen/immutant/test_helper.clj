@@ -9,8 +9,12 @@
 (def lein-home
   (io/file (io/resource "lein-home")))
 
+(def user-home
+  (io/file (io/resource "user-home")))
+
 (def base-lein-env
-  {"LEIN_HOME" (.getAbsolutePath lein-home)})
+  {"LEIN_HOME" (.getAbsolutePath lein-home)
+   "LEIN_JVM_OPTS" (format "-Duser.home=%s" (.getAbsolutePath user-home))})
 
 (def plugin-version
   (:version (utils/read-lein-project)))
@@ -50,7 +54,8 @@
   (when (test-or-src-changed?)
     (println "\n==> Performing test env setup...")
     (println "====> Installing project...")
-    (install/install (utils/read-lein-project))
+    (install/install (assoc (utils/read-lein-project)
+                       :local-repo "test-resources/user-home/.m2/repository"))
     (println "====> Creating lein profiles.clj...")
     (spit (io/file lein-home "profiles.clj")
           (pr-str {:user {:plugins [['lein-immutant plugin-version]]}}))

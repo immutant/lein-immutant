@@ -74,7 +74,7 @@
           (:out result)  => (.getAbsolutePath immutant-home))))))
 
 (facts "with IMMUTANT_HOME not set"
-  (let [immutant-home (io/file (io/resource "lein-home/immutant/current"))
+  (let [immutant-home (io/file (io/resource "user-home/.immutant/current"))
         jboss-home (io/file immutant-home "jboss")]
     (fact "env should work"
       (let [result (run-lein-env base-lein-env)]
