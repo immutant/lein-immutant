@@ -147,7 +147,7 @@
 By default, it will download the latest versioned release and put it
 in ~/.immutant/releases/. You can override the version (which must be
 an incremental build number from http://immutant.org/builds/, a
-released version, or :latest for the most recent incremental build)
+released version, or LATEST for the most recent incremental build)
 and the install directory. Wherever it gets installed, the most
 recently installed version will be linked to ~/.immutant/current. If
 this link is present (and points to a valid Immutant install), you

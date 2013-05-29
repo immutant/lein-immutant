@@ -26,7 +26,7 @@ The subtasks provided by the plugin are:
   distribution of the latest versioned release and put it in
   `<immutant base dir>/releases/`. You can override the version (which
   must be an incremental build number from
-  http://immutant.org/builds/, a released version, or :latest for
+  http://immutant.org/builds/, a released version, or LATEST for
   the most recent incremental build) and the install
   directory. Wherever it gets installed, the most recently installed
   version will be linked from `<immutant base dir>/current`. If this link
