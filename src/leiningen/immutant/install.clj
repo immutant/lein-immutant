@@ -60,10 +60,9 @@
 (defn normalize-version [version]
   (if (nil? version)
     (latest-release)
-    (.toUpperCase
-     (if (.startsWith version ":")
-       (.substring version 1)
-       version))))
+    (if (.startsWith version ":")
+      (.toUpperCase (.substring version 1))
+      version)))
 
 (defn suss-dist-type
   ([full? version]
