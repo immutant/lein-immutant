@@ -130,8 +130,9 @@
              (.getAbsolutePath (common/current-path)))))
   (->>
    (for [[file {:keys [type version]}] (installed-versions)]
-     [(if (= (.getCanonicalPath file)
-              (.getCanonicalPath (common/get-immutant-home)))
+     [(if (and (common/get-immutant-home)
+               (= (.getCanonicalPath file)
+                  (.getCanonicalPath (common/get-immutant-home))))
          "*"
          " ")
       version
