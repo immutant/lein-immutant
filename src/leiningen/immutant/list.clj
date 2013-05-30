@@ -12,7 +12,7 @@
 If called with no options, lists deployed applications. If given
 --installs (or -i), lists installed versions of immutant instead.
 
-When listing deploymens, it will only list disk-based ones, and won't
+When listing deployments, it will only list disk-based ones, and won't
 list anything deployed via the JBoss CLI or management interface."
 [opts]
   (if (:installs opts)
