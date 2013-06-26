@@ -135,6 +135,8 @@
           (verify-archive
            archive
            (conj base-project-archive-contents
+                 "lib/tools.nrepl-0.2.3.jar"
+                 "lib/clojure-complete-0.2.3.jar"
                  "lib/clojure-1.4.0.jar")) => true)))
 
     (fact ":omit-source should be honored"
@@ -237,6 +239,8 @@
           (verify-archive
            archive
            (conj base-project-archive-contents
+                 "lib/tools.nrepl-0.2.3.jar"
+                 "lib/clojure-complete-0.2.3.jar"
                  "lib/clojure-1.4.0.jar")) => true)))
 
     (fact "with a path, profiles, and options should add an internal descriptor"
