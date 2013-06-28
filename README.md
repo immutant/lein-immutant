@@ -9,7 +9,7 @@ A Leiningen plugin for deploying Immutant apps.
 As of version 0.15.0, the plugin only supports leiningen 2.0.0 and up.
 To use it, add it to your `~/.lein/profiles.clj`:
 
-    {:user {:plugins [[lein-immutant "1.0.0.beta1"]]}}
+    {:user {:plugins [[lein-immutant "1.0.0.beta2"]]}}
       
 ### Using it
 
