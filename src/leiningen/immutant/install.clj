@@ -211,7 +211,8 @@ $IMMUTANT_HOME environment variable."
        (install nil))
      (binding [overlayment/*verify-sha1-sum* true]
        (let [version-string (when-not (nil? version) (str "-" version))]
-         (overlayment/overlay (common/get-immutant-home) (str feature-set version-string))))) )
+         (overlayment/overlay (.getAbsolutePath (common/get-immutant-home))
+                              (str feature-set version-string))))))
 
 (defn version
   "Prints version info for the current Immutant
