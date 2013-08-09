@@ -1,8 +1,10 @@
 (ns leiningen.immutant.archive
-  (:require [clojure.java.io               :as io]
-            [leiningen.core.classpath      :as cp]
-            [leiningen.immutant.common     :as c]
-            [immutant.deploy-tools.archive :as archive]))
+  (:require [clojure.java.io                :as io]
+            [clojure.set                    :as set]
+            [leiningen.core.classpath       :as cp]
+            [leiningen.immutant.common      :as c]
+            [immutant.deploy-tools.archive  :as archive]
+            [immutant.dependency-exclusions :as depex]))
 
 (def archive-options
   (concat
@@ -10,23 +12,36 @@
     ["-n" "--name"]]
    c/descriptor-options))
 
-(defn- strip-immutant-deps [project]
-  (update-in project [:dependencies]
-             (fn [deps] (remove #(and
-                                  (= "org.immutant" (namespace (first %)))
-                                  (.startsWith (name (first %)) "immutant"))
-                                deps))))
+(defn dependency-overrides [project]
+  (as-> (:root project) %
+      (io/file % "lib")
+      (file-seq %)
+      (next %)
+      (map (memfn getName) %)
+      (set %)))
 
-(defn copy-dependencies [project]
+(defn filter-overlap [project specs]
+  (let [overrides (dependency-overrides project)
+        overlap (set/intersection
+                 overrides
+                 (->> specs (map :name) (map #(subs % 4)) set))]
+    (if (seq overlap)
+      (println "Note: the following jars from the local repo are overriden by versions in lib/:"
+               (clojure.string/join ", " overlap)))
+    (remove #(some #{(:name %)}
+                   (map (partial str "lib/")
+                        overrides))
+            specs)))
+
+(defn dependency-filespecs [project]
   (when project
-    (let [dependencies (cp/resolve-dependencies
-                        :dependencies (strip-immutant-deps project))
-          lib-dir (io/file (:root project) "lib")]
-      (println "Copying" (count dependencies) "dependencies to ./lib")
-      (if-not (.exists lib-dir)
-        (.mkdir lib-dir))
-      (doseq [dep (map io/file dependencies)]
-        (io/copy dep (io/file lib-dir (.getName dep)))))))
+    (->> (cp/resolve-dependencies
+          :dependencies
+          (depex/exclude-immutant-deps project))
+         (map io/file)
+         (map #(archive/->VirtualFile
+                (str "lib/" (.getName %)) %))
+         (filter-overlap project))))
 
 (defn archive
   "Creates an Immutant archive from a project
@@ -54,10 +69,14 @@ application's dependencies will be included in the archive as well.
 If the standard leiningen jar options :omit-source or :jar-exclusions
 are set, they will be honored for archive creation."
   [project root options]
-  (let [jar-file (archive/create project
-                                 (io/file (:root project root))
-                                 (System/getProperty "user.dir")
-                                 (assoc options
-                                   :copy-deps-fn copy-dependencies
-                                   :lein-profiles (c/extract-profiles project)))]
-    (println "Created" (.getAbsolutePath jar-file))))
+  (->> (archive/create
+        project
+        (io/file (:root project root))
+        (System/getProperty "user.dir")
+        (cond-> options
+          true
+          (assoc :lein-profiles (c/extract-profiles project))
+          (:include-dependencies options)
+          (assoc :extra-filespecs (dependency-filespecs project))))
+       .getAbsolutePath
+       (println "Created")))

@@ -99,8 +99,12 @@ $IMMUTANT_HOME environment variable."
                                    (-> options
                                        (merge config)
                                        (dissoc :archive)
-                                       (assoc :copy-deps-fn archive-task/copy-dependencies
-                                              :lein-profiles profiles)))
+                                       (cond->
+                                         true
+                                         (assoc :lein-profiles profiles)
+                                         (:include-dependencies options)
+                                         (assoc :extra-filespecs
+                                           (archive-task/dependency-filespecs project)))))
             (deploy/deploy-dir jboss-home project root options
                                (if profiles
                                  (assoc config :lein-profiles profiles)
