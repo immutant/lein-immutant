@@ -46,11 +46,11 @@
 (defn archive
   "Creates an Immutant archive from a project
 
-Creates an Immutant archive (suffixed with '.ima') in the current
-directory. By default, the archive file will be named after the
-project name in project.clj. This can be overridden via the --name (or
--n) option. This archive can be deployed in lieu of a descriptor
-pointing to the app directory.
+Creates an Immutant archive (suffixed with '.ima') in target/.  By
+default, the archive file will be named after the project name in
+project.clj. This can be overridden via the --name (or -n)
+option. This archive can be deployed in lieu of a descriptor pointing
+to the app directory.
 
 Any profiles that are active (via with-profile) will be captured and
 applied when the app is deployed.
@@ -72,7 +72,7 @@ are set, they will be honored for archive creation."
   (->> (archive/create
         project
         (io/file (:root project root))
-        (System/getProperty "user.dir")
+        (io/file (:target-path project root))
         (cond-> options
           true
           (assoc :lein-profiles (c/extract-profiles project))

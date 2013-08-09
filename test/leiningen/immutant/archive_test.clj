@@ -12,7 +12,7 @@
     (fact "with no args should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
-              archive (io/file project-dir "test-project.ima")]
+              archive (io/file project-dir "target/test-project.ima")]
           (run-lein "immutant" "archive"
                     :dir project-dir
                     :env base-lein-env)          => 0
@@ -23,7 +23,7 @@
     (fact "with no args and non-default project settings should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "non-defaults-project")
-              archive (io/file project-dir "test-project.ima")]
+              archive (io/file project-dir "target/test-project.ima")]
           (run-lein "immutant" "archive"
                     :dir project-dir
                     :env base-lein-env)          => 0
@@ -68,7 +68,7 @@
     (fact "with a --name arg should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
-              archive (io/file project-dir "blarg.ima")]
+              archive (io/file project-dir "target/blarg.ima")]
           (run-lein "immutant" "archive" "--name" "blarg"
                     :dir project-dir
                     :env base-lein-env)  => 0
@@ -80,7 +80,7 @@
     (fact "with options should add an internal descriptor"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
-              archive (io/file project-dir "test-project.ima")]
+              archive (io/file project-dir "target/test-project.ima")]
           (run-lein "immutant" "archive" "--context-path" "/" "--virtual-host" "ham"
                     :dir project-dir
                     :env base-lein-env)  => 0
@@ -96,7 +96,7 @@
     (fact "with profiles should add an internal descriptor"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
-              archive (io/file project-dir "test-project.ima")]
+              archive (io/file project-dir "target/ham/test-project.ima")]
           (run-lein "with-profile" "ham" "immutant" "archive"
                     :dir project-dir
                     :env base-lein-env)  => 0
@@ -111,7 +111,7 @@
     (fact "with profiles and options should add an internal descriptor"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
-              archive (io/file project-dir "test-project.ima")]
+              archive (io/file project-dir "target/ham/test-project.ima")]
           (run-lein "with-profile" "ham" "immutant" "archive" "--context-path" "biscuit"
                     :dir project-dir
                     :env base-lein-env)  => 0
@@ -127,7 +127,7 @@
     (fact "with a --include-dependencies arg should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
-              archive (io/file project-dir "test-project.ima")]
+              archive (io/file project-dir "target/test-project.ima")]
           (run-lein "immutant" "archive" "--include-dependencies"
                     :dir project-dir
                     :env base-lein-env)    => 0
@@ -142,7 +142,7 @@
     (fact ":omit-source should be honored"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "jar-options-project")
-              archive (io/file project-dir "jar-options-project.ima")]
+              archive (io/file project-dir "target/jar-options-project.ima")]
           (run-lein "immutant" "archive"
                     :dir project-dir
                     :env base-lein-env)          => 0
@@ -154,7 +154,7 @@
     (fact ":jar-exclusions should be honored"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "jar-options-project")
-              archive (io/file project-dir "jar-options-project.ima")]
+              archive (io/file project-dir "target/jar-options-project.ima")]
           (run-lein "immutant" "archive"
                     :dir project-dir
                     :env base-lein-env)          => 0
@@ -168,7 +168,7 @@
     (fact "with a path arg should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
-              archive (io/file *tmp-dir* "test-project.ima")]
+              archive (io/file project-dir "target/test-project.ima")]
           (run-lein "immutant" "archive" "test-project"
                     :dir *tmp-dir*
                     :env base-lein-env)    => 0
@@ -179,7 +179,7 @@
     (fact "with a path and non-default project settings should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "non-defaults-project")
-              archive (io/file *tmp-dir* "test-project.ima")]
+              archive (io/file project-dir "target/test-project.ima")]
           (run-lein "immutant" "archive" "non-defaults-project"
                     :dir *tmp-dir*
                     :env base-lein-env)              => 0
@@ -195,7 +195,7 @@
     (fact "with a path and no project.clj should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "projectless-project")
-              archive (io/file *tmp-dir* "projectless-project.ima")]
+              archive (io/file project-dir "projectless-project.ima")]
           (run-lein "immutant" "archive" "projectless-project"
                     :dir *tmp-dir*
                     :env base-lein-env)              => 0
@@ -219,8 +219,8 @@
     
     (fact "with a --name arg and a path arg should work"
       (with-tmp-dir
-        (copy-resource-to-tmp "test-project")
-        (let [archive (io/file *tmp-dir* "blarg.ima")]
+        (let [project-dir (copy-resource-to-tmp "test-project")
+              archive (io/file project-dir "target/blarg.ima")]
           (run-lein "immutant" "archive" "--name" "blarg" "test-project"
                     :dir *tmp-dir*
                     :env base-lein-env)  => 0
@@ -230,8 +230,8 @@
 
     (fact "with a --name arg, --include-dependencies, and a path arg should work"
       (with-tmp-dir
-        (copy-resource-to-tmp "test-project")
-        (let [archive (io/file *tmp-dir* "blarg.ima")]
+        (let [project-dir (copy-resource-to-tmp "test-project")
+              archive (io/file project-dir "target/blarg.ima")]
           (run-lein "immutant" "archive" "--name" "blarg" "--include-dependencies" "test-project"
                     :dir *tmp-dir*
                     :env base-lein-env)  => 0
@@ -246,7 +246,7 @@
     (fact "with a path, profiles, and options should add an internal descriptor"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
-              archive (io/file *tmp-dir* "test-project.ima")]
+              archive (io/file project-dir "target/ham/test-project.ima")]
           (run-lein "with-profile" "ham" "immutant" "archive" "--context-path" "biscuit" "test-project"
                     :dir *tmp-dir*
                     :env base-lein-env)  => 0

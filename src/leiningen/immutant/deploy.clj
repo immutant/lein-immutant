@@ -95,7 +95,7 @@ $IMMUTANT_HOME environment variable."
             (deploy/deploy-archive jboss-home
                                    project
                                    (io/file (:root project root))
-                                   (System/getProperty "user.dir")
+                                   (io/file (:target-path project root))
                                    (-> options
                                        (merge config)
                                        (dissoc :archive)

@@ -54,8 +54,8 @@ The subtasks provided by the plugin are:
   Immutant environment. It currently only displays the path to the
   current Immutant, and the path to JBoss.
   
-* `lein immutant new project-`name - calls `lein new project-name` for
-   you, then calls `lein immutant init`.
+* `lein immutant new project-name` - creates a new project using 
+   the Immutant template..
 
 * `lein immutant init` - creates a sample `immutant.init` namespace
   beneath `src/`
@@ -63,8 +63,8 @@ The subtasks provided by the plugin are:
 * `lein immutant archive [--include-dependencies] [--name name]
                          [--context-path path] [--virtual-host host] 
                          [path/to/project]` - 
-  creates an Immutant archive (suffixed with `.ima`) in the current
-  directory.  By default, the archive file will be named after the
+  creates an Immutant archive (suffixed with `.ima`) in target/. 
+  By default, the archive file will be named after the
   project name in project.clj.  This can be overridden via the
   `--name` (or `-n`) option.  This archive can be deployed in lieu of
   a descriptor pointing to the app directory. 
