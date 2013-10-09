@@ -60,7 +60,7 @@ The subtasks provided by the plugin are:
 * `lein immutant init` - creates a sample `immutant.init` namespace
   beneath `src/`
   
-* `lein immutant archive [--include-dependencies] [--name name]
+* `lein immutant archive [--exclude-dependencies] [--name name]
                          [--context-path path] [--virtual-host host] 
                          [path/to/project]` - 
   creates an Immutant archive (suffixed with `.ima`) in target/. 
@@ -79,15 +79,14 @@ The subtasks provided by the plugin are:
   You can override the default context-path (based off of the
   deployment name) and virtual-host with the `--context-path` and
   `--virtual-host` options, respectively. If the
-  `--include-dependencies` (or `-i`) option is provided, all of the
-  application's dependencies will be included in the archive as
-  well. 
+  `--exclude-dependencies` (or `-e`) option is provided, the
+  application's dependencies won't be included in the archive. 
 
   If the standard leiningen jar options `:omit-source` or
   `:jar-exclusions` are set, they will be honored for archive
   creation.
 
-* `lein immutant deploy [--archive [--include-dependencies]] [--name name] 
+* `lein immutant deploy [--archive [--exclude-dependencies]] [--name name] 
                         [--context-path path] [--virtual-host host] 
                         [path/to/project]` - 
   deploys the current app to the current Immutant. If passed the

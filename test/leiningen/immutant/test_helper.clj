@@ -154,5 +154,8 @@
 (def base-project-archive-contents
   (conj base-archive-contents
         "target/classes/Foo.class"
-        "target/native/foo.so"))
+        "target/native/foo.so"
+        "lib/tools.nrepl-0.2.3.jar"
+        "lib/clojure-complete-0.2.3.jar"
+        "lib/clojure-1.4.0.jar"))
 

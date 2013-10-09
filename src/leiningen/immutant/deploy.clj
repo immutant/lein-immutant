@@ -102,7 +102,7 @@ $IMMUTANT_HOME environment variable."
                                        (cond->
                                          true
                                          (assoc :lein-profiles profiles)
-                                         (:include-dependencies options)
+                                         (not (:exclude-dependencies options))
                                          (assoc :extra-filespecs
                                            (archive-task/dependency-filespecs project)))))
             (deploy/deploy-dir jboss-home project root options

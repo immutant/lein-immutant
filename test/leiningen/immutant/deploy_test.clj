@@ -171,9 +171,10 @@
                     :env env)                    => 0
           (.exists archive)                      => true
           (verify-archive archive
-                          (conj
-                           base-project-archive-contents
-                           ".immutant.clj")) => true
+           (-> base-project-archive-contents
+               (conj ".immutant.clj")
+               (disj "lib/tools.nrepl-0.2.3.jar"
+                     "lib/clojure-complete-0.2.3.jar"))) => true
           (read-string
            (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:biscuit]
                                                                     :context-path "ham"}))))
@@ -278,9 +279,10 @@
                     :env env)                    => 0
                     (.exists archive)                      => true
           (verify-archive archive
-                          (conj
-                           base-project-archive-contents
-                           ".immutant.clj")) => true
+           (-> base-project-archive-contents
+               (conj ".immutant.clj")
+               (disj "lib/tools.nrepl-0.2.3.jar"
+                     "lib/clojure-complete-0.2.3.jar"))) => true
           (read-string
            (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:biscuit]
                                                                     :context-path "ham"})))))

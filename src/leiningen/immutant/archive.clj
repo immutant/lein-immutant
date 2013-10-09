@@ -8,7 +8,7 @@
 
 (def archive-options
   (concat
-   [["-i" "--include-dependencies" :flag true]
+   [["-e" "--exclude-dependencies" :flag true]
     ["-n" "--name"]]
    c/descriptor-options))
 
@@ -63,8 +63,8 @@ You can override the default context-path (based off of the deployment
 name) and virtual-host with the --context-path and --virtual-host
 options, respectively. 
 
-If the --include-dependencies (or -i) option is provided, all of the
-application's dependencies will be included in the archive as well.
+If the --exclude-dependencies (or -e) option is provided, the
+application's dependencies will not be included in the archive.
 
 If the standard leiningen jar options :omit-source or :jar-exclusions
 are set, they will be honored for archive creation."
@@ -76,7 +76,7 @@ are set, they will be honored for archive creation."
         (cond-> options
           true
           (assoc :lein-profiles (c/extract-profiles project))
-          (:include-dependencies options)
+          (not (:exclude-dependencies options))
           (assoc :extra-filespecs (dependency-filespecs project))))
        .getAbsolutePath
        (println "Created")))
