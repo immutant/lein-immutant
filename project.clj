@@ -18,7 +18,7 @@
                  [org.immutant/fntest                         "0.3.15"]]
   :profiles {:dev
              {:dependencies [[lein-midje "2.0.3"]
-                             [leinjacker "0.4.1"]
+                             [leinjacker "0.4.2"]
                              [midje      "1.3.1" :exclusions [org.clojure/core.unify]]]
               :resource-paths ["test-resources"]}}
   :pedantic :warn
