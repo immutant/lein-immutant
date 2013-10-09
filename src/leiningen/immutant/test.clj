@@ -25,7 +25,7 @@ $IMMUTANT_HOME environment variable."
   (println "Running tests inside Immutant...")
   (when-not (common/mapply
               fntest/test-in-container
-              (util/app-name project root)
+              (str (java.util.UUID/randomUUID))
               root
               (assoc opts
                 :jboss-home (common/get-jboss-home)
