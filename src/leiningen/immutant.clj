@@ -3,7 +3,6 @@
             [leiningen.immutant.common  :as common]
             [leiningen.immutant.deploy  :as deploy]
             [leiningen.immutant.env     :as env]
-            [leiningen.immutant.init    :as init]
             [leiningen.immutant.install :as install]
             [leiningen.immutant.list    :as list]
             [leiningen.immutant.run     :as run]
@@ -43,12 +42,10 @@
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
   {:no-project-needed true
-   :subtasks [#'init/new
-              #'install/install
+   :subtasks [#'install/install
               #'install/overlay
               #'install/version
               #'env/env
-              #'init/init
               #'archive/archive
               #'deploy/deploy
               #'deploy/undeploy
@@ -70,8 +67,6 @@
             "overlay"  (apply install/overlay other-args)
             "version"  (install/version)
             "env"      (apply env/env other-args)
-            "new"      (init/new (first other-args))
-            "init"     (init/init project-or-nil)
             "archive"  (subtask-with-resolved-project
                         archive/archive project-or-nil root-dir options)
             "deploy"   (subtask-with-resolved-project

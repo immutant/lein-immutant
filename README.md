@@ -53,13 +53,7 @@ The subtasks provided by the plugin are:
 * `lein immutant env [key]` - prints out information about the
   Immutant environment. It currently only displays the path to the
   current Immutant, and the path to JBoss.
-  
-* `lein immutant new project-name` - creates a new project using 
-   the Immutant template..
-
-* `lein immutant init` - creates a sample `immutant.init` namespace
-  beneath `src/`
-  
+    
 * `lein immutant archive [--exclude-dependencies] [--name name]
                          [--context-path path] [--virtual-host host] 
                          [path/to/project]` - 
