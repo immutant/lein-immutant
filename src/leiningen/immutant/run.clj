@@ -2,46 +2,13 @@
   (:require [clojure.java.io            :as io]
             [leiningen.immutant.common  :as c]
             [jboss-as.management        :as api]
+            [fntest.sh                  :as sh]
             [immutant.deploy-tools.util :as util]))
 
 (def ^:dynamic *pump-should-sleep* true)
 
-(defn- pump
-  "Borrowed from leiningen.core/eval and modified."
-  [reader out line-fn]
-  (let [line-fn (or line-fn identity)]
-    (loop [line (.readLine reader)]
-      (when line
-        (.write out (str (line-fn line) "\n"))
-        (.flush out)
-        (when *pump-should-sleep*
-          (Thread/sleep 10))
-        (recur (.readLine reader))))))
-
 (defn- add-shutdown-hook! [f]
   (.addShutdownHook (Runtime/getRuntime) (Thread. f)))
-
-(defn- sh
-  "A version of clojure.java.shell/sh that streams out/err, and returns the process created.
-It also allows applying a fn to each line of the output. Borrowed from leiningen.core/eval
-and modified."
-  [cmd & [line-fn]]
-  (let [proc (.exec (Runtime/getRuntime)
-                    (into-array cmd))]
-    (.start
-     (Thread.
-      (bound-fn []
-        (with-open [out (io/reader (.getInputStream proc))
-                    err (io/reader (.getErrorStream proc))]
-          (doto (Thread. (bound-fn []
-                           (pump out *out* line-fn)))
-            .start
-            .join)
-          (doto (Thread. (bound-fn []
-                           (pump err *err* line-fn)))
-            .start
-            .join)))))
-    proc))
 
 (let [mgt-url (atom nil)
       jboss-home (c/get-jboss-home)]
@@ -49,10 +16,8 @@ and modified."
     (str (.getAbsolutePath jboss-home) "/bin/standalone."
          (if c/windows? "bat" "sh")))
 
-  (defn- find-mgt-url [line]
-    (if-let [match (re-find #"Http management interface listening on (.*/management)" line)]
-      (reset! mgt-url (last match)))
-    line)
+  (def find-mgt-url
+    (partial sh/find-management-endpoint #(reset! mgt-url %)))
 
   (defn- shutdown []
     (if-let [url @mgt-url]
@@ -104,8 +69,9 @@ $IMMUTANT_HOME environment variable."
                params (replace
                        {"--clustered" "--server-config=standalone-ha.xml"} opts)]
            (apply println "Starting Immutant:" script params)
-           (binding [*pump-should-sleep*
+           (binding [sh/*pump-should-sleep*
                      (not (some options-that-exit-immediately params))]
-             (let [proc (sh (into [script] params) find-mgt-url)]
+             (let [proc (sh/sh (into [script] params)
+                               :line-fn find-mgt-url)]
                (add-shutdown-hook! shutdown)
                (.waitFor proc))))))))

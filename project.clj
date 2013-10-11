@@ -15,7 +15,7 @@
                  [org.immutant/immutant-dependency-exclusions "0.1.0"]
                  [org.clojure/data.json                       "0.2.1"]
                  [org.clojure/tools.cli                       "0.2.1"]
-                 [org.immutant/fntest                         "0.3.15"]]
+                 [org.immutant/fntest                         "0.4.0"]]
   :profiles {:dev
              {:dependencies [[lein-midje "2.0.3"]
                              [leinjacker "0.4.2"]
