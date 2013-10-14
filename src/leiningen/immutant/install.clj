@@ -194,15 +194,14 @@ containing the path to the current Immutant instead of a link."
   "Overlays a feature set onto the current Immutant
 
 This turns the Immutant into a hybrid application server, which acts as
-an Immutant and whatever feature sets are overlayed onto it. Currently,
-the only supported feature set is 'torquebox'.
+an Immutant and whatever feature sets are overlayed onto it.
 
 By default, the plugin will locate the current Immutant by looking at
 ~/.immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
   ([]
-     (println "No feature set provided, assuming 'torquebox'")
-     (overlay "torquebox" nil))
+     (println "Feature spec required: feature[-version]")
+     (overlayment/usage))
   ([feature-set]
      (overlay feature-set nil))
   ([feature-set version]
@@ -212,7 +211,8 @@ $IMMUTANT_HOME environment variable."
      (binding [overlayment/*verify-sha1-sum* true]
        (let [version-string (when-not (nil? version) (str "-" version))]
          (overlayment/overlay (.getAbsolutePath (common/get-immutant-home))
-                              (str feature-set version-string))))))
+                              (str feature-set version-string)
+                              "--overwrite")))))
 
 (defn version
   "Prints version info for the current Immutant
