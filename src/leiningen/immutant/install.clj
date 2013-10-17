@@ -2,6 +2,7 @@
   (:require [clojure.java.io            :as io]
             [clojure.java.shell         :as shell]
             [clojure.data.json          :as json]
+            [clojure.string             :as str]
             [overlay.core               :as overlayment]
             [overlay.filesystem         :as fs]
             [leiningen.immutant.common  :as common]
@@ -82,7 +83,7 @@
                       (= "0.10.0" version)
                       (= "1" (re-find #"^\d" version))))  
              (and (not release?)
-                  (< 750 (Integer/parseInt version))))
+                  (< 750 (-> version (str/split #"_") first Integer/parseInt))))
           (if full? "full" "slim")
           default))))
 
