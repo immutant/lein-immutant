@@ -3,8 +3,10 @@
             [clojure.java.shell         :as shell]
             [clojure.data.json          :as json]
             [overlay.core               :as overlayment]
+            [overlay.filesystem         :as fs]
             [leiningen.immutant.common  :as common]
-            [immutant.deploy-tools.util :as util]))
+            [immutant.deploy-tools.util :as util])
+  (:import org.apache.commons.io.FileUtils))
 
 (alter-var-root #'overlayment/*output-dir*
                 (constantly (io/file (System/getProperty "java.io.tmpdir")
@@ -47,15 +49,18 @@
        (.exists legacy-dir) [legacy-dir version]
        (.exists dir)        [dir version])))
 
-(defn version-exists [url dest-dir version dist-type]
-  (if (overlayment/released-version? version)
-    (version-dir-exists dest-dir version dist-type)
-    (try
-      (let [incr-version (with-open [r (io/reader (overlayment/metadata-url url))]
-                           (:build_number (json/read-str (slurp r) :key-fn keyword)))]
-        (version-dir-exists dest-dir (str "1.x.incremental." incr-version) dist-type))
-      (catch Exception _
-        nil))))
+(defn version-exists [dest-dir version dist-type]
+  (version-dir-exists dest-dir (if (overlayment/released-version? version)
+                                 version
+                                 (str "1.x.incremental." version))
+                      dist-type))
+
+(defn check-for-and-use-existing-version [install-dir version dist-type]
+  (when-let [[existing-dir true-version] (version-exists install-dir version dist-type)]
+    (println (format "Version %s (%s) already installed to %s, not downloading."
+                     true-version dist-type install-dir))
+    (link-current existing-dir)
+    true))
 
 (defn normalize-version [version]
   (if (nil? version)
@@ -98,6 +103,24 @@
              "WARNING: Rename failed - the plugin won't be able to detect this version was installed in the future")
             dir))))))
 
+(defn extract-version-and-type [name]
+  (let [[_ version _ type] (re-find #"immutant-(.*?)($|-([^-]*)$)" name)]
+    {:type type :version version}))
+
+(defn generate-overlay-version [current-name overlay-artifact]
+  (let [overlay-fragment (format "%s-%s"
+                                 (name (overlayment/feature overlay-artifact))
+                                 (overlayment/version overlay-artifact))
+        current-version (:version (extract-version-and-type current-name))]
+    (if (re-find (re-pattern (format "_%s[_-]" overlay-fragment)) current-name)
+      current-version
+      (format "%s_%s" current-version overlay-fragment))))
+
+(defn generate-overlay-dir-name [current-name overlay-artifact]
+  (format "immutant-%s-%s"
+          (generate-overlay-version current-name overlay-artifact)
+          (:type (extract-version-and-type current-name))))
+
 (defn installed-versions
   ([]
      (into {}
@@ -115,8 +138,7 @@
           (filter
            #(re-find #"immutant-.*$" (.getName %)))
           (map (fn [f]
-                 (let [[_ version _ type] (re-find #"immutant-(.*?)($|-(.*)$)" (.getName f))]
-                   [f {:type type :version version}]))))))
+                 [f (extract-version-and-type (.getName f))])))))
 
 (defn list-installs
   "Lists currently installed versions of Immutant"
@@ -137,7 +159,7 @@
       version
       (or type "?")])
    (sort-by second)
-   (map #(apply format " %s %-30s (type: %s)" %))
+   (map #(apply format " %s %-50s (type: %s)" %))
    (clojure.string/join "\n")
    println))
 
@@ -175,13 +197,10 @@ containing the path to the current Immutant instead of a link."
      (let [version (normalize-version version)
            dist-type (suss-dist-type (:full options) version)
            artifact (overlayment/artifact "immutant" version dist-type)
-           url (overlayment/url artifact)
            install-dir (or dest-dir (releases-dir))]
-       (if-let [[existing-dir true-version] (version-exists url install-dir version dist-type)]
-         (do
-           (println (format "Version %s (%s) already installed to %s, not downloading."
-                             true-version dist-type install-dir))
-          (link-current existing-dir))
+       (when-not (check-for-and-use-existing-version install-dir
+                                                     (:version artifact)
+                                                     dist-type)
          (if-let [extracted-dir (binding [overlayment/*extract-dir* install-dir
                                           overlayment/*verify-sha1-sum* true]
                                   (-> artifact
@@ -208,11 +227,25 @@ $IMMUTANT_HOME environment variable."
      (when-not (and (common/get-jboss-home) (.exists (common/get-jboss-home)))
        (println "No Immutant installed, installing the latest versioned release")
        (install nil))
-     (binding [overlayment/*verify-sha1-sum* true]
-       (let [version-string (when-not (nil? version) (str "-" version))]
-         (overlayment/overlay (.getAbsolutePath (common/get-immutant-home))
-                              (str feature-set version-string)
-                              "--overwrite")))))
+     (let [spec (str feature-set (when-not (nil? version) (str "-" version)))
+           artifact (overlayment/artifact spec)
+           current-home (-> (common/get-immutant-home)
+                            .getCanonicalFile)]
+       (when-not (check-for-and-use-existing-version
+                  (releases-dir)
+                  (generate-overlay-version (.getName current-home)
+                                            artifact)
+                  (:type (extract-version-and-type (.getName current-home))))
+         (let [new-dir (io/file (releases-dir) 
+                                (generate-overlay-dir-name (.getName current-home)
+                                                           artifact))]
+           (FileUtils/copyDirectory current-home new-dir true)
+           (fs/+x-sh-scripts new-dir)
+           (binding [overlayment/*verify-sha1-sum* true]
+             (overlayment/overlay (.getAbsolutePath new-dir)
+                                  spec
+                                  "--overwrite"))
+           (link-current new-dir))))))
 
 (defn version
   "Prints version info for the current Immutant

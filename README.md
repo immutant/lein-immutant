@@ -37,11 +37,14 @@ The subtasks provided by the plugin are:
 * `lein immutant overlay [feature-set [version]]` - downloads and
   overlays a feature set onto the currenty installed Immutant. If it
   can't find an Immutant install (either via the `current` link or
-  `$IMMUTANT_HOME`), it will download and install the latest
-  versioned release first. Currently, the only supported feature set
-  is 'torquebox'. The version defaults to the latest incremental, but
-  can also be any recent build number from
-  http://torquebox.org/2x/builds/.
+  `$IMMUTANT_HOME`), it will download and install the latest versioned
+  release first. It will copy the current Immutant install before
+  applying the overlay, allowing you to roll back. Currently, the only
+  supported feature sets are 'torquebox' and 'hotrod'. The version for
+  both defaults to the latest incremental, but can also be any recent
+  build number from http://torquebox.org/2x/builds/ and
+  https://projectodd.ci.cloudbees.com/job/hotrod-overlay/,
+  respectively.
 
 * `lein immutant list [--installs]` - Lists deployments or Immutant
   installs. If called with no options, lists deployed applications. If
@@ -127,10 +130,11 @@ The subtasks provided by the plugin are:
 * `lein immutant run` - launches the current Immutant. 
 
 * `lein immutant test [path/to/project]` - Runs a project's tests
-  inside the current Immutant. Runs the current Immutant, if
-  necessary, deploys the project to it, runs all tests, undeploys the
-  app, and then shuts down the Immutant it started. All tests
-  specified in the `:test-paths` from project.clj will be executed.
+  inside the current Immutant. Runs the current Immutant with offset
+  ports so it won't interfere with any currently running Immutant,
+  deploys the project to it, runs all tests, undeploys the app, and
+  then shuts down the Immutant it started. All tests specified in the
+  `:test-paths` from project.clj will be executed.
 
   If passed a bare argument, the task will assume it is a path to a
   project to be tested, and will switch to the context of that
