@@ -199,7 +199,7 @@ containing the path to the current Immutant instead of a link."
            artifact (overlayment/artifact "immutant" version dist-type)
            install-dir (or dest-dir (releases-dir))]
        (when-not (check-for-and-use-existing-version install-dir
-                                                     (:version artifact)
+                                                     (overlayment/version artifact)
                                                      dist-type)
          (if-let [extracted-dir (binding [overlayment/*extract-dir* install-dir
                                           overlayment/*verify-sha1-sum* true]
