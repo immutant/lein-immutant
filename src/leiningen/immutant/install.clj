@@ -220,16 +220,15 @@ By default, the plugin will locate the current Immutant by looking at
 ~/.immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
   ([]
-     (println "Feature spec required: feature[-version]")
-     (overlayment/usage))
-  ([feature-set]
-     (overlay feature-set nil))
-  ([feature-set version]
+     (common/abort (str "Feature spec required: feature[-version]."
+                        "\nRun `lein help immutant overlay` for more information.")))
+  ([feature version]
+     (overlay (str feature (when-not (nil? version) (str "-" version)))))
+  ([feature-spec]
      (when-not (and (common/get-jboss-home) (.exists (common/get-jboss-home)))
        (println "No Immutant installed, installing the latest versioned release")
        (install nil))
-     (let [spec (str feature-set (when-not (nil? version) (str "-" version)))
-           artifact (overlayment/artifact spec)
+     (let [artifact (overlayment/artifact feature-spec)
            current-home (-> (common/get-immutant-home)
                             .getCanonicalFile)]
        (when-not (check-for-and-use-existing-version
@@ -244,7 +243,7 @@ $IMMUTANT_HOME environment variable."
            (fs/+x-sh-scripts new-dir)
            (binding [overlayment/*verify-sha1-sum* true]
              (overlayment/overlay (.getAbsolutePath new-dir)
-                                  spec
+                                  feature-spec
                                   "--overwrite"))
            (link-current new-dir))))))
 
