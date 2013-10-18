@@ -188,7 +188,7 @@ project.clj. Setting the base directory in project.clj will override
 the setting in .lein/profiles.clj. Using the environment variable will
 override both.
 
- On Windows, ~/.immutant/current is actually a text file
+On Windows, ~/.immutant/current is actually a text file
 containing the path to the current Immutant instead of a link."
   ([options]
      (install options nil nil))
