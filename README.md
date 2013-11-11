@@ -115,14 +115,14 @@ The subtasks provided by the plugin are:
 
   Examples of matching deployment names with globs:
 
-  Given    Will undeploy
-  -----    -------------
-  ham      ham.clj, ham.ima
-  ham.clj  ham.clj
-  ha?      ham.clj, ham.ima, hat.clj, hat.ima
-  *h*      ham.clj, ham.ima, ship.clj, ship.ima, moh.clj, moh.ima
-  h*.clj   ham.clj, hat.clj
-  *        everything
+      Given    Will undeploy
+      -----    -------------
+      ham      ham.clj, ham.ima
+      ham.clj  ham.clj
+      ha?      ham.clj, ham.ima, hat.clj, hat.ima
+      *h*      ham.clj, ham.ima, ship.clj, ship.ima, moh.clj, moh.ima
+      h*.clj   ham.clj, hat.clj
+      *        everything
 
   Note that depending on your shell, you may have to quote or escape *
   and ? in globs.
