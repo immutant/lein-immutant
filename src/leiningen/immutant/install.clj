@@ -9,9 +9,13 @@
             [immutant.deploy-tools.util :as util])
   (:import org.apache.commons.io.FileUtils))
 
+(def tmp-dir (doto
+               (io/file (System/getProperty "java.io.tmpdir")
+                 (str "lein-immutant-" (java.util.UUID/randomUUID)))
+               (.deleteOnExit)))
+
 (alter-var-root #'overlayment/*output-dir*
-                (constantly (io/file (System/getProperty "java.io.tmpdir")
-                                     (str "lein-immutant-" (java.util.UUID/randomUUID)))))
+  (constantly tmp-dir))
 
 (def install-options
   [["-f" "--full" :flag true]])
@@ -249,18 +253,21 @@ $IMMUTANT_HOME environment variable."
                   (generate-overlay-version (.getName current-home)
                                             artifact)
                   type)
-         (let [[managed? new-dir] (new-overlay-dir current-home artifact)]
+         (let [[managed? new-dir] (new-overlay-dir current-home artifact)
+               tmp (io/file tmp-dir (.getName new-dir))]
            (if (.exists new-dir)
              (common/abort (str "Overlay already exists at" (.getCanonicalPath new-dir)))
              (do
-               (FileUtils/copyDirectory current-home new-dir true)
+               (FileUtils/copyDirectory current-home tmp true)
                (fs/+x-sh-scripts new-dir)
                (binding [overlayment/*verify-sha1-sum* true]
-                 (overlayment/overlay (.getAbsolutePath new-dir)
+                 (overlayment/overlay (.getAbsolutePath tmp)
                    feature-spec
-                   "--overwrite"))))
-           (when managed?
-             (link-current new-dir)))))))
+                   "--overwrite"))
+               (println "Moving" (.getCanonicalPath tmp) "to" (.getCanonicalPath new-dir))
+               (FileUtils/moveDirectory tmp new-dir)
+               (when managed?
+                 (link-current new-dir)))))))))
 
 (defn version
   "Prints version info for the current Immutant
