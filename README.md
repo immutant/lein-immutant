@@ -140,6 +140,10 @@ The subtasks provided by the plugin are:
   project to be tested, and will switch to the context of that
   project. This works when lein is invoked in or out of a project.
 
+  Note that the log output for the Immutant instance used for the 
+  test run will be located in 
+  `<project-root>/target/isolated-immutant/standalone/log/`.
+  
   This is a very simple way to automate your integration testing on a
   [CI](http://en.wikipedia.org/wiki/Continuous_integration) host.
   
