@@ -44,11 +44,12 @@
       "LATEST")))
 
 (defn version-dir-exists [dest-dir version dist-type]
+  (when dist-type
     (let [legacy-dir (io/file dest-dir dist-type (format "immutant-%s" version))
           dir        (io/file dest-dir (format "immutant-%s-%s" version dist-type))]
       (cond
-       (.exists legacy-dir) [legacy-dir version]
-       (.exists dir)        [dir version])))
+        (.exists legacy-dir) [legacy-dir version]
+        (.exists dir)        [dir version]))))
 
 (defn version-exists [dest-dir version dist-type]
   (version-dir-exists dest-dir (if (overlayment/released-version? version)
@@ -115,12 +116,22 @@
         current-version (:version (extract-version-and-type current-name))]
     (if (re-find (re-pattern (format "_%s[_-]" overlay-fragment)) current-name)
       current-version
-      (format "%s_%s" current-version overlay-fragment))))
+      (format "%s_%s" (or current-version current-name) overlay-fragment))))
 
 (defn generate-overlay-dir-name [current-name overlay-artifact]
   (format "immutant-%s-%s"
           (generate-overlay-version current-name overlay-artifact)
           (:type (extract-version-and-type current-name))))
+
+(defn new-overlay-dir [current-home artifact]
+  (let [current-name (.getName current-home)]
+    (if (-> current-home
+          .getCanonicalPath
+          (.startsWith (.getCanonicalPath (releases-dir))))
+      [true (io/file (releases-dir)
+              (generate-overlay-dir-name current-name artifact))]
+      [false (io/file (.getParentFile current-home)
+               (generate-overlay-version current-name artifact))])))
 
 (defn installed-versions
   ([]
@@ -230,22 +241,26 @@ $IMMUTANT_HOME environment variable."
        (install nil))
      (let [artifact (overlayment/artifact feature-spec)
            current-home (-> (common/get-immutant-home)
-                            .getCanonicalFile)]
+                          .getCanonicalFile)
+           {:keys [version type]} (extract-version-and-type
+                                    (.getName current-home))]
        (when-not (check-for-and-use-existing-version
                   (releases-dir)
                   (generate-overlay-version (.getName current-home)
                                             artifact)
-                  (:type (extract-version-and-type (.getName current-home))))
-         (let [new-dir (io/file (releases-dir) 
-                                (generate-overlay-dir-name (.getName current-home)
-                                                           artifact))]
-           (FileUtils/copyDirectory current-home new-dir true)
-           (fs/+x-sh-scripts new-dir)
-           (binding [overlayment/*verify-sha1-sum* true]
-             (overlayment/overlay (.getAbsolutePath new-dir)
-                                  feature-spec
-                                  "--overwrite"))
-           (link-current new-dir))))))
+                  type)
+         (let [[managed? new-dir] (new-overlay-dir current-home artifact)]
+           (if (.exists new-dir)
+             (common/abort (str "Overlay already exists at" (.getCanonicalPath new-dir)))
+             (do
+               (FileUtils/copyDirectory current-home new-dir true)
+               (fs/+x-sh-scripts new-dir)
+               (binding [overlayment/*verify-sha1-sum* true]
+                 (overlayment/overlay (.getAbsolutePath new-dir)
+                   feature-spec
+                   "--overwrite"))))
+           (when managed?
+             (link-current new-dir)))))))
 
 (defn version
   "Prints version info for the current Immutant
