@@ -1,4 +1,4 @@
-(defproject lein-immutant "1.1.1-SNAPSHOT"
+(defproject lein-immutant "1.1.1"
   :description "Leiningen plugin for managing an Immutant project."
   :url "https://github.com/immutant/lein-immutant"
   :mailing-list {:name "Immutant users list"
