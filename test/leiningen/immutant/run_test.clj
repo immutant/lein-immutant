@@ -34,10 +34,18 @@
   
   (fact "should massage the --clustered arg"
     (let [{:keys [out]} (call-run "--clustered")]
-      (re-find #"--server-config=standalone-ha.xml" out) => truthy)))
+      (re-find #"--server-config=standalone-ha.xml" out) => truthy))
 
+  (fact "should massage the --offset arg"
+    (let [regex #"-Djboss.socket.binding.port-offset=42"]
+      (re-find regex (:out (call-run "--offset 42"))) => truthy
+      (re-find regex (:out (call-run "--offset=42"))) => truthy
+      (re-find regex (:out (call-run "-o 42"))) => truthy
+      (re-find regex (:out (call-run "-o=42"))) => truthy))
 
-
-
-
-
+  (fact "should massage the --node-name arg"
+    (let [regex #"-Djboss.node.name=toby"]
+      (re-find regex (:out (call-run "--node-name toby"))) => truthy
+      (re-find regex (:out (call-run "--node-name=toby"))) => truthy
+      (re-find regex (:out (call-run "-n toby"))) => truthy
+      (re-find regex (:out (call-run "-n=toby"))) => truthy)))

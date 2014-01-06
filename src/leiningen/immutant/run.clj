@@ -2,7 +2,9 @@
   (:require [clojure.java.io            :as io]
             [leiningen.immutant.common  :as c]
             [jboss-as.management        :as api]
-            [immutant.deploy-tools.util :as util]))
+            [immutant.deploy-tools.util :as util]
+            [clojure.string             :as str])
+  (:use [clojure.pprint :only (pprint)]))
 
 (def ^:dynamic *pump-should-sleep* true)
 
@@ -43,6 +45,15 @@ and modified."
             .join)))))
     proc))
 
+(defn expand-options
+  "Replace convenient plugin options with their JBoss counterparts"
+  [opts]
+  (-> (str/join " " opts)
+    (str/replace "--clustered" "--server-config=standalone-ha.xml")
+    (str/replace #"(--offset|-o)(?:=|\s+)(\S+)" "-Djboss.socket.binding.port-offset=$2")
+    (str/replace #"(--node-name|-n)(?:=|\s+)(\S+)" "-Djboss.node.name=$2")
+    (str/split #" ")))
+
 (let [mgt-url (atom nil)
       jboss-home (c/get-jboss-home)]
   (defn- standalone-sh []
@@ -76,10 +87,14 @@ This task delegates to $JBOSS_HOME/bin/standalone.[sh|bat], and
 takes any arguments the standalone script accepts. To see a full
 list, run `lein immutant run --help`.
 
-It also takes the additional convenience arguments:
+It also takes some additional convenience arguments:
 
- --clustered  Starts the Immutant in clustered mode. This is
-              equivalent to passing '--server-config=standalone-ha.xml`
+ --clustered   Starts the Immutant in clustered mode. Equivalent
+               to passing `--server-config=standalone-ha.xml`
+ --node-name=x (-n=x) To provide unique name when running multiple on
+               same host. Equivalent to `-Djboss.node.name=x`
+ --offset=100  (-o=100) To avoid port conflicts when running multiple on
+               same host. Equivalent to `-Djboss.socket.binding.port-offset=100`
 
 By default, the plugin will locate the current Immutant by looking at
 ~/.immutant/current. This can be overriden by setting the
@@ -100,8 +115,7 @@ $IMMUTANT_HOME environment variable."
            %s\n"
                (c/deploy-with-profiles-cmd profiles)))))
          (let [script (standalone-sh)
-               params (replace
-                       {"--clustered" "--server-config=standalone-ha.xml"} opts)]
+               params (expand-options opts)]
            (apply println "Starting Immutant:" script params)
            (binding [*pump-should-sleep*
                      (not (some options-that-exit-immediately params))]
