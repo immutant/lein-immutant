@@ -85,36 +85,34 @@ By default, the plugin will locate the current Immutant by looking at
 ~/.immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable."
   [project root opts]
-  (if (:list opts)
-    (list-deployments)
-    (let [[options config] (c/group-options opts deploy-options)
-          jboss-home (c/get-jboss-home)
-          profiles (c/extract-profiles project)
-          deployed-file
-          (if (:archive options)
-            (deploy/deploy-archive jboss-home
-                                   project
-                                   (io/file (:root project root))
-                                   (io/file (:target-path project root))
-                                   (-> options
-                                       (merge config)
-                                       (dissoc :archive)
-                                       (cond->
-                                         true
-                                         (assoc :lein-profiles profiles)
-                                         (not (:exclude-dependencies options))
-                                         (assoc :extra-filespecs
-                                           (archive-task/dependency-filespecs project)))))
-            (deploy/deploy-dir jboss-home project root options
-                               (if profiles
-                                 (assoc config :lein-profiles profiles)
-                                 config)))]
-      (if-let [given-profiles (:lein-profiles config)]
-        (c/err (format "Warning: setting lein profiles via --lein-profiles is deprecated.
+  (let [[options config] (c/group-options opts deploy-options)
+        jboss-home (c/get-jboss-home)
+        profiles (c/extract-profiles project)
+        deployed-file
+        (if (:archive options)
+          (deploy/deploy-archive jboss-home
+            project
+            (io/file (:root project root))
+            (io/file (:target-path project root))
+            (-> options
+              (merge config)
+              (dissoc :archive)
+              (cond->
+                true
+                (assoc :lein-profiles profiles)
+                (not (:exclude-dependencies options))
+                (assoc :extra-filespecs
+                  (archive-task/dependency-filespecs project)))))
+          (deploy/deploy-dir jboss-home project root options
+            (if profiles
+              (assoc config :lein-profiles profiles)
+              config)))]
+    (if-let [given-profiles (:lein-profiles config)]
+      (c/err (format "Warning: setting lein profiles via --lein-profiles is deprecated.
          Specify profiles using lein's with-profile higher order task:
            %s\n"
-                       (c/deploy-with-profiles-cmd given-profiles))))
-      (println "Deployed" (util/app-name project root) "to" (.getAbsolutePath deployed-file)))))
+               (c/deploy-with-profiles-cmd given-profiles))))
+    (println "Deployed" (util/app-name project root) "to" (.getAbsolutePath deployed-file))))
 
 (defn undeploy
   "Undeploys a project from the current Immutant
