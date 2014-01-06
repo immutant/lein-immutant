@@ -3,8 +3,7 @@
             [leiningen.immutant.common  :as c]
             [jboss-as.management        :as api]
             [immutant.deploy-tools.util :as util]
-            [clojure.string             :as str])
-  (:use [clojure.pprint :only (pprint)]))
+            [clojure.string             :as str]))
 
 (def ^:dynamic *pump-should-sleep* true)
 
