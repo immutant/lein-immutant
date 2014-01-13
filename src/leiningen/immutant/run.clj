@@ -47,11 +47,12 @@ and modified."
 (defn expand-options
   "Replace convenient plugin options with their JBoss counterparts"
   [opts]
-  (-> (str/join " " opts)
-    (str/replace "--clustered" "--server-config=standalone-ha.xml")
-    (str/replace #"(--offset|-o)(?:=|\s+)(\S+)" "-Djboss.socket.binding.port-offset=$2")
-    (str/replace #"(--node-name|-n)(?:=|\s+)(\S+)" "-Djboss.node.name=$2")
-    (str/split #" ")))
+  (remove empty?
+    (-> (str/join " " opts)
+      (str/replace "--clustered" "--server-config=standalone-ha.xml")
+      (str/replace #"(--offset|-o)(?:=|\s+)(\S+)" "-Djboss.socket.binding.port-offset=$2")
+      (str/replace #"(--node-name|-n)(?:=|\s+)(\S+)" "-Djboss.node.name=$2")
+      (str/split #" "))))
 
 (let [mgt-url (atom nil)
       jboss-home (c/get-jboss-home)]
