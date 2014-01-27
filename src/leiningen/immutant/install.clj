@@ -225,6 +225,11 @@ containing the path to the current Immutant instead of a link."
            (link-current extracted-dir)
            (println "Please try the install again."))))))
 
+(defn auto-install []
+  (when-not (and (common/get-jboss-home) (.exists (common/get-jboss-home)))
+    (println "No Immutant installed, installing the latest versioned release")
+    (install nil)))
+
 (defn overlay
   "Overlays a feature set onto the current Immutant
 
@@ -240,9 +245,7 @@ $IMMUTANT_HOME environment variable."
   ([feature version]
      (overlay (str feature (when-not (nil? version) (str "-" version)))))
   ([feature-spec]
-     (when-not (and (common/get-jboss-home) (.exists (common/get-jboss-home)))
-       (println "No Immutant installed, installing the latest versioned release")
-       (install nil))
+     (auto-install)
      (let [artifact (overlayment/artifact feature-spec)
            current-home (-> (common/get-immutant-home)
                           .getCanonicalFile)

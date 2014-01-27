@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [test])
   (:require [fntest.core                :as fntest]
             [leiningen.immutant.common  :as common]
+            [leiningen.immutant.install :as install]
             [immutant.deploy-tools.util :as util]
             [clojure.java.io            :as io]
             [clojure.string             :as str]))
@@ -20,9 +21,11 @@ project. This works when lein is invoked in or out of a project.
 
 By default, the plugin will locate the current Immutant by looking at
 ~/.immutant/current. This can be overriden by setting the
-$IMMUTANT_HOME environment variable."
+$IMMUTANT_HOME environment variable. If no Immutant install can be
+located, the latest stable release will be installed."
   [project root opts]
   (println "Running tests inside Immutant...")
+  (install/auto-install)
   (when-not (common/mapply
               fntest/test-in-container
               (util/app-name project root)

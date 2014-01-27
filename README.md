@@ -104,6 +104,9 @@ The subtasks provided by the plugin are:
   You can override the default context-path (based off of the
   deployment name) and virtual-host with the `--context-path` and
   `--virtual-host` options, respectively.
+  
+  If no Immutant install can be located, the latest stable release
+  will be installed.
 
 * `lein immutant undeploy [name or glob or path/to/project]` - undeploys
   an application (or applications) from the current Immutant.  
@@ -127,8 +130,10 @@ The subtasks provided by the plugin are:
   Note that depending on your shell, you may have to quote or escape *
   and ? in globs.
   
-* `lein immutant run` - launches the current Immutant. 
-
+* `lein immutant run` - launches the current Immutant. If no Immutant
+  install can be located, the latest stable release will be
+  installed.
+  
 * `lein immutant test [path/to/project]` - Runs a project's tests
   inside the current Immutant. Runs the current Immutant with offset
   ports so it won't interfere with any currently running Immutant,
@@ -147,6 +152,9 @@ The subtasks provided by the plugin are:
   This is a very simple way to automate your integration testing on a
   [CI](http://en.wikipedia.org/wiki/Continuous_integration) host.
   
+  If no Immutant install can be located, the latest stable release
+  will be installed.
+   
 By default, the plugin places its files (installed Immutants, the
 current link) under `~/.immutant/`. You can override this by setting
 `$LEIN_IMMUTANT_BASE_DIR` or by adding `:lein-immutant {:base-dir

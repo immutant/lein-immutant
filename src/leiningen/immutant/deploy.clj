@@ -3,6 +3,7 @@
             [clojure.string                :as str]
             [leiningen.immutant.archive    :as archive-task]
             [leiningen.immutant.common     :as c]
+            [leiningen.immutant.install    :as install]
             [immutant.deploy-tools.archive :as archive]
             [immutant.deploy-tools.deploy  :as deploy]
             [immutant.deploy-tools.util    :as util]))
@@ -83,8 +84,10 @@ options, respectively.
 
 By default, the plugin will locate the current Immutant by looking at
 ~/.immutant/current. This can be overriden by setting the
-$IMMUTANT_HOME environment variable."
+$IMMUTANT_HOME environment variable. If no Immutant install can be
+located, the latest stable release will be installed."
   [project root opts]
+  (install/auto-install)
   (let [[options config] (c/group-options opts deploy-options)
         jboss-home (c/get-jboss-home)
         profiles (c/extract-profiles project)
@@ -98,11 +101,9 @@ $IMMUTANT_HOME environment variable."
               (merge config)
               (dissoc :archive)
               (cond->
-                true
-                (assoc :lein-profiles profiles)
-                (not (:exclude-dependencies options))
-                (assoc :extra-filespecs
-                  (archive-task/dependency-filespecs project)))))
+                true                                  (assoc :lein-profiles profiles)
+                (not (:exclude-dependencies options)) (assoc :extra-filespecs
+                                                        (archive-task/dependency-filespecs project)))))
           (deploy/deploy-dir jboss-home project root options
             (if profiles
               (assoc config :lein-profiles profiles)

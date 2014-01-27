@@ -1,6 +1,7 @@
 (ns leiningen.immutant.run
   (:require [clojure.java.io            :as io]
             [leiningen.immutant.common  :as c]
+            [leiningen.immutant.install :as install]
             [jboss-as.management        :as api]
             [immutant.deploy-tools.util :as util]
             [clojure.string             :as str]))
@@ -97,10 +98,12 @@ It also takes some additional convenience arguments:
 
 By default, the plugin will locate the current Immutant by looking at
 ~/.immutant/current. This can be overriden by setting the
-$IMMUTANT_HOME environment variable."
+$IMMUTANT_HOME environment variable. If no Immutant install can be
+located, the latest stable release will be installed."
     ([]
        (run nil))
     ([project & opts]
+       (install/auto-install)
        (util/with-jboss-home (c/get-jboss-home)
          (when project
            (if-not (util/application-is-deployed? project nil nil)
