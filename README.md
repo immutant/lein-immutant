@@ -130,9 +130,32 @@ The subtasks provided by the plugin are:
   Note that depending on your shell, you may have to quote or escape *
   and ? in globs.
   
-* `lein immutant run` - launches the current Immutant. If no Immutant
-  install can be located, the latest stable release will be
-  installed.
+* `lein immutant run` - Starts up the current Immutant, displaying its console output
+
+  The Immutant to start is specified by the `~/.immutant/current` link
+  or `$IMMUTANT_HOME`, with the environment variable taking
+  precedence. You can shutdown the Immutant with ^C.
+
+  This task delegates to `$JBOSS_HOME/bin/standalone.[sh|bat]`, and
+  takes any arguments the standalone script accepts. To see a full
+  list, run `lein immutant run --help`.
+
+  It also takes some additional convenience arguments:
+
+   --clustered       Starts the Immutant in clustered mode. Equivalent
+                     to passing `--server-config=standalone-ha.xml`
+   --node-name=x     (-n=x) To provide unique name when running multiple on
+                     same host. Equivalent to `-Djboss.node.name=x`
+   --offset=100      (-o=100) To avoid port conflicts when running multiple on
+                     same host. Equivalent to `-Djboss.socket.binding.port-offset=100`
+   --log-level=DEBUG Sets the default logging level to DEBUG (or any other
+                     given valid level). Equivalent to
+                     `-Djboss.logging.level=DEBUG`.
+ 
+  By default, the plugin will locate the current Immutant by looking
+  at `~/.immutant/current`. This can be overriden by setting the
+  `$IMMUTANT_HOME` environment variable. If no Immutant install can be
+  located, the latest stable release will be installed.
   
 * `lein immutant test [path/to/project]` - Runs a project's tests
   inside the current Immutant. Runs the current Immutant with offset

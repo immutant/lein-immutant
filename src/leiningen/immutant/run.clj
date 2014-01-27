@@ -53,7 +53,22 @@ and modified."
       (str/replace "--clustered" "--server-config=standalone-ha.xml")
       (str/replace #"(--offset|-o)(?:=|\s+)(\S+)" "-Djboss.socket.binding.port-offset=$2")
       (str/replace #"(--node-name|-n)(?:=|\s+)(\S+)" "-Djboss.node.name=$2")
+      (str/replace #"(--log-level)(?:=|\s+)(\S+)" "-Djboss.logging.level=$2")
       (str/split #" "))))
+
+(defn munge-logging-properties [params]
+  (when-let [[_ level] (some #(re-find #"-Djboss.logging.level=(\S+)$" %) params)]
+    (let [propfile (io/file (c/get-jboss-home) "standalone/configuration/logging.properties")]
+      (when (.exists propfile)
+        (try
+          (-> propfile
+            slurp
+            (str/replace #"logger\.level=.*\n"
+              (format "logger.level=%s\n" level))
+            (str/replace #"handler\.CONSOLE\.level=.*\n"
+              (format "handler.CONSOLE.level=%s\n" level))
+            (as-> content (spit propfile content)))
+          (catch java.io.IOException _))))))
 
 (let [mgt-url (atom nil)]
   (defn- standalone-sh []
@@ -89,13 +104,16 @@ list, run `lein immutant run --help`.
 
 It also takes some additional convenience arguments:
 
- --clustered   Starts the Immutant in clustered mode. Equivalent
-               to passing `--server-config=standalone-ha.xml`
- --node-name=x (-n=x) To provide unique name when running multiple on
-               same host. Equivalent to `-Djboss.node.name=x`
- --offset=100  (-o=100) To avoid port conflicts when running multiple on
-               same host. Equivalent to `-Djboss.socket.binding.port-offset=100`
-
+ --clustered       Starts the Immutant in clustered mode. Equivalent
+                   to passing `--server-config=standalone-ha.xml`
+ --node-name=x     (-n=x) To provide unique name when running multiple on
+                   same host. Equivalent to `-Djboss.node.name=x`
+ --offset=100      (-o=100) To avoid port conflicts when running multiple on
+                   same host. Equivalent to `-Djboss.socket.binding.port-offset=100`
+ --log-level=DEBUG Sets the default logging level to DEBUG (or any other
+                   given valid level). Equivalent to
+                   `-Djboss.logging.level=DEBUG`.
+ 
 By default, the plugin will locate the current Immutant by looking at
 ~/.immutant/current. This can be overriden by setting the
 $IMMUTANT_HOME environment variable. If no Immutant install can be
@@ -118,6 +136,7 @@ located, the latest stable release will be installed."
                (c/deploy-with-profiles-cmd profiles)))))
          (let [script (standalone-sh)
                params (expand-options opts)]
+           (munge-logging-properties params)
            (apply println "Starting Immutant:" script params)
            (binding [*pump-should-sleep*
                      (not (some options-that-exit-immediately params))]
