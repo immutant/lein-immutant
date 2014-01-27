@@ -54,10 +54,9 @@ and modified."
       (str/replace #"(--node-name|-n)(?:=|\s+)(\S+)" "-Djboss.node.name=$2")
       (str/split #" "))))
 
-(let [mgt-url (atom nil)
-      jboss-home (c/get-jboss-home)]
+(let [mgt-url (atom nil)]
   (defn- standalone-sh []
-    (str (.getAbsolutePath jboss-home) "/bin/standalone."
+    (str (.getAbsolutePath (c/get-jboss-home)) "/bin/standalone."
          (if c/windows? "bat" "sh")))
 
   (defn- find-mgt-url [line]
@@ -102,7 +101,7 @@ $IMMUTANT_HOME environment variable."
     ([]
        (run nil))
     ([project & opts]
-       (util/with-jboss-home jboss-home
+       (util/with-jboss-home (c/get-jboss-home)
          (when project
            (if-not (util/application-is-deployed? project nil nil)
              (c/err "Warning: The current app may not be deployed - deploy with 'lein immutant deploy'"))
