@@ -262,13 +262,13 @@ $IMMUTANT_HOME environment variable."
              (common/abort (str "Overlay already exists at" (.getCanonicalPath new-dir)))
              (do
                (FileUtils/copyDirectory current-home tmp true)
-               (fs/+x-sh-scripts new-dir)
                (binding [overlayment/*verify-sha1-sum* true]
                  (overlayment/overlay (.getAbsolutePath tmp)
                    feature-spec
                    "--overwrite"))
                (println "Moving" (.getCanonicalPath tmp) "to" (.getCanonicalPath new-dir))
                (FileUtils/moveDirectory tmp new-dir)
+               (fs/+x-sh-scripts new-dir)
                (when managed?
                  (link-current new-dir)))))))))
 
