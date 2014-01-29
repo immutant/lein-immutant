@@ -2,9 +2,11 @@
   (:require [clojure.java.io            :as io]
             [leiningen.immutant.common  :as c]
             [leiningen.immutant.install :as install]
+            [leiningen.immutant.deploy  :as deploy]
             [jboss-as.management        :as api]
             [immutant.deploy-tools.util :as util]
-            [clojure.string             :as str]))
+            [clojure.string             :as str]
+            [clojure.java.browse        :as browse]))
 
 (def ^:dynamic *pump-should-sleep* true)
 
@@ -70,18 +72,28 @@ and modified."
             (as-> content (spit propfile content)))
           (catch java.io.IOException _))))))
 
-(let [mgt-url (atom nil)]
+(let [log-data (atom nil)]
   (defn- standalone-sh []
     (str (.getAbsolutePath (c/get-jboss-home)) "/bin/standalone."
          (if c/windows? "bat" "sh")))
 
   (defn- find-mgt-url [line]
-    (if-let [match (re-find #"Http management interface listening on (.*/management)" line)]
-      (reset! mgt-url (last match)))
+    (when-let [match (re-find #"Http management interface listening on (.*/management)" line)]
+      (swap! log-data assoc :mgt-url (last match)))
     line)
 
+  (defn- find-handler-urls [line]
+    (when-let [match (re-find #"Starting handler for (.*) at: (.*)$" line)]
+      (swap! log-data update-in [:handler-urls (second match)] #(conj % (last match))))
+    line)
+
+  (defn- find-deployment-completion [line]
+    (when-let [match (re-find #"JBAS018559: Deployed \"([^.]*)\.clj\"" line)]
+      (swap! log-data update-in [:deployed] #(conj % (last match))))
+    line)
+    
   (defn- shutdown []
-    (if-let [url @mgt-url]
+    (if-let [url (:mgt-url @log-data)]
       (try
         (println "Sending a shutdown message to" url)
         (api/stop (api/->Standalone url nil))
@@ -140,6 +152,39 @@ located, the latest stable release will be installed."
            (apply println "Starting Immutant:" script params)
            (binding [*pump-should-sleep*
                      (not (some options-that-exit-immediately params))]
-             (let [proc (sh (into [script] params) find-mgt-url)]
+             (let [proc (sh (into [script] params)
+                          (comp find-mgt-url find-handler-urls
+                            find-deployment-completion))]
                (add-shutdown-hook! shutdown)
-               (.waitFor proc))))))))
+               (.waitFor proc)))))))
+
+  (defn- open-in-browser [app-name]
+    (future
+      (loop [attempts 1000]
+        (if (some #{app-name} (:deployed @log-data))
+          (when-let [urls (get-in @log-data [:handler-urls app-name])]
+            (println "Opening" (last urls))
+            (browse/browse-url (last urls)))
+          (do
+            (Thread/sleep 100)
+            (if (> attempts 0)
+              (recur (dec attempts))))))))
+  
+  (defn server
+    "Deploys the current app to the current Immutant and runs it
+
+Analogous to `lein ring server`. Takes an optional http port
+parameter.
+
+By default, the plugin will locate the current Immutant by looking at
+~/.immutant/current. This can be overriden by setting the
+$IMMUTANT_HOME environment variable. If no Immutant install can be
+located, the latest stable release will be installed."
+    [project port]
+    (-> (deploy/deploy project nil nil)
+      .getName
+      (str/split #"\.")
+      first
+      open-in-browser)
+    (let [run-opts (if port (str "-Dhttp.port=" port))]
+      (run project run-opts))))

@@ -51,15 +51,18 @@
               #'deploy/undeploy
               #'list/list
               #'run/run
+              #'run/server
               #'test/test]}
   ([subtask]
      (common/print-help))
   ([project-or-nil subtask & args]
      (common/bind-config
       project-or-nil
-      (if (= "run" subtask)
-        ;; run currently handles its own options
-        (apply run/run project-or-nil args)
+      (case subtask
+        ;; run & server currently handle their own options
+        "run"    (apply run/run project-or-nil args)
+        "server" (run/server project-or-nil (first args))
+        
         (let [[options other-args banner] (apply cli/cli args (cli-options subtask))
               root-dir (common/get-application-root other-args)]
           (case subtask

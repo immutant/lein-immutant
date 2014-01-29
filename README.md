@@ -157,6 +157,15 @@ The subtasks provided by the plugin are:
   `$IMMUTANT_HOME` environment variable. If no Immutant install can be
   located, the latest stable release will be installed.
   
+* `lein immutant server [port]` - Deploys the current app to the
+  current Immutant and runs it. Analogous to `lein ring server`. Takes
+  an optional http port parameter.
+
+  By default, the plugin will locate the current Immutant by looking at
+  `~/.immutant/current`. This can be overriden by setting the
+  `$IMMUTANT_HOME` environment variable. If no Immutant install can be
+  located, the latest stable release will be installed.
+
 * `lein immutant test [path/to/project]` - Runs a project's tests
   inside the current Immutant. Runs the current Immutant with offset
   ports so it won't interfere with any currently running Immutant,
@@ -209,6 +218,6 @@ The plugin has a mediocre midje test suite. You can run it via:
 
 ## License
 
-Copyright (C) 2011-2013 Red Hat, Inc.
+Copyright (C) 2011-2014 Red Hat, Inc.
 
 Licensed under the Eclipse Public License v1.0

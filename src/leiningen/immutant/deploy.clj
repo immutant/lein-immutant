@@ -113,7 +113,8 @@ located, the latest stable release will be installed."
          Specify profiles using lein's with-profile higher order task:
            %s\n"
                (c/deploy-with-profiles-cmd given-profiles))))
-    (println "Deployed" (util/app-name project root) "to" (.getAbsolutePath deployed-file))))
+    (println "Deployed" (util/app-name project root) "to" (.getAbsolutePath deployed-file))
+    deployed-file))
 
 (defn undeploy
   "Undeploys a project from the current Immutant
