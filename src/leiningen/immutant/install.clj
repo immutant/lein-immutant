@@ -76,7 +76,7 @@
   (when-let [[existing-dir true-version] (version-exists install-dir version dist-type)]
     (println (format "Version %s (%s) already installed to %s, not downloading."
                      true-version dist-type install-dir))
-    (link-current existing-dir)
+    (link-current install-dir existing-dir)
     true))
 
 (defn normalize-version [version]
