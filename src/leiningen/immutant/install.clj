@@ -24,20 +24,31 @@
   (doto (io/file (common/immutant-storage-dir) "releases")
     .mkdirs))
 
+(defn managed-base-dir? [base-dir]
+  (-> base-dir
+    io/file
+    .getCanonicalPath
+    (.startsWith (.getCanonicalPath (releases-dir)))))
+
 (declare list-installs)
 
-(defn link-current [target]
-  (.delete (common/current-path))
-  (let [current-path (.getAbsolutePath (common/current-path))
-        target-path (.getAbsolutePath target)]
-    (if common/windows?
-      (do
-        (println "Storing path to" target-path "in" current-path)
-        (spit current-path target-path))
-      (do
-        (println  "Linking" current-path "to" target-path)
-        (shell/sh "ln" "-s" target-path current-path))))
-  (list-installs))
+(defn link-current [base-dir target]
+  (if (managed-base-dir? base-dir)
+    (do
+      (.delete (common/current-path))
+      (let [current-path (.getAbsolutePath (common/current-path))
+            target-path (.getAbsolutePath target)]
+        (if common/windows?
+          (do
+            (println "Storing path to" target-path "in" current-path)
+            (spit current-path target-path))
+          (do
+            (println  "Linking" current-path "to" target-path)
+            (shell/sh "ln" "-s" target-path current-path))))
+      (list-installs))
+    (println (-> base-dir io/file .getAbsolutePath)
+      "is unmanaged, not linking"
+      (.getAbsolutePath (common/current-path)))))
 
 (defn latest-release []
   (try
@@ -129,13 +140,11 @@
 
 (defn new-overlay-dir [current-home artifact]
   (let [current-name (.getName current-home)]
-    (if (-> current-home
-          .getCanonicalPath
-          (.startsWith (.getCanonicalPath (releases-dir))))
-      [true (io/file (releases-dir)
-              (generate-overlay-dir-name current-name artifact))]
-      [false (io/file (.getParentFile current-home)
-               (generate-overlay-version current-name artifact))])))
+    (if (managed-base-dir? current-home)
+      (io/file (releases-dir)
+        (generate-overlay-dir-name current-name artifact))
+      (io/file (.getParentFile current-home)
+        (generate-overlay-version current-name artifact)))))
 
 (defn installed-versions
   ([]
@@ -222,7 +231,7 @@ containing the path to the current Immutant instead of a link."
                                   (-> artifact
                                       overlayment/download-and-extract
                                       (adjust-legacy-dist dist-type)))]
-           (link-current extracted-dir)
+           (link-current install-dir extracted-dir)
            (println "Please try the install again."))))))
 
 (defn auto-install []
@@ -256,7 +265,7 @@ $IMMUTANT_HOME environment variable."
                   (generate-overlay-version (.getName current-home)
                                             artifact)
                   type)
-         (let [[managed? new-dir] (new-overlay-dir current-home artifact)
+         (let [new-dir (new-overlay-dir current-home artifact)
                tmp (io/file tmp-dir (.getName new-dir))]
            (if (.exists new-dir)
              (common/abort (str "Overlay already exists at" (.getCanonicalPath new-dir)))
@@ -269,8 +278,7 @@ $IMMUTANT_HOME environment variable."
                (println "Moving" (.getCanonicalPath tmp) "to" (.getCanonicalPath new-dir))
                (FileUtils/moveDirectory tmp new-dir)
                (fs/+x-sh-scripts new-dir)
-               (when managed?
-                 (link-current new-dir)))))))))
+               (link-current current-home new-dir))))))))
 
 (defn version
   "Prints version info for the current Immutant
