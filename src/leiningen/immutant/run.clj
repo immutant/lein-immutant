@@ -181,6 +181,10 @@ By default, the plugin will locate the current Immutant by looking at
 $IMMUTANT_HOME environment variable. If no Immutant install can be
 located, the latest stable release will be installed."
     [project port]
+    (try
+      (if port (Integer/parseInt port))
+      (catch NumberFormatException _
+        (c/abort "Argument must be a port.")))   
     (-> (deploy/deploy project nil nil)
       .getName
       (str/split #"\.")
