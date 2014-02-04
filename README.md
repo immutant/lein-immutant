@@ -9,7 +9,7 @@ A Leiningen plugin for deploying Immutant apps.
 As of version 0.15.0, the plugin only supports leiningen 2.0.0 and up.
 To use it, add it to your `~/.lein/profiles.clj`:
 
-    {:user {:plugins [[lein-immutant "1.1.1"]]}}
+    {:user {:plugins [[lein-immutant "1.2.0"]]}}
       
 ### Using it
 
@@ -28,7 +28,7 @@ The subtasks provided by the plugin are:
   must be an incremental build number from
   http://immutant.org/builds/, a released version, or LATEST for
   the most recent incremental build) and the install
-  directory. Wherever it gets installed, the most recently installed
+  directory. Without an `install-dir` argument, the most recently installed
   version will be linked from `<immutant base dir>/current`. If this link
   is present (and points to a valid Immutant install), you won't need
   to set `$IMMUTANT_HOME`. You can have it install the *full*
