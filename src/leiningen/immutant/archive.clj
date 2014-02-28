@@ -9,7 +9,8 @@
 (def archive-options
   (concat
    [["-e" "--exclude-dependencies" :flag true]
-    ["-n" "--name"]]
+    ["-n" "--name"]
+    ["-v" "--version" :flag true]]
    c/descriptor-options))
 
 (defn dependency-overrides [project]
@@ -48,9 +49,10 @@
 
 Creates an Immutant archive (suffixed with '.ima') in target/.  By
 default, the archive file will be named after the project name in
-project.clj. This can be overridden via the --name (or -n)
-option. This archive can be deployed in lieu of a descriptor pointing
-to the app directory.
+project.clj. This can be overridden via the --name (or -n) option. If
+the --version (or -v) flag is specified, the project version will be
+appended to the name. This archive can be deployed in lieu of a
+descriptor pointing to the app directory.
 
 Any profiles that are active (via with-profile) will be captured and
 applied when the app is deployed.
