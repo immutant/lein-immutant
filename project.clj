@@ -1,4 +1,4 @@
-(defproject lein-immutant "1.2.1-SNAPSHOT"
+(defproject lein-immutant "2.0.0-SNAPSHOT"
   :description "Leiningen plugin for managing an Immutant project."
   :url "https://github.com/immutant/lein-immutant"
   :mailing-list {:name "Immutant users list"
@@ -9,17 +9,6 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo}
   :eval-in-leiningen true
-  :exclusions [org.clojure/clojure dynapath]
-  :dependencies [[org.immutant/overlay                        "1.5.2"]
-                 [org.immutant/deploy-tools                   "0.14.1"]
-                 [org.immutant/immutant-dependency-exclusions "0.1.0"]
-                 [org.clojure/data.json                       "0.2.1"]
-                 [org.immutant/fntest                         "0.5.2"]]
-  :profiles {:dev
-             {:dependencies [[lein-midje "2.0.3"]
-                             [leinjacker "0.4.2"]
-                             [midje      "1.3.1" :exclusions [org.clojure/core.unify]]]
-              :resource-paths ["test-resources"]}}
   :pedantic :warn
   :signing {:gpg-key "BFC757F9"}
   :lein-release {:deploy-via :clojars})
