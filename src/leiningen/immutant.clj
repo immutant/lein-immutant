@@ -1,5 +1,6 @@
 (ns leiningen.immutant
   (:require [leiningen.core.classpath :as cp]
+            [leiningen.core.main :refer [abort]]
             [clojure.string :as str]
             [clojure.java.io :as io])
   (:import java.util.Properties))
@@ -12,11 +13,28 @@
                (require 'immutant.wildfly)
                (immutant.wildfly/init (quote ~init-fn) {:nrepl {:host "localhost" :port 0}})))))
 
+(defn extract-keys
+  ([m]
+     (extract-keys [] m))
+  ([acc m]
+     (if (map? m)
+       (concat (keys m) (mapcat (fn [[_ v]] (extract-keys acc v)) m)))))
+
+(defn- locate-version [project ns]
+  (if-let [version (->> project
+                     (cp/dependency-hierarchy :dependencies)
+                     extract-keys
+                     (some (fn [[dep version]]
+                             (if (= ns (namespace dep))
+                               version))))]
+      version
+      (abort (format "No %s dependency found in the project's dependency tree." ns))))
+
 (defn- classpath [project]
   ;; TODO: don't displace a version that may be there
   (-> project
     (update-in [:dependencies]
-      conj ['org.immutant/wildfly "2.0.0-SNAPSHOT"])
+      conj ['org.immutant/wildfly (locate-version project "org.immutant")])
     cp/get-classpath))
 
 (defn- build-descriptor [project]
@@ -33,11 +51,10 @@
     (Properties.)
     m))
 
-(defn- copy-deploy-jar [to]
-  ;; TODO: deal with different versions of wboss
-  ;; pull that version from the existing deps somehow?
+(defn- copy-deploy-jar [project to]
   (-> (cp/resolve-dependencies :dependencies
-        {:dependencies '[[org.projectodd.wunderboss/wunderboss-wildfly "0.1.0-SNAPSHOT"]]})
+        {:dependencies [['org.projectodd.wunderboss/wunderboss-wildfly
+                         (locate-version project "org.projectodd.wunderboss")]]})
     (as-> files (filter #(re-find #"wunderboss-wildfly.*\.jar" (.getName %)) files))
     first
     (io/copy to)))
@@ -49,7 +66,7 @@
         props-file (io/file dep-dir (str (:name project) ".properties"))
         jar-file (io/file dep-dir (str (:name project) ".jar"))]
     (println "Creating" (.getAbsolutePath jar-file))
-    (copy-deploy-jar jar-file)
+    (copy-deploy-jar project jar-file)
     (println "Creating" (.getAbsolutePath props-file))
     (with-open [writer (io/writer props-file)]
       (-> project
