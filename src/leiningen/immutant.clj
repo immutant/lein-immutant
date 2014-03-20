@@ -5,10 +5,22 @@
             [clojure.java.io :as io])
   (:import java.util.Properties))
 
+(defn- main-fn [project]
+  (if-let [main-ns (:main project)]
+    (symbol (str main-ns) "-main")))
+
+(defn- ring-fn [project]
+  ;;TODO: implement
+  )
+
+(defn- immutant-init-fn [project]
+  (-> project :immutant :init))
+
 (defn- build-init [project]
-  ;;TODO: support ring/main options
   ;;TODO: make repl optional
-  (if-let [init-fn (-> project :immutant :init)]
+  (if-let [init-fn (or (main-fn project)
+                     (ring-fn project)
+                     (immutant-init-fn project))]
     (pr-str `(do
                (require 'immutant.wildfly)
                (immutant.wildfly/init (quote ~init-fn) {:nrepl {:host "localhost" :port 0}})))))
