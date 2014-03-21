@@ -72,8 +72,12 @@
     (io/copy to)))
 
 (defn deploy [project wf-home]
-    "Deploys the current project to the given WildFly home."
+  "Deploys the current project to the given WildFly home."
   [project wf-home]
+  (when (nil? wf-home)
+    (abort "Missing argument: deploy requires JBoss install path"))
+  (when (nil? (build-init project))
+    (abort "Project requires an entry point, e.g. -main, ring handler, immutant init"))
   (let [dep-dir (io/file wf-home "standalone/deployments")
         props-file (io/file dep-dir (str (:name project) ".properties"))
         jar-file (io/file dep-dir (str (:name project) ".jar"))]
