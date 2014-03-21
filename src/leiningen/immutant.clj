@@ -18,9 +18,9 @@
 
 (defn- build-init [project]
   ;;TODO: make repl optional
-  (if-let [init-fn (or (main-fn project)
-                     (ring-fn project)
-                     (immutant-init-fn project))]
+  (if-let [init-fn (or (immutant-init-fn project)
+                     (main-fn project)
+                     (ring-fn project))]
     (pr-str `(do
                (require 'immutant.wildfly)
                (immutant.wildfly/init (quote ~init-fn) {:nrepl {:host "localhost" :port 0}})))))
