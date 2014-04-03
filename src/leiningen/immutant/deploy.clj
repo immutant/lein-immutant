@@ -97,13 +97,10 @@ located, the latest stable release will be installed."
             project
             (io/file (:root project root))
             (io/file (:target-path project root))
-            (-> options
-              (merge config)
-              (dissoc :archive)
-              (cond->
-                true                                  (assoc :lein-profiles profiles)
-                (not (:exclude-dependencies options)) (assoc :extra-filespecs
-                                                        (archive-task/dependency-filespecs project)))))
+            (archive-task/merge-archive-options project 
+              (-> options
+                (merge config)
+                (dissoc :archive))))
           (deploy/deploy-dir jboss-home project root options
             (if profiles
               (assoc config :lein-profiles profiles)

@@ -21,7 +21,7 @@
       (map (memfn getName) %)
       (set %)))
 
-(defn filter-overlap [project specs]
+(defn filter-overlap [specs project]
   (let [overrides (dependency-overrides project)
         overlap (set/intersection
                  overrides
@@ -34,15 +34,27 @@
                         overrides))
             specs)))
 
+(defn filespecs-for-dep-type [project key prefix]
+  (->> (cp/resolve-dependencies key project)
+    (map io/file)
+    (map #(archive/->VirtualFile
+            (str prefix (.getName %)) %))))
+
 (defn dependency-filespecs [project]
   (when project
-    (->> (cp/resolve-dependencies
-          :dependencies
-          (depex/exclude-immutant-deps project))
-         (map io/file)
-         (map #(archive/->VirtualFile
-                (str "lib/" (.getName %)) %))
-         (filter-overlap project))))
+    (concat
+      (-> project
+        depex/exclude-immutant-deps
+        (filespecs-for-dep-type :dependencies "lib/")
+         (filter-overlap project))
+      (filespecs-for-dep-type project :plugins "plugin-deps/"))))
+
+(defn merge-archive-options [project options]
+  (let [include-deps? (not (:exclude-dependencies options))]
+    (cond-> (assoc options :lein-profiles (c/extract-profiles project))
+      include-deps? (assoc :extra-filespecs (dependency-filespecs project)
+                           :resolve-dependencies false
+                           :resolve-plugin-dependencies false))))
 
 (defn archive
   "Creates an Immutant archive from a project
@@ -75,10 +87,6 @@ are set, they will be honored for archive creation."
         project
         (io/file (:root project root))
         (io/file (:target-path project root))
-        (cond-> options
-          true
-          (assoc :lein-profiles (c/extract-profiles project))
-          (not (:exclude-dependencies options))
-          (assoc :extra-filespecs (dependency-filespecs project))))
+        (merge-archive-options project options))
        .getAbsolutePath
        (println "Created")))
