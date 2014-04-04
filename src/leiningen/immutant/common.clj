@@ -148,4 +148,6 @@
   [(as-config-option ["--context-path"])
    (as-config-option ["--virtual-host"])])
 
-(def prep-tasks eval/prep)
+(defn prep-tasks [project]
+  (when project
+    (eval/prep project)))
