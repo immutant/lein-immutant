@@ -157,11 +157,11 @@
                     :env env)                    => 0
           (.exists archive)                      => true
           (verify-archive archive
-                          (conj
-                           base-project-archive-contents
-                           ".immutant.clj")) => true
+            base-project-archive-contents) => true
           (read-string
-           (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "ham"})))
+            (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "ham"
+                                                                     :resolve-dependencies false
+                                                                     :resolve-plugin-dependencies false})))
 
     (fact "--archive with options and profiles should work"
       (with-tmp-jboss-home
@@ -171,13 +171,14 @@
                     :env env)                    => 0
           (.exists archive)                      => true
           (verify-archive archive
-           (-> base-project-archive-contents
-               (conj ".immutant.clj")
-               (disj "lib/tools.nrepl-0.2.3.jar"
-                     "lib/clojure-complete-0.2.3.jar"))) => true
+            (disj base-project-archive-contents
+              "lib/tools.nrepl-0.2.3.jar"
+              "lib/clojure-complete-0.2.3.jar")) => true
           (read-string
            (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:biscuit]
-                                                                    :context-path "ham"}))))
+                                                                    :context-path "ham"
+                                                                    :resolve-dependencies false
+                                                                    :resolve-plugin-dependencies false}))))
   
   (facts "not in a project"
     (fact "with a path arg should work"
@@ -269,7 +270,9 @@
                              base-project-archive-contents
                              ".immutant.clj")) => true
             (read-string
-             (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "ham"})))
+              (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "ham"
+                                                                       :resolve-dependencies false
+                                                                       :resolve-plugin-dependencies false})))
 
     (fact "--archive with options and profiles should work"
       (with-tmp-jboss-home
@@ -285,7 +288,9 @@
                      "lib/clojure-complete-0.2.3.jar"))) => true
           (read-string
            (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:biscuit]
-                                                                    :context-path "ham"})))))
+                                                                    :context-path "ham"
+                                                                    :resolve-dependencies false
+                                                                    :resolve-plugin-dependencies false})))))
 
 (facts "undeploy"
   (facts "in a project"

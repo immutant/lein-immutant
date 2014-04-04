@@ -147,7 +147,8 @@
         f))))
 
 
-(def base-archive-contents #{"project.clj"
+(def base-archive-contents #{".immutant.clj"
+                             "project.clj"
                              "resources/resource.txt"
                              "src/test_project/core.clj"})
 

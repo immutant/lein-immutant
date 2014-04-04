@@ -83,7 +83,7 @@
                           base-project-archive-contents) => true)))
 
 
-    (fact "with options should add an internal descriptor"
+    (fact "with options should add them to the internal descriptor"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
               archive (io/file project-dir "target/test-project.ima")]
@@ -92,13 +92,48 @@
                     :env base-lein-env)  => 0
           (.exists archive)              => true
           (verify-archive
-           archive
-           (conj base-project-archive-contents
-                 ".immutant.clj"))       => true
+            archive
+            base-project-archive-contents)       => true
            (read-string
             (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "/"
-                                                                     :virtual-host "ham"})))
+                                                                     :virtual-host "ham"
+                                                                     :resolve-dependencies false
+                                                                     :resolve-plugin-dependencies false})))
 
+    (fact "plugin deps should be included"
+      (with-tmp-dir
+        (let [project-dir (copy-resource-to-tmp "test-project")
+              archive (io/file project-dir "target/test-project.ima")]
+          (run-lein "with-profile" "plugin" "immutant" "archive"
+                    :dir project-dir
+                    :env base-lein-env)  => 0
+          (.exists archive)              => true
+          (verify-archive
+            archive
+            (-> base-project-archive-contents
+              (disj
+                "lib/tools.nrepl-0.2.3.jar"
+                "lib/clojure-complete-0.2.3.jar")
+              (conj
+                "plugin-deps/immutant-dependency-exclusions-0.1.0.jar")))       => true)))
+    
+    (fact "excluding dependencies should put nothing in the descriptor"
+      (with-tmp-dir
+        (let [project-dir (copy-resource-to-tmp "test-project")
+              archive (io/file project-dir "target/test-project.ima")]
+          (run-lein "immutant" "archive" "--context-path" "/" "--exclude-dependencies"
+            :dir project-dir
+            :env base-lein-env)  => 0
+          (.exists archive)              => true
+          (verify-archive
+           archive
+           (disj base-project-archive-contents
+             "lib/tools.nrepl-0.2.3.jar"
+             "lib/clojure-complete-0.2.3.jar"
+             "lib/clojure-1.4.0.jar"))       => true
+           (read-string
+             (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "/"})))
+    
     (fact "with profiles should add an internal descriptor"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
@@ -109,13 +144,13 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (-> base-project-archive-contents
-               (conj ".immutant.clj")
-               (disj
-                "lib/tools.nrepl-0.2.3.jar"
-                "lib/clojure-complete-0.2.3.jar")))       => true
+           (disj base-project-archive-contents
+             "lib/tools.nrepl-0.2.3.jar"
+             "lib/clojure-complete-0.2.3.jar"))       => true
            (read-string
-            (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:ham]})))
+             (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:ham]
+                                                                      :resolve-dependencies false
+                                                                      :resolve-plugin-dependencies false})))
 
     (fact "with profiles and options should add an internal descriptor"
       (with-tmp-dir
@@ -127,14 +162,14 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (-> base-project-archive-contents
-               (conj ".immutant.clj")
-               (disj
-                "lib/tools.nrepl-0.2.3.jar"
-                "lib/clojure-complete-0.2.3.jar")))       => true
+            (disj base-project-archive-contents
+              "lib/tools.nrepl-0.2.3.jar"
+              "lib/clojure-complete-0.2.3.jar"))       => true
            (read-string
             (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:ham]
-                                                                     :context-path "biscuit"})))
+                                                                     :context-path "biscuit"
+                                                                     :resolve-dependencies false
+                                                                     :resolve-plugin-dependencies false})))
         
     (fact "with a --exclude-dependencies arg should work"
       (with-tmp-dir
@@ -147,9 +182,10 @@
           (verify-archive
            archive
            (disj base-project-archive-contents
-                 "lib/tools.nrepl-0.2.3.jar"
-                 "lib/clojure-complete-0.2.3.jar"
-                 "lib/clojure-1.4.0.jar")) => true)))
+             ".immutant.clj"
+             "lib/tools.nrepl-0.2.3.jar"
+             "lib/clojure-complete-0.2.3.jar"
+             "lib/clojure-1.4.0.jar")) => true)))
 
     (fact ":omit-source should be honored"
       (with-tmp-dir
@@ -258,9 +294,10 @@
           (verify-archive
            archive
            (disj base-project-archive-contents
-                 "lib/tools.nrepl-0.2.3.jar"
-                 "lib/clojure-complete-0.2.3.jar"
-                 "lib/clojure-1.4.0.jar")) => true)))
+             ".immutant.clj"
+             "lib/tools.nrepl-0.2.3.jar"
+             "lib/clojure-complete-0.2.3.jar"
+             "lib/clojure-1.4.0.jar")) => true)))
 
     (fact "with a path, profiles, and options should add an internal descriptor"
       (with-tmp-dir
@@ -272,11 +309,12 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (-> base-project-archive-contents
-               (conj ".immutant.clj")
-               (disj "lib/tools.nrepl-0.2.3.jar"
-                     "lib/clojure-complete-0.2.3.jar")))       => true
+           (disj base-project-archive-contents
+             "lib/tools.nrepl-0.2.3.jar"
+             "lib/clojure-complete-0.2.3.jar"))       => true
            (read-string
             (slurp (file-from-archive archive ".immutant.clj"))) => {:lein-profiles [:ham]
-                                                                     :context-path "biscuit"})))))
+                                                                     :context-path "biscuit"
+                                                                     :resolve-dependencies false
+                                                                     :resolve-plugin-dependencies false})))))
 
