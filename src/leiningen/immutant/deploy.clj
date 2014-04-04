@@ -64,28 +64,30 @@ anything deployed via the JBoss CLI or management interface."
 (defn deploy 
   "Deploys a project to the current Immutant
 
-If passed the --archive option, it will deploy an archive of the app
-instead of a descriptor pointing to the app on disk. This will
-currently recreate the archive on every deploy.  By default, the
-deployment will be named after the project name in project.clj.  This
-can be overridden via the --name (or -n) option.
+  If passed the --archive option, it will deploy an archive of the app
+  instead of a descriptor pointing to the app on disk. This will
+  currently recreate the archive on every deploy.  By default, the
+  deployment will be named after the project name in project.clj.
+  This can be overridden via the --name (or -n) option.  If the
+  --version (or -v) flag is specified, the project version will be
+  appended to the archive name.
 
-If passed a bare argument, the task will assume it is a path to a
-project to be deployed, and will switch to the context of that
-project. This works when lein is invoked in or out of a project.
+  If passed a bare argument, the task will assume it is a path to a
+  project to be deployed, and will switch to the context of that
+  project. This works when lein is invoked in or out of a project.
 
-Any profiles that are active (via with-profile) will be captured in
-the :lein-profiles key in the descriptor and applied when the app is
-deployed.
+  Any profiles that are active (via with-profile) will be captured in
+  the :lein-profiles key in the descriptor and applied when the app is
+  deployed.
 
-You can override the default context-path (based off of the deployment
-name) and virtual-host with the --context-path and --virtual-host
-options, respectively. 
+  You can override the default context-path (based off of the
+  deployment name) and virtual-host with the --context-path and
+  --virtual-host options, respectively.
 
-By default, the plugin will locate the current Immutant by looking at
-~/.immutant/current. This can be overriden by setting the
-$IMMUTANT_HOME environment variable. If no Immutant install can be
-located, the latest stable release will be installed."
+  By default, the plugin will locate the current Immutant by looking
+  at ~/.immutant/current. This can be overriden by setting the
+  $IMMUTANT_HOME environment variable. If no Immutant install can be
+  located, the latest stable release will be installed."
   [project root opts]
   (install/auto-install)
   (c/prep-tasks project)

@@ -59,12 +59,13 @@ The subtasks provided by the plugin are:
     
 * `lein immutant archive [--exclude-dependencies] [--name name]
                          [--context-path path] [--virtual-host host] 
-                         [path/to/project]` - 
+                         [--version] [path/to/project]` - 
   creates an Immutant archive (suffixed with `.ima`) in target/. 
   By default, the archive file will be named after the
   project name in project.clj.  This can be overridden via the
-  `--name` (or `-n`) option.  This archive can be deployed in lieu of
-  a descriptor pointing to the app directory. 
+  `--name` (or `-n`) option.   If the --version (or -v) flag is specified, 
+  the project version will be appended to the name. This archive can
+  be deployed in lieu of a descriptor pointing to the app directory. 
 
   Any profiles that are active (via with-profile) will be captured and
   applied when the app is deployed.
@@ -83,15 +84,17 @@ The subtasks provided by the plugin are:
   `:jar-exclusions` are set, they will be honored for archive
   creation.
 
-* `lein immutant deploy [--archive [--exclude-dependencies]] [--name name] 
-                        [--context-path path] [--virtual-host host] 
-                        [path/to/project]` - 
+* `lein immutant deploy [--archive [--exclude-dependencies] [--version]]
+                        [--name name] [--context-path path] 
+                        [--virtual-host host] [path/to/project]` - 
   deploys the current app to the current Immutant. If passed the
   `--archive` option, it will deploy an archive of the app instead of
   a descriptor pointing to the app on disk. This will currently
   recreate the archive on every deploy.  By default, the deployment
   will be named after the project name in project.clj.  This can be
-  overridden via the `--name` (or `-n`) option.  
+  overridden via the `--name` (or `-n`) option.  If the
+  --version (or -v) flag is specified, the project version will be
+  appended to the archive name.
 
   If passed a bare argument, the task will assume it is a path to a
   project to be deployed, and will switch to the context of that
