@@ -53,11 +53,13 @@
         (filespecs-for-dep-type :plugins "plugin-deps/")))))
 
 (defn merge-archive-options [project options]
-  (let [include-deps? (not (:exclude-dependencies options))]
-    (cond-> (assoc options :lein-profiles (c/extract-profiles project))
-      include-deps? (assoc :extra-filespecs (dependency-filespecs project)
-                           :resolve-dependencies false
-                           :resolve-plugin-dependencies false))))
+  (let [opts (assoc options :lein-profiles (c/extract-profiles project))]
+    (if-not (:exclude-dependencies opts)
+      (assoc opts
+        :extra-filespecs (dependency-filespecs project)
+        :resolve-dependencies false
+        :resolve-plugin-dependencies false)
+      opts)))
 
 (defn archive
   "Creates an Immutant archive from a project
