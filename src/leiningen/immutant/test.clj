@@ -39,6 +39,7 @@
   [project root opts]
   (println "Running tests inside Immutant (log output available in target/isolated-immutant/standalone/log/server.log)...")
   (install/auto-install)
+  (common/prep-tasks project)
   (when-not (common/mapply
               fntest/test-in-container
               (util/app-name project root)

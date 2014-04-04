@@ -88,6 +88,7 @@ application's dependencies will not be included in the archive.
 If the standard leiningen jar options :omit-source or :jar-exclusions
 are set, they will be honored for archive creation."
   [project root options]
+  (c/prep-tasks project)
   (->> (archive/create
         project
         (io/file (:root project root))

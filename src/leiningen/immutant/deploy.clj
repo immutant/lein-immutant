@@ -88,6 +88,7 @@ $IMMUTANT_HOME environment variable. If no Immutant install can be
 located, the latest stable release will be installed."
   [project root opts]
   (install/auto-install)
+  (c/prep-tasks project)
   (let [[options config] (c/group-options opts deploy-options)
         jboss-home (c/get-jboss-home)
         profiles (c/extract-profiles project)

@@ -2,6 +2,7 @@
   (:require [clojure.java.io        :as io]
             [clojure.string         :as str]
             [leiningen.help         :as lhelp]
+            [leiningen.core.eval    :as eval]
             [leiningen.core.user    :as user]
             [leiningen.core.main    :as main]
             [leiningen.core.project :as project]))
@@ -146,3 +147,5 @@
 (def descriptor-options
   [(as-config-option ["--context-path"])
    (as-config-option ["--virtual-host"])])
+
+(def prep-tasks eval/prep)
