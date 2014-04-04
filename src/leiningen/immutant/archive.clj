@@ -2,6 +2,7 @@
   (:require [clojure.java.io                :as io]
             [clojure.set                    :as set]
             [leiningen.core.classpath       :as cp]
+            [leiningen.core.project         :as project]
             [leiningen.immutant.common      :as c]
             [immutant.deploy-tools.archive  :as archive]
             [immutant.dependency-exclusions :as depex]))
@@ -46,8 +47,10 @@
       (-> project
         depex/exclude-immutant-deps
         (filespecs-for-dep-type :dependencies "lib/")
-         (filter-overlap project))
-      (filespecs-for-dep-type project :plugins "plugin-deps/"))))
+        (filter-overlap project))
+      (-> project
+        (project/unmerge-profiles [:user])
+        (filespecs-for-dep-type :plugins "plugin-deps/")))))
 
 (defn merge-archive-options [project options]
   (let [include-deps? (not (:exclude-dependencies options))]
