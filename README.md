@@ -166,17 +166,26 @@ The subtasks provided by the plugin are:
   `$IMMUTANT_HOME` environment variable. If no Immutant install can be
   located, the latest stable release will be installed.
 
-* `lein immutant test [path/to/project]` - Runs a project's tests
-  inside the current Immutant. Runs the current Immutant with offset
-  ports so it won't interfere with any currently running Immutant,
-  deploys the project to it, runs all tests, undeploys the app, and
-  then shuts down the Immutant it started. All tests specified in the
-  `:test-paths` from project.clj will be executed.
+* `lein immutant test [--log-level] [--offset] [path/to/project]` -
+  Runs a project's tests inside the current Immutant. Runs the current
+  Immutant with offset ports so it won't interfere with any currently
+  running Immutant, deploys the project to it, runs all tests,
+  undeploys the app, and then shuts down the Immutant it started. All
+  tests specified in the `:test-paths` from project.clj will be
+  executed.
 
   If passed a bare argument, the task will assume it is a path to a
   project to be tested, and will switch to the context of that
   project. This works when lein is invoked in or out of a project.
 
+  The test Immutant instance is started with offset ports so it won't
+  collide with a dev Immutant you may be running on the standard
+  ports. By default, the ports are offset by 67, but you can override
+  that with the --offset option.
+
+  You can override the default logging level of INFO with the
+  --log-level option. 
+  
   Note that the log output for the Immutant instance used for the 
   test run will be located in 
   `<project-root>/target/isolated-immutant/standalone/log/`.

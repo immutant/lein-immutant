@@ -13,7 +13,8 @@
   {"archive"   archive/archive-options
    "deploy"    deploy/deploy-options
    "install"   install/install-options
-   "list"      list/list-options})
+   "list"      list/list-options
+   "test"      test/test-options})
 
 (defn- subtask-with-resolved-project
   [subtask project-or-nil root-dir options]

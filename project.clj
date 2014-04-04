@@ -14,7 +14,7 @@
                  [org.immutant/deploy-tools                   "0.14.2-SNAPSHOT"]
                  [org.immutant/immutant-dependency-exclusions "0.1.0"]
                  [org.clojure/data.json                       "0.2.1"]
-                 [org.immutant/fntest                         "0.5.2"]]
+                 [org.immutant/fntest                         "0.5.3-SNAPSHOT"]]
   :profiles {:dev
              {:dependencies [[lein-midje "2.0.3"]
                              [leinjacker "0.4.2"]
