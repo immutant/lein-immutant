@@ -31,8 +31,7 @@ The subtasks provided by the plugin are:
   directory. Without an `install-dir` argument, the most recently installed
   version will be linked from `<immutant base dir>/current`. If this link
   is present (and points to a valid Immutant install), you won't need
-  to set `$IMMUTANT_HOME`. You can have it install the *full*
-  distribution by passing it the `--full` flag.
+  to set `$IMMUTANT_HOME`. 
 
 * `lein immutant overlay [feature-set [version]]` - downloads and
   overlays a feature set onto the currenty installed Immutant. If it

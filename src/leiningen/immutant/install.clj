@@ -201,9 +201,6 @@ this link is present (and points to a valid Immutant install), you
 won't need to set $IMMUTANT_HOME to notify plugin tasks of the
 location of Immutant.
 
-This task will install the 'slim' distribution unless given the
-'--full' option.
-
 By default, the install places its files (installed Immutants, the
 current link) under ~/.immutant/. You can override this by setting
 $LEIN_IMMUTANT_BASE_DIR or by adding :lein-immutant {:base-dir
