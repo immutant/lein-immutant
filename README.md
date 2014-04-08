@@ -5,19 +5,19 @@ A Leiningen plugin for deploying Immutant apps.
 ## Usage
 
 ### Installation
-    
+
 As of version 0.15.0, the plugin only supports leiningen 2.0.0 and up.
 To use it, add it to your `~/.lein/profiles.clj`:
 
-    {:user {:plugins [[lein-immutant "1.2.0"]]}}
-      
+    {:user {:plugins [[lein-immutant "1.2.1"]]}}
+
 ### Using it
 
 The plugin provides several subtasks for installing, deploying to, and
 running an Immutant. All of the subtasks are namespaced under the
 `immutant` task. You can use `lein help immutant` to see a full list,
-and use `lein help immutant SUBTASK` to get more detailed help for a 
-specific subtask. 
+and use `lein help immutant SUBTASK` to get more detailed help for a
+specific subtask.
 
 The subtasks provided by the plugin are:
 
@@ -31,7 +31,7 @@ The subtasks provided by the plugin are:
   directory. Without an `install-dir` argument, the most recently installed
   version will be linked from `<immutant base dir>/current`. If this link
   is present (and points to a valid Immutant install), you won't need
-  to set `$IMMUTANT_HOME`. 
+  to set `$IMMUTANT_HOME`.
 
 * `lein immutant overlay [feature-set [version]]` - downloads and
   overlays a feature set onto the currenty installed Immutant. If it
@@ -55,16 +55,16 @@ The subtasks provided by the plugin are:
 * `lein immutant env [key]` - prints out information about the
   Immutant environment. It currently only displays the path to the
   current Immutant, and the path to JBoss.
-    
+
 * `lein immutant archive [--exclude-dependencies] [--name name]
-                         [--context-path path] [--virtual-host host] 
-                         [--version] [path/to/project]` - 
-  creates an Immutant archive (suffixed with `.ima`) in target/. 
+                         [--context-path path] [--virtual-host host]
+                         [--version] [path/to/project]` -
+  creates an Immutant archive (suffixed with `.ima`) in target/.
   By default, the archive file will be named after the
   project name in project.clj.  This can be overridden via the
-  `--name` (or `-n`) option.   If the --version (or -v) flag is specified, 
+  `--name` (or `-n`) option.   If the --version (or -v) flag is specified,
   the project version will be appended to the name. This archive can
-  be deployed in lieu of a descriptor pointing to the app directory. 
+  be deployed in lieu of a descriptor pointing to the app directory.
 
   Any profiles that are active (via with-profile) will be captured and
   applied when the app is deployed.
@@ -77,15 +77,15 @@ The subtasks provided by the plugin are:
   deployment name) and virtual-host with the `--context-path` and
   `--virtual-host` options, respectively. If the
   `--exclude-dependencies` (or `-e`) option is provided, the
-  application's dependencies won't be included in the archive. 
+  application's dependencies won't be included in the archive.
 
   If the standard leiningen jar options `:omit-source` or
   `:jar-exclusions` are set, they will be honored for archive
   creation.
 
 * `lein immutant deploy [--archive [--exclude-dependencies] [--version]]
-                        [--name name] [--context-path path] 
-                        [--virtual-host host] [path/to/project]` - 
+                        [--name name] [--context-path path]
+                        [--virtual-host host] [path/to/project]` -
   deploys the current app to the current Immutant. If passed the
   `--archive` option, it will deploy an archive of the app instead of
   a descriptor pointing to the app on disk. This will currently
@@ -106,12 +106,12 @@ The subtasks provided by the plugin are:
   You can override the default context-path (based off of the
   deployment name) and virtual-host with the `--context-path` and
   `--virtual-host` options, respectively.
-  
+
   If no Immutant install can be located, the latest stable release
   will be installed.
 
 * `lein immutant undeploy [name or glob or path/to/project]` - undeploys
-  an application (or applications) from the current Immutant.  
+  an application (or applications) from the current Immutant.
   If passed a bare argument, the task will first treat it as a glob
   argument specifying one or more deployments to undeploy. If it does
   not match any current deployments, it is assumed to be a path to a
@@ -131,7 +131,7 @@ The subtasks provided by the plugin are:
 
   Note that depending on your shell, you may have to quote or escape *
   and ? in globs.
-  
+
 * `lein immutant run` - Starts up the current Immutant, displaying its console output
 
   The Immutant to start is specified by the `~/.immutant/current` link
@@ -153,12 +153,12 @@ The subtasks provided by the plugin are:
    --log-level=DEBUG Sets the default logging level to DEBUG (or any other
                      given valid level). Equivalent to
                      `-Djboss.logging.level=DEBUG`.
- 
+
   By default, the plugin will locate the current Immutant by looking
   at `~/.immutant/current`. This can be overriden by setting the
   `$IMMUTANT_HOME` environment variable. If no Immutant install can be
   located, the latest stable release will be installed.
-  
+
 * `lein immutant server [port]` - Deploys the current app to the
   current Immutant and runs it. Analogous to `lein ring server`. Takes
   an optional http port parameter.
@@ -186,18 +186,18 @@ The subtasks provided by the plugin are:
   that with the --offset option.
 
   You can override the default logging level of INFO with the
-  --log-level option. 
-  
-  Note that the log output for the Immutant instance used for the 
-  test run will be located in 
+  --log-level option.
+
+  Note that the log output for the Immutant instance used for the
+  test run will be located in
   `<project-root>/target/isolated-immutant/standalone/log/`.
-  
+
   This is a very simple way to automate your integration testing on a
   [CI](http://en.wikipedia.org/wiki/Continuous_integration) host.
-  
+
   If no Immutant install can be located, the latest stable release
   will be installed.
-   
+
 By default, the plugin places its files (installed Immutants, the
 current link) under `~/.immutant/`. You can override this by setting
 `$LEIN_IMMUTANT_BASE_DIR` or by adding `:lein-immutant {:base-dir
@@ -220,7 +220,7 @@ There are two differences when using the plugin on windows:
   [cygwin](http://www.cygwin.com/) - it instead just detaches the
   shell from the java process, leaving it running. Using `command.com`
   does not exhibit this problem.
-  
+
 ## Development
 
 The plugin has a mediocre midje test suite. You can run it via:
