@@ -1,9 +1,13 @@
 (ns leiningen.immutant
   (:require [leiningen.core.classpath :as cp]
             [leiningen.core.main :refer [abort]]
+            [leiningen.uberjar :as uberjar]
+            [leiningen.jar :as jar]
             [clojure.string :as str]
             [clojure.java.io :as io])
-  (:import java.util.Properties))
+  (:import java.io.FileOutputStream
+           java.util.Properties
+           java.util.zip.ZipOutputStream))
 
 (defn- main-fn [project]
   (if-let [main-ns (:main project)]
@@ -23,7 +27,7 @@
                      (ring-fn project))]
     (pr-str `(do
                (require 'immutant.wildfly)
-               (immutant.wildfly/init (quote ~init-fn) {:nrepl {:host "localhost" :port 0}})))))
+               (immutant.wildfly/init-deployment (quote ~init-fn) {:nrepl {:host "localhost" :port 0}})))))
 
 (defn extract-keys
   ([m]
@@ -63,26 +67,41 @@
     (Properties.)
     m))
 
-(defn- copy-deploy-jar [project to]
-  (-> (cp/resolve-dependencies :dependencies
-        {:dependencies [['org.projectodd.wunderboss/wunderboss-wildfly
-                         (locate-version project "org.projectodd.wunderboss")]]})
-    (as-> files (filter #(re-find #"wunderboss-wildfly.*\.jar" (.getName %)) files))
-    first
-    (io/copy to)))
+(defn- find-base-jars [project]
+  (let [version (locate-version project "org.projectodd.wunderboss")]
+    (filter #(re-find #"^wunderboss-.*\.jar$" (.getName %))
+      (cp/resolve-dependencies :dependencies
+        (update-in project [:dependencies]
+          conj ['org.projectodd.wunderboss/wunderboss-wildfly version])))))
+
+;; We need to keep the manifest that comes from the wunderboss-wildfly.jar
+;; a better solution is to probably read it as Properties and merge there
+(defn- merge-manifests [new prev]
+  (if (re-find #"Dependencies" new)
+    new
+    prev))
+
+(defn- build-jar [project to uber?]
+  ;; TODO: implement uber?
+  (with-open [out (-> to FileOutputStream. ZipOutputStream.)]
+    (uberjar/write-components (update-in project [:uberjar-merge-with]
+                                assoc
+                                #"(?i)^META-INF/MANIFEST.MF$"
+                                `[slurp #'leiningen.immutant/merge-manifests spit])
+      (->> project find-base-jars (sort-by #(.getName %))) out)))
 
 (defn deploy [project wf-home]
   "Deploys the current project to the given WildFly home."
   [project wf-home]
   (when (nil? wf-home)
-    (abort "Missing argument: deploy requires JBoss install path"))
+    (abort "Missing argument: deploy requires WildFly/EAP install path"))
   (when (nil? (build-init project))
     (abort "Project requires an entry point, e.g. -main, ring handler, immutant init"))
-  (let [dep-dir (io/file wf-home "standalone/deployments")
+ (let [dep-dir (io/file wf-home "standalone/deployments")
         props-file (io/file dep-dir (str (:name project) ".properties"))
         jar-file (io/file dep-dir (str (:name project) ".jar"))]
     (println "Creating" (.getAbsolutePath jar-file))
-    (copy-deploy-jar project jar-file)
+    (build-jar project jar-file false)
     (println "Creating" (.getAbsolutePath props-file))
     (with-open [writer (io/writer props-file)]
       (-> project
