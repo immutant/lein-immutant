@@ -58,7 +58,8 @@
    :language "clojure"
    :classpath (str/join ":" (classpath project))
    ;; TODO: don't barf if :init is nil
-   :init (build-init project)})
+   :init (build-init project)
+   "config.repl-options" (pr-str (:repl-options project))})
 
 (defn- map->properties [m]
   (reduce (fn [p [k v]]
