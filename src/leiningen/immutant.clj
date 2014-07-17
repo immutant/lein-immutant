@@ -4,10 +4,12 @@
             [leiningen.uberjar :as uberjar]
             [leiningen.jar :as jar]
             [clojure.string :as str]
-            [clojure.java.io :as io])
-  (:import java.io.FileOutputStream
+            [clojure.java.io :as io]
+            [clojure.pprint :refer [pprint]])
+  (:import [java.io BufferedOutputStream FileOutputStream]
            java.util.Properties
-           java.util.zip.ZipOutputStream))
+           java.util.zip.ZipOutputStream
+           [java.util.jar JarEntry JarOutputStream]))
 
 (defn- main-fn [project]
   (if-let [main-ns (:main project)]
@@ -20,14 +22,15 @@
 (defn- immutant-init-fn [project]
   (-> project :immutant :init))
 
-(defn- build-init [project]
+(defn- build-init [project uber?]
   ;;TODO: make repl optional
   (if-let [init-fn (or (immutant-init-fn project)
                      (main-fn project)
                      (ring-fn project))]
     (pr-str `(do
                (require 'immutant.wildfly)
-               (immutant.wildfly/init-deployment (quote ~init-fn) {:nrepl {:host "localhost" :port 0}})))))
+               (immutant.wildfly/init-deployment (quote ~init-fn)
+                 ~(if uber? {} {:nrepl {:host "localhost" :port 0}}))))))
 
 (defn extract-keys
   ([m]
@@ -53,13 +56,13 @@
       conj ['org.immutant/wildfly (locate-version project "org.immutant")])
     cp/get-classpath))
 
-(defn- build-descriptor [project]
-  {:root (:root project)
-   :language "clojure"
-   :classpath (str/join ":" (classpath project))
-   ;; TODO: don't barf if :init is nil
-   :init (build-init project)
-   "config.repl-options" (pr-str (:repl-options project))})
+(defn- build-descriptor [project uber?]
+  (cond-> {:language "clojure"
+           :init (build-init project uber?)}
+    (not uber?) (merge
+                  {:root (:root project)
+                   :classpath (str/join ":" (classpath project))
+                    "config.repl-options" (pr-str (:repl-options project))})))
 
 (defn- map->properties [m]
   (reduce (fn [p [k v]]
@@ -74,6 +77,18 @@
       (cp/resolve-dependencies :dependencies
         (update-in project [:dependencies]
           conj ['org.projectodd.wunderboss/wunderboss-wildfly version])))))
+
+(defn- find-wildfly-jars [project uber?]
+  (->> (assoc project
+         :dependencies [['org.immutant/wildfly (locate-version project "org.immutant")
+                         :exclusions (cond->
+                                       ['org.immutant/core
+                                        'org.clojure/clojure
+                                        'org.projectodd.wunderboss/wunderboss-clojure]
+                                       uber? (conj 'org.clojure/tools.nrepl))]])
+    (cp/resolve-dependencies :dependencies)
+    #_(filter #(re-find #"wildfly-.*\.jar$" (.getName %)))
+    #_first))
 
 ;; We need to keep the manifest that comes from the wunderboss-wildfly.jar
 ;; a better solution is to probably read it as Properties and merge there
@@ -91,29 +106,56 @@
                                 `[slurp #'leiningen.immutant/merge-manifests spit])
       (->> project find-base-jars (sort-by #(.getName %))) out)))
 
-(defn deploy [project wf-home]
-  "Deploys the current project to the given WildFly home."
-  [project wf-home]
-  (when (nil? wf-home)
-    (abort "Missing argument: deploy requires WildFly/EAP install path"))
-  (when (nil? (build-init project))
-    (abort "Project requires an entry point, e.g. -main, ring handler, immutant init"))
- (let [dep-dir (io/file wf-home "standalone/deployments")
-        props-file (io/file dep-dir (str (:name project) ".properties"))
-        jar-file (io/file dep-dir (str (:name project) ".jar"))]
-    (println "Creating" (.getAbsolutePath jar-file))
-    (build-jar project jar-file false)
-    (println "Creating" (.getAbsolutePath props-file))
-    (with-open [writer (io/writer props-file)]
-      (-> project
-        build-descriptor
-        map->properties
-        (.store writer "")))))
+(defn- build-war [project dest entries]
+  (with-open [out (-> dest FileOutputStream. BufferedOutputStream. JarOutputStream.)]
+    (doseq [[path content] entries]
+      (.putNextEntry out (JarEntry. path))
+      (io/copy content out))))
+
+(defn devwar [project path]
+  (println "Not yet implemented, sorry!"))
+
+(defn resolve-path [project path]
+  (if path
+    (let [path-dir (io/file path)
+          deployments-dir (io/file path-dir "standalone/deployments")]
+      (when-not (.exists path-dir)
+        (abort (format "Path '%s' does not exist." path)))
+      (when-not (.isDirectory path-dir)
+        (abort (format "Path '%s' is not a directory." path)))
+      (if (.exists deployments-dir)
+        deployments-dir
+        path-dir))
+    (io/file (:target-path project))))
+
+(defn uberwar [project path]
+  (let [war-entries
+        (concat
+          [[(format "WEB-INF/lib/%s.jar" (:name project))
+            (io/file (uberjar/uberjar project))]
+           ["META-INF/app.properties"
+            (with-out-str
+              (-> project
+                (build-descriptor true)
+                map->properties
+                (.store *out* "")))]
+           ["WEB-INF/web.xml"
+            (slurp (io/resource "web.xml"))]]
+          (mapv (fn [f] [(format "WEB-INF/lib/%s" (.getName f))
+                        f])
+            (find-wildfly-jars project true)))
+        file (io/file (resolve-path project path) (format "%s.war" (:name project)))]
+    (println "Creating" (.getAbsolutePath file))
+    (build-war project file war-entries)
+    file))
 
 (defn immutant
   "Manage the deployment lifecycle of an Immutant application."
-  {:subtasks [#'deploy]}
-  ([project subtask & args]
+  {:subtasks [#'uberwar #'devwar]}
+  ([project subtask & [path]]
      (case subtask
-       "deploy" (deploy project (first args)))
+       "devwar"  (devwar project path)
+       "uberwar" (uberwar project path)
+       ;;TODO: print help for default
+       )
      (shutdown-agents)))
