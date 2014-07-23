@@ -81,8 +81,9 @@
 (def abort main/abort)
 
 (defn extract-profiles [project]
-  (let [profiles (seq (-> project meta :included-profiles))]
-    (if (and profiles (not= profiles [:default]))
+  (when-let [profiles (seq (-> project meta :included-profiles))]
+    (when-not (= profiles
+                (:default @project/default-profiles))
       (vec profiles))))
 
 (defn- switch-scope [project dir]
