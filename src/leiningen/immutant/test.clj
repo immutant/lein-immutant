@@ -45,7 +45,9 @@
               (util/app-name project root)
               root
               (assoc opts
+                :profiles (or
+                            (common/extract-profiles project)
+                            [:dev :test])
                 :jboss-home (common/get-jboss-home)
                 :dirs (:test-paths project)))
     (common/abort "Tests failed")))
-
