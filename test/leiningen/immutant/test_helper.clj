@@ -147,16 +147,24 @@
         f))))
 
 
-(def base-archive-contents #{".immutant.clj"
-                             "project.clj"
-                             "resources/resource.txt"
-                             "src/test_project/core.clj"})
+(defn base-archive-contents
+  ([project-name]
+     (base-archive-contents project-name "target/classes"))
+  ([project-name classes-dir]
+     (let [contents #{".immutant.clj"
+                      "project.clj"
+                      "resources/resource.txt"
+                      "src/test_project/core.clj"}]
+       (if project-name
+         (conj contents
+           (format "%s/META-INF/maven/%s/%s/pom.properties"
+             classes-dir project-name project-name))
+         contents))))
 
-(def base-project-archive-contents
-  (conj base-archive-contents
+(defn base-project-archive-contents [project-name]
+  (conj (base-archive-contents project-name)
         "target/classes/Foo.class"
         "target/native/foo.so"
         "lib/tools.nrepl-0.2.3.jar"
         "lib/clojure-complete-0.2.3.jar"
         "lib/clojure-1.4.0.jar"))
-

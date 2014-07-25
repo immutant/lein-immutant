@@ -18,7 +18,7 @@
                     :env base-lein-env)          => 0
           (.exists archive)                      => true
           (verify-archive archive
-                          base-project-archive-contents) => true)))
+            (base-project-archive-contents "test-project")) => true)))
 
     (fact "with no args and non-default project settings should work"
       (with-tmp-dir
@@ -30,7 +30,7 @@
           (.exists archive)                      => true
           (verify-archive
            archive
-           (conj base-archive-contents
+           (conj (base-archive-contents "test-project" "schmasses")
                  "lib/tools.nrepl-0.2.3.jar"
                  "lib/clojure-complete-0.2.3.jar"
                  "lib/clojure-1.4.0.jar"
@@ -49,7 +49,7 @@
           (.exists archive)                => true
           (verify-archive
            archive
-           (-> base-project-archive-contents
+           (-> (base-project-archive-contents nil)
                (disj "project.clj"
                      "lib/tools.nrepl-0.2.3.jar"
                      "lib/clojure-complete-0.2.3.jar"
@@ -57,12 +57,12 @@
                (conj
                 "native/bar.so"
                 "classes/Bar.class")))   => true)))
-        
+
     (fact "with non-existent path arg should print a warning"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
               archive (io/file project-dir "test-project.ima")
-              result 
+              result
               (run-lein "immutant" "archive" "yarg"
                         :dir project-dir
                         :env base-lein-env
@@ -70,7 +70,7 @@
           (re-find #"Error: path 'yarg' does not exist" (:err result)) =not=> nil
           (:exit result)                   => 1
           (.exists archive)                => false)))
-    
+
     (fact "with a --name arg should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
@@ -80,7 +80,7 @@
                     :env base-lein-env)  => 0
           (.exists archive)              => true
           (verify-archive archive
-                          base-project-archive-contents) => true)))
+            (base-project-archive-contents "test-project")) => true)))
 
 
     (fact "with options should add them to the internal descriptor"
@@ -93,7 +93,7 @@
           (.exists archive)              => true
           (verify-archive
             archive
-            base-project-archive-contents)       => true
+            (base-project-archive-contents "test-project"))       => true
            (read-string
             (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "/"
                                                                      :virtual-host "ham"
@@ -110,13 +110,13 @@
           (.exists archive)              => true
           (verify-archive
             archive
-            (-> base-project-archive-contents
+            (-> (base-project-archive-contents "test-project")
               (disj
                 "lib/tools.nrepl-0.2.3.jar"
                 "lib/clojure-complete-0.2.3.jar")
               (conj
                 "plugin-deps/immutant-dependency-exclusions-0.1.0.jar")))       => true)))
-    
+
     (fact "excluding dependencies should put nothing in the descriptor"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
@@ -127,13 +127,13 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (disj base-project-archive-contents
+           (disj (base-project-archive-contents "test-project")
              "lib/tools.nrepl-0.2.3.jar"
              "lib/clojure-complete-0.2.3.jar"
              "lib/clojure-1.4.0.jar"))       => true
            (read-string
              (slurp (file-from-archive archive ".immutant.clj"))) => {:context-path "/"})))
-    
+
     (fact "with profiles should add an internal descriptor"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
@@ -144,7 +144,7 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (disj base-project-archive-contents
+           (disj (base-project-archive-contents "test-project")
              "lib/tools.nrepl-0.2.3.jar"
              "lib/clojure-complete-0.2.3.jar"))       => true
            (read-string
@@ -162,7 +162,7 @@
           (.exists archive)              => true
           (verify-archive
            archive
-            (disj base-project-archive-contents
+           (disj (base-project-archive-contents "test-project")
               "lib/tools.nrepl-0.2.3.jar"
               "lib/clojure-complete-0.2.3.jar"))       => true
            (read-string
@@ -170,7 +170,7 @@
                                                                      :context-path "biscuit"
                                                                      :resolve-dependencies false
                                                                      :resolve-plugin-dependencies false})))
-        
+
     (fact "with a --exclude-dependencies arg should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
@@ -181,7 +181,7 @@
           (.exists archive)                => true
           (verify-archive
            archive
-           (disj base-project-archive-contents
+           (disj (base-project-archive-contents "test-project")
              ".immutant.clj"
              "lib/tools.nrepl-0.2.3.jar"
              "lib/clojure-complete-0.2.3.jar"
@@ -196,8 +196,8 @@
                     :env base-lein-env)          => 0
           (.exists archive)                      => true
           (verify-archive archive
-                          (-> base-project-archive-contents
-                              (disj "src/test_project/core.clj"))) => true)))
+            (-> (base-project-archive-contents "jar-options-project")
+              (disj "src/test_project/core.clj"))) => true)))
 
     (fact ":jar-exclusions should be honored"
       (with-tmp-dir
@@ -208,10 +208,10 @@
                     :env base-lein-env)          => 0
           (.exists archive)                      => true
           (verify-archive archive
-                          (disj base-project-archive-contents
-                                "src/test_project/core.clj")) => true))))
+            (disj (base-project-archive-contents "jar-options-project")
+              "src/test_project/core.clj")) => true))))
 
-  
+
   (facts "not in a project"
     (fact "with a path arg should work"
       (with-tmp-dir
@@ -222,7 +222,7 @@
                     :env base-lein-env)    => 0
           (.exists archive)                => true
           (verify-archive archive
-                          base-project-archive-contents)   => true)))
+            (base-project-archive-contents "test-project"))   => true)))
 
     (fact "with a path and non-default project settings should work"
       (with-tmp-dir
@@ -234,7 +234,7 @@
           (.exists archive)                => true
           (verify-archive
            archive
-           (conj base-archive-contents
+           (conj (base-archive-contents "test-project" "schmasses")
                  "lib/tools.nrepl-0.2.3.jar"
                  "lib/clojure-complete-0.2.3.jar"
                  "lib/clojure-1.4.0.jar"
@@ -253,7 +253,7 @@
           (.exists archive)                => true
           (verify-archive
            archive
-           (-> base-project-archive-contents
+           (-> (base-project-archive-contents nil)
                (disj
                 "project.clj"
                 "lib/tools.nrepl-0.2.3.jar"
@@ -262,7 +262,7 @@
                (conj
                 "native/bar.so"
                 "classes/Bar.class")))   => true)))
-    
+
     (fact "with a non-existent path arg should work"
       (let [{:keys [err exit]}
             (run-lein "immutant" "archive" "/tmp/hAmBisCuit"
@@ -271,7 +271,7 @@
                       :return-result? true)]
         exit                                                     => 1
         (re-find #"Error: path '/tmp/hAmBisCuit' does not exist" err) =not=> nil))
-    
+
     (fact "with a --name arg and a path arg should work"
       (with-tmp-dir
         (let [project-dir (copy-resource-to-tmp "test-project")
@@ -281,7 +281,7 @@
                     :env base-lein-env)  => 0
           (.exists archive)              => true
           (verify-archive archive
-                          base-project-archive-contents) => true)))
+            (base-project-archive-contents "test-project")) => true)))
 
     (fact "with a --name arg, --exclude-dependencies, and a path arg should work"
       (with-tmp-dir
@@ -293,7 +293,7 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (disj base-project-archive-contents
+           (disj (base-project-archive-contents "test-project")
              ".immutant.clj"
              "lib/tools.nrepl-0.2.3.jar"
              "lib/clojure-complete-0.2.3.jar"
@@ -309,7 +309,7 @@
           (.exists archive)              => true
           (verify-archive
            archive
-           (disj base-project-archive-contents
+           (disj (base-project-archive-contents "test-project")
              "lib/tools.nrepl-0.2.3.jar"
              "lib/clojure-complete-0.2.3.jar"))       => true
            (read-string
@@ -317,4 +317,3 @@
                                                                      :context-path "biscuit"
                                                                      :resolve-dependencies false
                                                                      :resolve-plugin-dependencies false})))))
-
