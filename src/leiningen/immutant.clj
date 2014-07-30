@@ -116,7 +116,7 @@
     options
     {[:dest] io/file
      [:resource-dir] io/file
-     [:nrepl :port] read-string}))
+     [:nrepl :port] #(if (string? %) (read-string %) %)}))
 
 (defn merge-options
   [{:keys [nrepl-host nrepl-port nrepl-port-file nrepl-start] :as options}
