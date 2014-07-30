@@ -96,16 +96,27 @@
   (let [{:keys [options errors]}
         (opts/parse-opts args
           [["-d" "--dev"                  :id :dev?]
-           ["-o" "--dest DIR"             :parse-fn io/file]
+           ["-o" "--dest DIR"]
            ["-n" "--name NAME"]
-           ["-r" "--resource-dir DIR"     :parse-fn io/file]
+           ["-r" "--resource-dir DIR"]
            [nil  "--nrepl-host HOST"]
-           [nil  "--nrepl-port PORT"      :parse-fn read-string]
+           [nil  "--nrepl-port PORT"]
            [nil  "--nrepl-port-file FILE"]
            [nil  "--nrepl-start"]])]
     (when errors
       (abort (str/join "\n" errors)))
     options))
+
+(defn coerce-options [options]
+  (reduce
+    (fn [m [path coerce-fn]]
+      (if (get-in m path)
+        (update-in m path coerce-fn)
+        m))
+    options
+    {[:dest] io/file
+     [:resource-dir] io/file
+     [:nrepl :port] read-string}))
 
 (defn merge-options
   [{:keys [nrepl-host nrepl-port nrepl-port-file nrepl-start] :as options}
@@ -135,8 +146,10 @@
     (str/replace #"%t" (if (:dev? options) "-dev" ""))
     (str ".war")))
 
-(defn add-app-properties [m project options]
-  (assoc m
+(defn add-app-properties
+  "Adds the generated wunderboss app.properties to the entry specs."
+  [specs project options]
+  (assoc specs
     "META-INF/app.properties"
     (with-out-str
       (-> project
@@ -181,14 +194,21 @@
                           'org.projectodd.wunderboss/wunderboss-clojure]]])
     (cp/resolve-dependencies :dependencies)))
 
-(defn add-dependency-jars [specs project options]
+(defn add-top-level-jars
+  "Adds any additional (other than the uberjar) top-level jars to the war.
+
+   These will be just enough jars to bootstrap the app in the container,
+   and vary for devwars and uberwars."
+  [specs project options]
   (reduce #(add-file-spec %1 "WEB-INF/lib" %2)
     specs
     (if (:dev? options)
       (wboss-jars-for-dev project)
       (all-wildfly-jars project))))
 
-(defn add-top-level-resources [specs _ options]
+(defn add-top-level-resources
+  "Adds the tree of :resource-dir to the top-level of the war."
+  [specs _ options]
   (if-let [resource-dir (:resource-dir options)]
     (if (.exists resource-dir)
       (reduce
@@ -202,33 +222,43 @@
         specs
         (file-seq resource-dir))
       (abort (format ":resource-dir '%s' does not exist."
-               (.getPath resource-dir)))))
-  specs)
+               (.getPath resource-dir))))
+    specs))
 
-(defn add-web-xml [specs project _]
+(defn add-web-xml
+  "Adds a WEB-INF/web.xml to the entry specs unless it already exists (from :resource-dir).
+
+   If it does add the web.xml to the specs, it also drops a copy in
+   target/ in case the user needs to customize it."
+  [specs project _]
   (if (specs "WEB-INF/web.xml")
     specs
     (let [content (slurp (io/resource "web.xml"))]
       (spit (io/file (:target-path project) "web.xml") content)
       (assoc specs "WEB-INF/web.xml" content))))
 
-(defn add-uberjar [specs project options]
+(defn add-uberjar
+  "Builds and adds the uberjar to the entry specs if we're building an uberwar."
+  [specs project options]
   (if (:dev? options)
     specs
     (add-file-spec specs "WEB-INF/lib"
       (io/file (uberjar/uberjar project)))))
 
-(defn war [project args]
+(defn war
+  "Generates a war file suitable for deploying to a WildFly container."
+  [project args]
   (let [options (-> args
                   parse-options
-                  (merge-options project))
+                  (merge-options project)
+                  coerce-options)
         file (io/file (resolve-path project (:dest options))
                (war-name project options))]
     (build-war project file
       (-> {}
         (add-uberjar project options)
         (add-app-properties project options)
-        (add-dependency-jars project options)
+        (add-top-level-jars project options)
         (add-top-level-resources project options)
         (add-web-xml project options)))
     (println "Created" (.getAbsolutePath file))
