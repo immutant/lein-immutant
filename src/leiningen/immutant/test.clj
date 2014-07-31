@@ -32,6 +32,22 @@
   --log-level option. The server.log is avaiable in
   target/isolated-immutant/standalone/log/.
 
+  If you only want to run a subset of your tests inside or outside of
+  the container, you can separate the tests in to different
+  directories, and use profiles to activate the correct tests
+  in-container. Given the following project.clj snippet:
+
+      :test-paths [\"outside-tests\"]
+      :profiles {:inside {:test-paths ^:replace [\"inside-tests\"]}}
+
+  `lein test` will only run the outside tests, while
+  `lein with-profile inside immutant test` will only run the inside
+  tests within Immutant.
+
+  If you want to run all of the tests within Immutant, remove the
+  `:replace` metadata to have `inside-tests` added to the existing
+  `:test-paths`.
+
   By default, the plugin will locate the current Immutant by looking
   at ~/.immutant/current. This can be overriden by setting the
   $IMMUTANT_HOME environment variable. If no Immutant install can be
