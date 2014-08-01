@@ -1,8 +1,10 @@
 (ns leiningen.immutant
+  "Tasks for managing Immutant 2.x projects in a WildFly container."
   (:require [leiningen.core.classpath :as cp]
             [leiningen.core.main :refer [abort]]
             [leiningen.uberjar :as uberjar]
             [leiningen.jar :as jar]
+            [leiningen.help :as help]
             [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.pprint :refer [pprint]]
@@ -101,9 +103,9 @@
   (let [{:keys [options errors]}
         (opts/parse-opts args
           [["-d" "--dev"                  :id :dev?]
-           ["-o" "--dest DIR"]
+           ["-o" "--destination DIR"]
            ["-n" "--name NAME"]
-           ["-r" "--resource-dir DIR"]
+           ["-r" "--resource-paths DIR"   :parse-fn #(str/split % #",")]
            [nil  "--nrepl-host HOST"]
            [nil  "--nrepl-port PORT"      :parse-fn read-string]
            [nil  "--nrepl-port-file FILE"]
@@ -119,8 +121,8 @@
         (update-in m path coerce-fn)
         m))
     options
-    {[:dest] io/file
-     [:resource-dir] io/file}))
+    {[:destination] io/file
+     [:resource-paths] (partial map io/file)}))
 
 (defn merge-options
   [{:keys [nrepl-host nrepl-port nrepl-port-file nrepl-start] :as options}
@@ -210,24 +212,28 @@
       (wboss-jars-for-dev project)
       (all-wildfly-jars project))))
 
+(defn add-resource-dir [specs resource-dir]
+  (if (.exists resource-dir)
+    (reduce
+      (fn [m file]
+        (if (.isFile file)
+          (add-file-spec m
+            (.substring (.getParent (.getAbsoluteFile file))
+              (.length (.getAbsolutePath resource-dir)))
+            file)
+          m))
+      specs
+      (file-seq resource-dir))
+    (abort (format "resource path '%s' does not exist."
+             (.getPath resource-dir)))))
+
 (defn add-top-level-resources
-  "Adds the tree of :resource-dir to the top-level of the war."
+  "Adds the tree of :resource-paths to the top-level of the war."
   [specs _ options]
-  (if-let [resource-dir (:resource-dir options)]
-    (if (.exists resource-dir)
-      (reduce
-        (fn [m file]
-          (if (.isFile file)
-            (add-file-spec m
-              (.substring (.getParent (.getAbsoluteFile file))
-                (.length (.getAbsolutePath resource-dir)))
-              file)
-            m))
-        specs
-        (file-seq resource-dir))
-      (abort (format ":resource-dir '%s' does not exist."
-               (.getPath resource-dir))))
-    specs))
+  (reduce
+    add-resource-dir
+    specs
+    (:resource-paths options)))
 
 (defn add-web-xml
   "Adds a WEB-INF/web.xml to the entry specs unless it already exists (from :resource-dir).
@@ -256,7 +262,7 @@
                   parse-options
                   (merge-options project)
                   coerce-options)
-        file (io/file (resolve-path project (:dest options))
+        file (io/file (resolve-path project (:destination options))
                (war-name project options))]
     (build-war file
       (-> {}
@@ -269,11 +275,9 @@
     file))
 
 (defn immutant
-  "Manage the deployment lifecycle of an Immutant application."
   {:subtasks [#'war]}
-  ([project subtask & args]
+  ([project subtask & options]
      (case subtask
-       "war"  (war project args)
-       ;;TODO: print help for default
-       )
+       "war"  (war project options)
+       (help/help project "immutant"))
      (shutdown-agents)))
