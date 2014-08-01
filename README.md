@@ -20,7 +20,9 @@ The current version is a snapshot:
 The plugin currently provides one subtask: `lein immutant war`. This
 generates a `.war` file suitable for deploying to WildFly.
 
-See <resources/leiningen/help/immutant-war.md> for details.
+See
+[the help file for the war task](resources/leiningen/help/immutant-war.md)
+for details.
 
 ## License
 

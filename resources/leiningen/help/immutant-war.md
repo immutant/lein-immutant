@@ -78,27 +78,31 @@ overridden via command line switches.
 ### Example
 
 ```clojure
-:immutant {
-  :war {
-    ;; the following will generate foo-0.1.0.war, or
-    ;; foo-0.1.0-dev.war for dev wars.
-    :name "foo-%v%t"
+(project my-app "0.1.0"
+  ...
+  :immutant {
+    :war {
+      ;; the following will generate foo-0.1.0.war, or
+      ;; foo-0.1.0-dev.war for dev wars.
+      :name "foo-%v%t"
 
-    ;; Destination defaults to :target-path
-    :destination "path/for/war/"
+      ;; Destination defaults to :target-path
+      :destination "path/for/war/"
 
-    ;; contents placed at the top-level of the jar, useful for
-    ;; overriding WEB-INF/web.xml, etc. If, after copying these resources,
-    ;; we don't have a web.xml, we'll add our own.
-    :resource-paths ["war-resources"]
+      ;; contents placed at the top-level of the jar, useful for
+      ;; overriding WEB-INF/web.xml, etc. If, after copying these resources,
+      ;; we don't have a web.xml, we'll add our own.
+      :resource-paths ["war-resources"]
 
-    ;; override the nREPL settings
-    :nrepl {:host "foo"
-            :port 1234
-            :port-file "path/to/port/file"
-            :start? true}}}
+      ;; override the nREPL settings
+      :nrepl {:host "foo"
+              :port 1234
+              :port-file "path/to/port/file"
+              :start? true}}}
 
-:main my-app.core
+  :main my-app.core
+  ...
+  )
 ```
 
 ### Notes
@@ -113,3 +117,6 @@ drop a copy of that `web.xml` in to `:target-path` in case you need to
 modify it. You'll want to place your copy in a directory in your
 application root and point `[:immutant :war :resource-paths]` at it so
 it will get picked up.
+
+For both types of war archives, you'll need to specify a `:main` as
+the entry point for your application.
