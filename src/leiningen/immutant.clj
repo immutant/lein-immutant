@@ -74,8 +74,13 @@
     (Properties.)
     m))
 
-(defn build-war [project dest specs]
-  (with-open [out (-> dest FileOutputStream. BufferedOutputStream. JarOutputStream.)]
+(defn build-war
+  "Creates a war file with the given entry specs.
+
+   specs is a vector of 2-element vectors of the form [\"path/in/war\"
+   content-as-anything-that-can-be-io/copied]"
+  [file specs]
+  (with-open [out (-> file FileOutputStream. BufferedOutputStream. JarOutputStream.)]
     (doseq [[path content] specs]
       (.putNextEntry out (JarEntry. path))
       (io/copy content out))))
@@ -100,7 +105,7 @@
            ["-n" "--name NAME"]
            ["-r" "--resource-dir DIR"]
            [nil  "--nrepl-host HOST"]
-           [nil  "--nrepl-port PORT"]
+           [nil  "--nrepl-port PORT"      :parse-fn read-string]
            [nil  "--nrepl-port-file FILE"]
            [nil  "--nrepl-start"]])]
     (when errors
@@ -115,8 +120,7 @@
         m))
     options
     {[:dest] io/file
-     [:resource-dir] io/file
-     [:nrepl :port] #(if (string? %) (read-string %) %)}))
+     [:resource-dir] io/file}))
 
 (defn merge-options
   [{:keys [nrepl-host nrepl-port nrepl-port-file nrepl-start] :as options}
@@ -254,7 +258,7 @@
                   coerce-options)
         file (io/file (resolve-path project (:dest options))
                (war-name project options))]
-    (build-war project file
+    (build-war file
       (-> {}
         (add-uberjar project options)
         (add-app-properties project options)
