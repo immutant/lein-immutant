@@ -243,7 +243,12 @@
   (if (:dev? options)
     specs
     (add-file-spec specs "WEB-INF/lib"
-      (io/file (uberjar/uberjar project)))))
+      (io/file (uberjar/uberjar
+                 ;; both of these /should/ work, but neither seem to
+                 ;; (update-in project [:exclusions]
+                 ;;   conj 'org.jboss.xnio/xnio-api)
+                 (update-in project [:uberjar-exclusions]
+                   conj #"^org/xnio"))))))
 
 (defn war
   "Generates a war file suitable for deploying to a WildFly container."
