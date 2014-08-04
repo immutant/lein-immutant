@@ -3,19 +3,19 @@
 A [Leiningen](http://leiningen.org/) plugin for deploying Immutant 2.x
 applications to a [WildFly](http://wildfly.org/) application server.
 
-## Usage
-
-**Note:** as of Immutant 2.x, you /only/ need this plugin if you are
+**Note:** as of Immutant 2.x, you *only* need this plugin if you are
 deploying your applications to a WildFly container. See [somewhere]
 for more info.
 
-### Installation
+**Note deux:** this plugin requires Leinigen 2.4.0 or greater.
+
+## Installation
 
 The current version is a snapshot:
 
     [lein-immutant "2.0.0-SNAPSHOT"]
 
-### Usage
+## Usage
 
 The plugin currently provides one subtask: `lein immutant war`. This
 generates a `.war` file suitable for deploying to WildFly.
