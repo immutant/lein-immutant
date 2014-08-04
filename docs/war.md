@@ -104,7 +104,6 @@ overridden via command line switches.
   ...
   )
 ```
-
 ### Notes
 
 When generating an uberwar, we generate an uberjar using the standard
