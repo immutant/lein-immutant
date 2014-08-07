@@ -235,17 +235,33 @@
     specs
     (:resource-paths options)))
 
-(defn add-web-xml
-  "Adds a WEB-INF/web.xml to the entry specs unless it already exists (from :resource-dir).
+(defn find-base-xml [specs file-name]
+  (if-let [jar-key (some #(re-find #"^.*wunderboss-wildfly.*\.jar$" %) (keys specs))]
+    (let [cl (doto (clojure.lang.DynamicClassLoader.)
+               (.addURL (.toURL (specs jar-key))))
+          old-cl (-> (Thread/currentThread) .getContextClassLoader)]
+      (try
+        (-> (Thread/currentThread) (.setContextClassLoader cl))
+        (if-let [resource (io/resource (str "base-xml/" file-name))]
+          (slurp resource)
+          (abort (format "No %s found in the wunderboss-wildfly jar." file-name)))
+        (finally
+          (-> (Thread/currentThread) (.setContextClassLoader old-cl)))))
+    (abort "No wunderboss-wildfly jar found in the dependency tree.")))
 
-   If it does add the web.xml to the specs, it also drops a copy in
+(defn add-base-xml
+  "Adds a WEB-INF/file-name to the entry specs unless it already exists (from :resource-dir).
+
+   The file is pulled from the wunderboss-wildfly jar.
+   If it does add the file to the specs, it also drops a copy in
    target/ in case the user needs to customize it."
-  [specs project _]
-  (if (specs "WEB-INF/web.xml")
-    specs
-    (let [content (slurp (io/resource "web.xml"))]
-      (spit (io/file (:target-path project) "web.xml") content)
-      (assoc specs "WEB-INF/web.xml" content))))
+  [specs project file-name]
+  (let [spec-key (str "WEB-INF/" file-name)]
+    (if (specs spec-key)
+      specs
+      (let [content (find-base-xml specs file-name)]
+        (spit (io/file (:target-path project) file-name) content)
+        (assoc specs spec-key content)))))
 
 (defn add-uberjar
   "Builds and adds the uberjar to the entry specs if we're building an uberwar."
@@ -270,7 +286,8 @@
         (add-app-properties project options)
         (add-top-level-jars project options)
         (add-top-level-resources project options)
-        (add-web-xml project options)))
+        (add-base-xml project "web.xml")
+        (add-base-xml project "jboss-deployment-structure.xml")))
     (println "Created" (.getAbsolutePath file))
     file))
 
