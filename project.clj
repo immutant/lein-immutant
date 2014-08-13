@@ -10,7 +10,9 @@
             :distribution :repo}
   :dependencies [[org.clojure/tools.cli "0.3.1"]
                  [org.immutant/deploy-tools "2.0.0-SNAPSHOT"
-                  :exclusions [leiningen-core]]]
+                  :exclusions [leiningen-core]]
+                 [org.immutant/fntest "2.0.0-SNAPSHOT"]]
+  :exclusions [org.clojure/clojure]
   :eval-in-leiningen true
   :pedantic :warn
   :signing {:gpg-key "BFC757F9"}

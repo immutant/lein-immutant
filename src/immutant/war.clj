@@ -6,7 +6,7 @@
             [leiningen.uberjar :as uberjar]
             [clojure.string :as str]
             [clojure.java.io :as io]
-            [clojure.tools.cli :as opts]
+            [immutant.util :as u]
             [immutant.deploy-tools.war :as dt-war]))
 
 (defn resolve-path [project path]
@@ -21,20 +21,15 @@
         path))
     (io/file (:target-path project))))
 
-(defn parse-options [args]
-  (let [{:keys [options errors]}
-        (opts/parse-opts args
-          [["-d" "--dev"                  :id :dev?]
-           ["-o" "--destination DIR"]
-           ["-n" "--name NAME"]
-           ["-r" "--resource-paths DIR"   :parse-fn #(str/split % #",")]
-           [nil  "--nrepl-host HOST"]
-           [nil  "--nrepl-port PORT"      :parse-fn read-string]
-           [nil  "--nrepl-port-file FILE"]
-           [nil  "--nrepl-start"]])]
-    (when errors
-      (abort (str/join "\n" errors)))
-    options))
+(def option-specs
+  [["-d" "--dev"                  :id :dev?]
+   ["-o" "--destination DIR"]
+   ["-n" "--name NAME"]
+   ["-r" "--resource-paths DIR"   :parse-fn #(str/split % #",")]
+   [nil  "--nrepl-host HOST"]
+   [nil  "--nrepl-port PORT"      :parse-fn read-string]
+   [nil  "--nrepl-port-file FILE"]
+   [nil  "--nrepl-start"]])
 
 (defn absolutize [root path]
   (.getAbsolutePath
@@ -106,13 +101,11 @@
 (defn add-alias [src-path dest-path m]
   (assoc-in m dest-path (get-in m src-path)))
 
-
-
 (defn war
   "Generates a war file suitable for deploying to a WildFly container."
   [project args]
   (let [options (-> args
-                  parse-options
+                  (u/parse-options option-specs)
                   (merge-options project))
         file (io/file (resolve-path project (:destination options))
                (war-name project options))]
