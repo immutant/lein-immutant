@@ -37,8 +37,8 @@ the container, you can separate the tests in to different
 directories, and use profiles to activate the correct tests
 in-container. Given the following project.clj snippet:
 
-    :test-paths [\"outside-tests\"]
-    :profiles {:inside {:test-paths ^:replace [\"inside-tests\"]}}
+    :test-paths ["outside-tests"]
+    :profiles {:inside {:test-paths ^:replace ["inside-tests"]}}
 
 `lein test` will only run the outside tests, while
 `lein with-profile inside immutant test` will only run the inside
