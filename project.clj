@@ -8,7 +8,9 @@
   :license {:name "Eclipse Public License - v 1.0"
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo}
-  :dependencies [[org.clojure/tools.cli "0.3.1"]]
+  :dependencies [[org.clojure/tools.cli "0.3.1"]
+                 [org.immutant/deploy-tools "2.0.0-SNAPSHOT"
+                  :exclusions [leiningen-core]]]
   :eval-in-leiningen true
   :pedantic :warn
   :signing {:gpg-key "BFC757F9"}
