@@ -11,10 +11,11 @@
 
 (defn resolve-path [project path]
   (if path
-    (let [deployments-dir (io/file path "standalone/deployments")]
-      (when-not (.exists path)
+    (let [dir (io/file path)
+          deployments-dir (io/file dir "standalone/deployments")]
+      (when-not (.exists dir)
         (abort (format "Path '%s' does not exist." path)))
-      (when-not (.isDirectory path)
+      (when-not (.isDirectory dir)
         (abort (format "Path '%s' is not a directory." path)))
       (if (.exists deployments-dir)
         deployments-dir
