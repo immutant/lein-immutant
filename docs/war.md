@@ -35,7 +35,7 @@ overridden via command line switches.
   the application's code, resources, and dependencies.
 
   Development mode can be specified on the command line as `-d` or
-  `--dev`, and can only be enabled by the switch, not disabled.
+  `--dev`, or disabled with `--no-dev`.
 
 * `:name` - Specifies the name of the war file (without the .war
   suffix).  Defaults to `%p%t`, and supports placeholders:
@@ -64,8 +64,8 @@ overridden via command line switches.
     via `--nrepl-port-file FILE`.
   - `:start?` - Controls if an nREPL endpoint is started or not. For
     development wars, this is `true` by default, false otherwise. Can
-    be overridden on the command line via `--nrepl-start`, and can
-    only be enabled by the switch, not disabled.
+    be overridden on the command line via `--nrepl-start`, or disabled
+    with `--no-nrepl-start`.
 
 * `:resource-paths` - A vector of directories containing resources
   that need to be copied to the top-level of the war file. These

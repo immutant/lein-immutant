@@ -15,7 +15,7 @@ overridden via command line switches.
   Defaults to `false`.
 
   Cluster mode can be specified on the command line as `-c` or
-  `--cluster`.
+  `--cluster`, or disabled with `--no-cluster`.
 
 * `:jboss-home` - Specifies the path to the WildFly install to be
   used.

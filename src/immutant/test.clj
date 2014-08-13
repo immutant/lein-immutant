@@ -7,6 +7,7 @@
 
 (def option-specs
   [["-c" "--cluster"         :id :cluster?]
+   [nil  "--no-cluster"      :id :no-cluster?]
    ["-j" "--jboss-home PATH"]
    ["-o" "--offset OFFSET"   :parse-fn read-string]])
 

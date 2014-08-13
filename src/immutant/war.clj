@@ -23,13 +23,15 @@
 
 (def option-specs
   [["-d" "--dev"                  :id :dev?]
+   [nil  "--no-dev"               :id :no-dev?]
    ["-o" "--destination DIR"]
    ["-n" "--name NAME"]
    ["-r" "--resource-paths DIR"   :parse-fn #(str/split % #",")]
    [nil  "--nrepl-host HOST"]
    [nil  "--nrepl-port PORT"      :parse-fn read-string]
    [nil  "--nrepl-port-file FILE"]
-   [nil  "--nrepl-start"]])
+   [nil  "--nrepl-start"]
+   [nil  "--no-nrepl-start"]])
 
 (defn absolutize [root path]
   (.getAbsolutePath
