@@ -2,7 +2,7 @@
   "Generate war files for WildFly."
   (:refer-clojure :exclude [add-classpath])
   (:require [leiningen.core.classpath :as cp]
-            [leiningen.core.main :refer [abort]]
+            [leiningen.core.main :refer [abort warn]]
             [leiningen.uberjar :as uberjar]
             [clojure.string :as str]
             [clojure.java.io :as io]
@@ -83,7 +83,9 @@
   (if-let [main-ns (:main project)]
     (assoc options
       :init-fn (symbol (str main-ns) "-main"))
-    (abort "No :main specified in project.clj.")))
+    (do
+      (warn "No :main specified in project.clj, no app initialization will be performed.")
+      options)))
 
 (defn add-uberjar
   "Builds and adds the uberjar to the options if we're building an uberwar."
@@ -108,18 +110,16 @@
   [project args]
   (let [options (-> args
                   (u/parse-options option-specs)
-                  (merge-options project))
+                  (merge-options project)
+                  (->> (add-uberjar project)
+                    (add-init-fn project)
+                    (add-classpath project)
+                    (merge project)
+                    (add-alias [:immutant :war :resource-paths] [:war-resource-paths])
+                    (add-alias [:repl-options] [:nrepl :options])
+                    coerce-options))
         file (io/file (resolve-path project (:destination options))
                (war-name project options))]
-    (dt-war/create-war file
-      (->> options
-        (add-uberjar project)
-        (add-init-fn project)
-        (add-classpath project)
-        (merge project)
-        (add-alias [:immutant :war :resource-paths] [:war-resource-paths])
-        (add-alias [:repl-options] [:nrepl :options])
-        coerce-options))
-
+    (dt-war/create-war file options)
     (println "Created" (.getAbsolutePath file))
     file))
