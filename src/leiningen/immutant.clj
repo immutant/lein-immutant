@@ -11,5 +11,4 @@
      (case subtask
        "war"  (war project options)
        "test" (test project options)
-       (help/help project "immutant"))
-     (shutdown-agents)))
+       (help/help project "immutant"))))
