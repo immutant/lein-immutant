@@ -40,7 +40,8 @@
         port-file (io/file (:target-path project) "fntest-nrepl-port")]
     (println
       (format
-        "Running tests inside WildFly (log output available in target/isolated-wildfly/%s/log/server.log)..."
+        "Running tests inside WildFly (log output available in %s/isolated-wildfly/%s/log/server.log)..."
+        (:target-path project)
         (if (:cluster? options) "domain/servers/*" "standalone")))
     (when-not (u/mapply
                 fntest/test-in-container
