@@ -9,7 +9,10 @@
 
 (def test-options
   [["--offset" :parse-fn read-string]
-   ["--log-level"]])
+   ["--log-level"]
+   ["-f" "--format"] ;; format can be tap or junit
+   ["-t" "--to-file" :flag true] ;; has to be set to write to an output file
+   ["-o" "--output-file" :default "testresults.xml"]])
 
 (defn test
   "Runs a project's tests inside the current Immutant
