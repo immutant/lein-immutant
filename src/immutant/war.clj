@@ -121,6 +121,9 @@
                     coerce-options))
         file (io/file (resolve-path project (:destination options))
                (war-name project options))]
-    (dt-war/create-war file options)
+    (try
+      (dt-war/create-war file options)
+      (catch Exception e
+        (abort (str "Error: " (.getMessage e)))))
     (println "Created" (.getAbsolutePath file))
     file))
