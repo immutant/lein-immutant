@@ -7,6 +7,8 @@
 
 (defn immutant
   {:subtasks [#'war #'test]}
+  ([project]
+     (help/help project "immutant"))
   ([project subtask & options]
      (case subtask
        "war"  (war project options)
