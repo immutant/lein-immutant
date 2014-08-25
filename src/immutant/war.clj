@@ -36,7 +36,7 @@
    ["-r" "--resource-paths DIR1,DIR2"
     "Paths to file trees to include in the top level of the war"
     :parse-fn #(str/split % #",")]
-   [nil  "--nrepl-host HOST"
+   [nil  "--nrepl-interface INTERFACE"
     "Interface for nrepl to bind to"]
    [nil  "--nrepl-port PORT"
     "Port for nrepl to bind to"
@@ -67,7 +67,7 @@
        [:nrepl :port-file] absolutize-fn})))
 
 (defn merge-options
-  [{:keys [nrepl-host nrepl-port nrepl-port-file nrepl-start] :as options}
+  [{:keys [nrepl-interface nrepl-port nrepl-port-file nrepl-start] :as options}
    project]
   (let [merged-opts
         (merge-with
@@ -78,7 +78,7 @@
           (-> project :immutant :war)
           (update-in options [:nrepl]
             #(cond-> %
-               nrepl-host                       (assoc :host nrepl-host)
+               nrepl-interface                  (assoc :interface nrepl-interface)
                nrepl-port                       (assoc :port nrepl-port)
                nrepl-port-file                  (assoc :port-file nrepl-port-file)
                (contains? options :nrepl-start) (assoc :start? nrepl-start))))]
