@@ -1,4 +1,5 @@
-Generates a war file suitable for deploying to a WildFly container.
+To deploy an Immutant application to WildFly, you'll need to generate
+a war file via the `lein immutant war` task.
 
 The task's behavior can be configured with the following options under
 the `[:immutant :war]` path in `project.clj`, all of which can be
@@ -42,7 +43,7 @@ overridden via command line switches.
 
   - `%p` for the project name
   - `%v` for project version
-  - `%t` for the type suffix (which will be -dev for dev wars, ;; ""
+  - `%t` for the type suffix (which will be -dev for dev wars, ""
     for full wars).
 
   The name can be specified on the command line as `-n NAME` or

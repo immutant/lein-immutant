@@ -7,10 +7,17 @@
             [immutant.war :refer [war]]))
 
 (def option-specs
-  [["-c" "--cluster"         :id :cluster?]
-   [nil  "--no-cluster"      :id :no-cluster?]
-   ["-j" "--jboss-home PATH"]
-   ["-o" "--offset OFFSET"   :parse-fn read-string]])
+  [["-c" "--cluster"
+    "Deploy the test application to a cluster"
+    :id :cluster?]
+   [nil  "--no-cluster"
+    "Deploy the test application to a standalone server (default)"
+    :id :no-cluster?]
+   ["-j" "--jboss-home PATH"
+    "Use the WildFly at PATH"]
+   ["-o" "--offset OFFSET"
+    "Offset the WildFly network ports"
+    :parse-fn read-string]])
 
 (defn jboss-home [options]
   (if-let [home (:jboss-home options (System/getenv "JBOSS_HOME"))]
@@ -30,12 +37,19 @@
               :port-file (.getAbsolutePath port-file))))
     nil))
 
+(defn help-test []
+  (format "%s\n\n%s\n\n%s\n\n%s\n"
+    "Runs a project's tests inside WildFly."
+    "Valid options are:"
+    (u/options-summary option-specs)
+    "For detailed help, see `lein help immutant testing`."))
+
 (defn test
   "Runs a project's tests inside WildFly."
   [project args]
   (let [options (merge
                   (-> project :immutant :test)
-                  (u/parse-options args option-specs))
+                  (u/parse-options args option-specs help-test))
         jboss-home (jboss-home options)
         port-file (io/file (:target-path project) "fntest-nrepl-port")]
     (println

@@ -1,9 +1,10 @@
-Runs a project's tests inside WildFly.
+To run an application's tests inside of a WildFly container, you can
+use the `lein immutant test` task.
 
-Runs WildFly, deploys the project to it, runs all tests found beneath
-the test/ directory, undeploys the app, and then shuts down
-WildFly. All tests specified in the `:test-paths` from project.clj will
-be executed.
+This task runs WildFly, deploys the project to it, runs all tests
+found beneath the test/ directory, undeploys the app, and then shuts
+down WildFly. All tests specified in the `:test-paths` from
+project.clj will be executed.
 
 The task's behavior can be configured with the following options under
 the `[:immutant :test]` path in `project.clj`, all of which can be

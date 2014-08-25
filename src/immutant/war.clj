@@ -23,16 +23,30 @@
     (io/file (:target-path project))))
 
 (def option-specs
-  [["-d" "--dev"                  :id :dev?]
-   [nil  "--no-dev"               :id :no-dev?]
-   ["-o" "--destination DIR"]
-   ["-n" "--name NAME"]
-   ["-r" "--resource-paths DIR"   :parse-fn #(str/split % #",")]
-   [nil  "--nrepl-host HOST"]
-   [nil  "--nrepl-port PORT"      :parse-fn read-string]
-   [nil  "--nrepl-port-file FILE"]
-   [nil  "--nrepl-start"]
-   [nil  "--no-nrepl-start"]])
+  [["-d" "--dev"
+    "Generate a 'dev' war"
+    :id :dev?]
+   [nil  "--no-dev"
+    "Generate an uberwar (default)"
+    :id :no-dev?]
+   ["-o" "--destination DIR"
+    "Write the generated war to DIR"]
+   ["-n" "--name NAME"
+    "Override the name of the war (sans the .war suffix)"]
+   ["-r" "--resource-paths DIR1,DIR2"
+    "Paths to file trees to include in the top level of the war"
+    :parse-fn #(str/split % #",")]
+   [nil  "--nrepl-host HOST"
+    "Interface for nrepl to bind to"]
+   [nil  "--nrepl-port PORT"
+    "Port for nrepl to bind to"
+    :parse-fn read-string]
+   [nil  "--nrepl-port-file FILE"
+    "File to write actual nrepl port to"]
+   [nil  "--nrepl-start"
+    "Request nrepl to start (default for 'dev' wars)"]
+   [nil  "--no-nrepl-start"
+    "Don't request nrepl to start (default for uberwars)"]])
 
 (defn absolutize [root path]
   (.getAbsolutePath
@@ -106,11 +120,18 @@
 (defn add-alias [src-path dest-path m]
   (assoc-in m dest-path (get-in m src-path)))
 
+(defn help-war []
+  (format "%s\n\n%s\n\n%s\n\n%s\n"
+    "Generates a war file suitable for deploying to a WildFly container."
+    "Valid options are:"
+    (u/options-summary option-specs)
+    "For detailed help, see `lein help immutant deployment`."))
+
 (defn war
   "Generates a war file suitable for deploying to a WildFly container."
   [project args]
   (let [options (-> args
-                  (u/parse-options option-specs)
+                  (u/parse-options option-specs help-war)
                   (merge-options project)
                   (->> (add-uberjar project)
                     (add-init-fn project)

@@ -21,10 +21,10 @@ The plugin currently provides two subtasks:
 
 * `lein immutant war` - This generates a `.war` file suitable for
   deploying to WildFly. See
-  [the help file for the war task](docs/war.md) for details.
+  [deployment help](docs/deployment.md) for details.
 
 * `lein immutant test` - This deploys the application to WildFly, and
-  runs the tests. See [the help file for the test task](docs/test.md)
+  runs the tests. See [the testing help](docs/testing.md)
   for details.
 
 ## License

@@ -1,12 +1,16 @@
 (ns immutant.util
-  (:require [leiningen.core.main :refer [abort]]
+  (:require [leiningen.core.main :as lcm]
             [leiningen.core.project :as project]
             [clojure.tools.cli :as opts]
             [clojure.string :as str]))
 
-(defn parse-options [args option-specs]
+(defn options-summary [option-specs]
+  (:summary (opts/parse-opts [] option-specs)))
+
+(defn parse-options [args option-specs help-fn]
   (let [{:keys [options errors]}
-        (opts/parse-opts args option-specs)]
+        (opts/parse-opts args option-specs)
+        abort #(lcm/abort (format "%s\n\n%s" % (help-fn)))]
     (when errors
       (abort (str/join "\n" errors)))
     (reduce
