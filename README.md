@@ -11,9 +11,9 @@ for more info.
 
 ## Installation
 
-The current version is a snapshot:
+The current version is:
 
-    [lein-immutant "2.0.0-SNAPSHOT"]
+    [lein-immutant "2.0.0.alpha1"]
 
 ## Usage
 
