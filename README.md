@@ -192,6 +192,11 @@ The subtasks provided by the plugin are:
   test run will be located in
   `<project-root>/target/isolated-immutant/standalone/log/`.
 
+  If your tests are using clojure.test, you can specify an alternate
+  output format with --format (or -f), and/or output the results to a
+  file with --output-file (or -o). Options for --format are "tap" or
+  "junit".
+
   This is a very simple way to automate your integration testing on a
   [CI](http://en.wikipedia.org/wiki/Continuous_integration) host.
 

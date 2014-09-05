@@ -10,7 +10,7 @@
 (def test-options
   [["--offset" :parse-fn read-string]
    ["--log-level"]
-   ["-f" "--format"] ;; format can be tap or junit
+   ["-f" "--format"]
    ["-o" "--output-file"]])
 
 (defn test
@@ -33,6 +33,11 @@
   You can override the default logging level of INFO with the
   --log-level option. The server.log is avaiable in
   target/isolated-immutant/standalone/log/.
+
+  If your tests are using clojure.test, you can specify an alternate
+  output format with --format (or -f), and/or output the results to a
+  file with --output-file (or -o). Options for --format are \"tap\" or
+  \"junit\".
 
   If you only want to run a subset of your tests inside or outside of
   the container, you can separate the tests in to different
