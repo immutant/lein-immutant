@@ -55,6 +55,8 @@
   $IMMUTANT_HOME environment variable. If no Immutant install can be
   located, the latest stable release will be installed."
   [project root opts]
+  (when-not (contains? #{"tap" "junit" nil} (:format opts))
+    (common/abort (format "'%s' isn't a valid format. Valid formats are: 'tap', 'junit'" (:format opts))))
   (println "Running tests inside Immutant (log output available in target/isolated-immutant/standalone/log/server.log)...")
   (install/auto-install)
   (common/prep-tasks project)
