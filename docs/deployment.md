@@ -63,8 +63,8 @@ overridden via command line switches.
 
 * `:nrepl` - A map that specifies the options for an nREPL endpoint.
 
-  - `:interface` - The interface to bind to. Defaults to "localhost".
-     Can be overridden on the command line via `--nrepl-interface INTERFACE`.
+  - `:host` - The host to bind to. Defaults to "localhost".
+     Can be overridden on the command line via `--nrepl-host HOST`.
   - `:port` - The port to bind to. Defaults to `0`, which means a
     random port. Can be overridden on the command line via
     `--nrepl-port PORT`.
@@ -127,7 +127,7 @@ overridden via command line switches.
       :virtual-host "some-configured-host"
 
       ;; override the nREPL settings
-      :nrepl {:interface "0.0.0.0"
+      :nrepl {:host "0.0.0.0"
               :port 1234
               :port-file "path/to/port/file"
               :start? true}}}
