@@ -29,6 +29,10 @@
    [nil  "--no-dev"
     "Generate an uberwar (default)"
     :id :no-dev?]
+   ["-c" "--context-root CONTEXT"
+    "Deploy to this context root"]
+   ["-v" "--virtual-host HOST"
+    "Deploy to the named host defined in the WildFly config"]
    ["-o" "--destination DIR"
     "Write the generated war to DIR"]
    ["-n" "--name NAME"
