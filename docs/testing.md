@@ -18,6 +18,13 @@ overridden via command line switches.
   Cluster mode can be specified on the command line as `-c` or
   `--cluster`, or disabled with `--no-cluster`.
 
+* `:debug?` - If true, the server will be started with
+  remote-debugging enabled. This means it will start, but immediately
+  suspend, waiting for a remote debugger to attach to port 8787.
+
+  Debug mode can be specified on the command line as `-d` or
+  `--debug`, or disabled with `--no-debug`.
+
 * `:jboss-home` - Specifies the path to the WildFly install to be
   used.
 

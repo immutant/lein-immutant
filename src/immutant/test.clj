@@ -13,6 +13,12 @@
    [nil  "--no-cluster"
     "Deploy the test application to a standalone server (default)"
     :id :no-cluster?]
+   ["-d" "--debug"
+    "Start the server with debugging enabled"
+    :id :debug?]
+   [nil "--no-debug"
+    "Don't enable debugging on server start (default)"
+    :id :no-debug?]
    ["-j" "--jboss-home PATH"
     "Use the WildFly at PATH"]
    ["-o" "--offset OFFSET"
@@ -69,9 +75,9 @@
                       :jboss-home jboss-home
                       :dirs (:test-paths project)
                       :port-file port-file
-                      :war-file (generate-war project port-file))
+                      :war-file (generate-war project port-file)
+                      :modes fntest/default-modes)
                   (cond->
-                    (:cluster? options)
-                    (assoc
-                        :modes (conj fntest/default-modes :domain)))))
+                    (:cluster? options) (update-in [:modes] conj :domain)
+                    (:debug? options)   (update-in [:modes] conj :debug))))
       (abort "Tests failed"))))
