@@ -5,17 +5,17 @@ The task's behavior can be configured with the following options under
 the `[:immutant :war]` path in `project.clj`, all of which can be
 overridden via command line switches.
 
-* `:context-root` - The context root to attach the application to. By
+* `:context-path` - The context path to attach the application to. By
   default, the application will use a context based on the name of the
   war file, so a war file named `foo.war` will be hosted under `/foo`.
-  To override that, either set `:context-root` to the desired context,
+  To override that, either set `:context-path` to the desired context,
   or name the war file `ROOT.war` to get the root ('/') context.
 
   This value is written to `WEB-INF/jboss-web.xml` inside the war, and
   a copy of the file is written to `:target-path`.
 
-  The context root can be specified on the command line as `-c
-  CONTEXT` or `--context-root CONTEXT`.
+  The context path can be specified on the command line as `-c
+  CONTEXT` or `--context-path CONTEXT`.
 
 * `:destination` - The directory where the war file should be placed.
   To ease deployment to WildFly, you can specify the root of your
@@ -151,7 +151,7 @@ it will get picked up. We also generate a
 `WEB-INF/jboss-deployment-structure.xml` that specifies what WildFly
 modules the application depends on, and drop a copy in
 `:target-path`. We do the same for `WEB-INF/jboss-web.xml` if you
-specify a `:context-root` or `:virtual-host`.
+specify a `:context-path` or `:virtual-host`.
 
 For both types of war archives, you'll need to specify a `:main` as
 the entry point for your application.
