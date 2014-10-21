@@ -13,7 +13,7 @@ for more info.
 
 The current version is:
 
-    [lein-immutant "2.0.0-alpha1"]
+    [lein-immutant "2.0.0-alpha2"]
 
 ## Usage
 
