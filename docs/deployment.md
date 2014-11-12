@@ -8,8 +8,9 @@ overridden via command line switches.
 * `:context-path` - The context path to attach the application to. By
   default, the application will use a context based on the name of the
   war file, so a war file named `foo.war` will be hosted under `/foo`.
-  To override that, either set `:context-path` to the desired context,
-  or name the war file `ROOT.war` to get the root ('/') context.
+  To override that set `:context-path` to the desired context.  If you
+  want the root ('/') context, you can either set `:context-path` to
+  "/" *or* name the war file `ROOT.war`.
 
   This value is written to `WEB-INF/jboss-web.xml` inside the war, and
   a copy of the file is written to `:target-path`.
