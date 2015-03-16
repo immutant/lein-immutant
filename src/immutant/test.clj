@@ -3,7 +3,7 @@
   (:require [leiningen.core.main :refer [abort]]
             [fntest.core :as fntest]
             [clojure.java.io :as io]
-            [immutant.util :as u]
+            [immutant.lein.util :as u]
             [immutant.war :refer [war]]))
 
 (def option-specs

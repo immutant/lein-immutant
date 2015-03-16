@@ -6,7 +6,7 @@
             [leiningen.uberjar :as uberjar]
             [clojure.string :as str]
             [clojure.java.io :as io]
-            [immutant.util :as u]
+            [immutant.lein.util :as u]
             [immutant.deploy-tools.war :as dt-war]))
 
 (defn resolve-path [project path]

@@ -1,4 +1,4 @@
-(ns immutant.util
+(ns immutant.lein.util
   (:require [leiningen.core.main :as lcm]
             [leiningen.core.project :as project]
             [clojure.tools.cli :as opts]
