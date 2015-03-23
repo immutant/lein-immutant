@@ -1,6 +1,7 @@
 (ns immutant.test
   (:refer-clojure :exclude [test])
   (:require [leiningen.core.main :refer [abort]]
+            [leiningen.core.project :as project]
             [fntest.core :as fntest]
             [clojure.java.io :as io]
             [immutant.lein.util :as u]
@@ -53,7 +54,8 @@
 (defn test
   "Runs a project's tests inside WildFly."
   [project args]
-  (let [options (merge
+  (let [project (project/merge-profiles project [:leiningen/test :test])
+        options (merge
                   (-> project :immutant :test)
                   (u/parse-options args option-specs help-test))
         jboss-home (jboss-home options)
