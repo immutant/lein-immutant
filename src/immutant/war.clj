@@ -101,7 +101,9 @@
 (defn add-init-fn [project options]
   (if-let [main-ns (:main project)]
     (assoc options
-      :init-fn (symbol (str main-ns) "-main"))
+      :init-fn (if (-> main-ns symbol namespace)
+                 (symbol main-ns)
+                 (symbol (name main-ns) "-main")))
     (do
       (warn "No :main specified in project.clj, no app initialization will be performed.")
       options)))
