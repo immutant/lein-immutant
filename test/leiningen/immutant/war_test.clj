@@ -1,4 +1,5 @@
 (ns leiningen.immutant.war-test
+  (:refer-clojure :exclude [add-classpath])
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
             [clojure.set :as set]

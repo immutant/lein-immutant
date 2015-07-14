@@ -10,16 +10,11 @@
             [immutant.deploy-tools.war :as dt-war]))
 
 (defn resolve-path [project path]
-  (if path
-    (let [dir (io/file path)
-          deployments-dir (io/file dir "standalone/deployments")]
-      (when-not (.exists dir)
-        (abort (format "Path '%s' does not exist." path)))
-      (when-not (.isDirectory dir)
-        (abort (format "Path '%s' is not a directory." path)))
-      (if (.exists deployments-dir)
-        deployments-dir
-        path))
+  (if-let [path' (try
+                   (dt-war/resolve-target-path path)
+                   (catch Exception e
+                     (abort (.getMessage e))))]
+    path'
     (io/file (:target-path project))))
 
 (def option-specs
@@ -139,6 +134,9 @@
   (let [options (-> args
                   (u/parse-options option-specs help-war)
                   (merge-options project)
+                  (assoc
+                    :dependency-resolver (partial cp/resolve-dependencies :dependencies)
+                    :dependency-hierarcher (partial cp/dependency-hierarchy :dependencies))
                   (->> (add-uberjar project)
                     (add-init-fn project)
                     (add-classpath project)
