@@ -11,7 +11,7 @@
   :dependencies [[org.clojure/tools.cli "0.3.1"]
                  [org.immutant/deploy-tools "2.0.5"
                   :exclusions [leiningen-core]]
-                 [org.immutant/fntest "2.0.4"]]
+                 [org.immutant/fntest "2.0.7"]]
   :exclusions [org.clojure/clojure]
   :eval-in-leiningen true
   :pedantic :warn
