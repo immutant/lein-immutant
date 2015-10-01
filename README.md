@@ -13,7 +13,7 @@ for more info.
 
 The current version is:
 
-    [lein-immutant "2.0.0"]
+    [lein-immutant "2.0.1"]
 
 ## Usage
 
@@ -29,6 +29,6 @@ The plugin currently provides two subtasks:
 
 ## License
 
-Copyright (C) 2011-2014 Red Hat, Inc.
+Copyright (C) 2011-2015 Red Hat, Inc.
 
 Licensed under the Eclipse Public License v1.0
