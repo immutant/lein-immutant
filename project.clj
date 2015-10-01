@@ -16,5 +16,5 @@
   :eval-in-leiningen true
   :pedantic :warn
   :signing {:gpg-key "BFC757F9"}
-  :lein-release {:deploy-via :clojars}
+  :deploy-repositories [["releases" :clojars]]
   :min-lein-version "2.4.0")
