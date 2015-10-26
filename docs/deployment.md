@@ -92,7 +92,7 @@ overridden via command line switches.
 * `:virtual-host` - The name of a host defined in the WildFly
   configuration that has virtual aliases assigned. This likely *won't*
   be the actual hostname. See the
-  [WildFly docs](https://docs.jboss.org/author/display/WFLY8/Undertow+%28web%29+subsystem+configuration)
+  [WildFly docs](https://docs.jboss.org/author/display/WFLY8/Undertow+subsystem+configuration)
   for more detail.
 
   This value is written to `WEB-INF/jboss-web.xml` inside the war, and
