@@ -9,9 +9,9 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo}
   :dependencies [[org.clojure/tools.cli "0.3.1"]
-                 [org.immutant/deploy-tools "2.1.0-SNAPSHOT"
+                 [org.immutant/deploy-tools "2.1.0"
                   :exclusions [leiningen-core]]
-                 [org.immutant/fntest "2.0.8-SNAPSHOT"]]
+                 [org.immutant/fntest "2.0.8"]]
   :exclusions [org.clojure/clojure]
   :eval-in-leiningen true
   :pedantic :warn
